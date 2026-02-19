@@ -21,6 +21,13 @@ import { MorphingHamburger } from "@/components/morphing-hamburger";
 import { Typewriter } from "@/components/typewriter";
 import { MagneticDock } from "@/components/magnetic-dock";
 import { StaggeredList } from "@/components/staggered-list";
+import { ParallaxTiltCard, ParallaxLayer } from "@/components/parallax-tilt-card";
+import { ScrollReveal } from "@/components/scroll-reveal";
+import { Marquee, MarqueeItem } from "@/components/marquee";
+import { RippleButton } from "@/components/ripple-button";
+import { GradientBorder } from "@/components/gradient-border";
+import { Spotlight } from "@/components/spotlight";
+import { SwipeCards } from "@/components/swipe-cards";
 
 const variants: ButtonVariant[] = ["default", "secondary", "ghost", "destructive"];
 const sizes: ButtonSize[] = ["sm", "md", "lg"];
@@ -216,6 +223,143 @@ function StaggeredListDemo() {
         variant={variant}
         className="flex flex-col gap-2"
       />
+    </div>
+  );
+}
+
+function ParallaxTiltDemo() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <ParallaxTiltCard className="h-48">
+        <div className="p-6 h-full flex flex-col justify-end">
+          <ParallaxLayer depth={2}>
+            <h3 className="text-lg font-bold">3D Tilt</h3>
+          </ParallaxLayer>
+          <ParallaxLayer depth={1}>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Hover and move your cursor. Layers shift at different depths.</p>
+          </ParallaxLayer>
+        </div>
+      </ParallaxTiltCard>
+      <ParallaxTiltCard maxTilt={20} className="h-48">
+        <div className="p-6 h-full flex flex-col justify-center items-center text-center">
+          <ParallaxLayer depth={3}>
+            <span className="text-4xl">✦</span>
+          </ParallaxLayer>
+          <ParallaxLayer depth={1}>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">Extra tilt + deep parallax</p>
+          </ParallaxLayer>
+        </div>
+      </ParallaxTiltCard>
+    </div>
+  );
+}
+
+function ScrollRevealDemo() {
+  const [key, setKey] = useState(0);
+  const variants: Array<"fade-up" | "fade-left" | "scale" | "blur"> = ["fade-up", "fade-left", "scale", "blur"];
+  return (
+    <div className="flex flex-col gap-4">
+      <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>Replay</Button>
+      <div key={key} className="grid grid-cols-2 gap-3">
+        {variants.map((v, i) => (
+          <ScrollReveal key={v} variant={v} delay={i * 0.1}>
+            <div className="p-4 rounded-[8px] border border-neutral-200 dark:border-neutral-800 text-sm text-center">
+              {v}
+            </div>
+          </ScrollReveal>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MarqueeDemo() {
+  const items = ["React", "Framer Motion", "Tailwind", "Spring Physics", "Copy & Paste", "Zero Dependencies", "Motion-First"];
+  return (
+    <div className="flex flex-col gap-4">
+      <Marquee speed={30}>
+        {items.map((item) => (
+          <MarqueeItem key={item}>
+            <span className="px-4 py-2 rounded-full border border-neutral-200 dark:border-neutral-800 text-sm whitespace-nowrap">
+              {item}
+            </span>
+          </MarqueeItem>
+        ))}
+      </Marquee>
+      <Marquee speed={20} direction="right">
+        {items.map((item) => (
+          <MarqueeItem key={item}>
+            <span className="px-4 py-2 rounded-full bg-neutral-100 dark:bg-neutral-800 text-sm whitespace-nowrap">
+              {item}
+            </span>
+          </MarqueeItem>
+        ))}
+      </Marquee>
+    </div>
+  );
+}
+
+function RippleButtonDemo() {
+  return (
+    <div className="flex flex-wrap gap-4 items-center">
+      <RippleButton>Click for ripple</RippleButton>
+      <RippleButton rippleColor="rgba(99,102,241,0.4)" className="bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-600 dark:hover:bg-indigo-500 dark:text-white">
+        Custom color
+      </RippleButton>
+    </div>
+  );
+}
+
+function GradientBorderDemo() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <GradientBorder>
+        <div className="p-5">
+          <h3 className="text-base font-semibold mb-1">Rainbow Spin</h3>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">Default gradient, 3s rotation.</p>
+        </div>
+      </GradientBorder>
+      <GradientBorder colors={["#6366f1", "#8b5cf6", "#a78bfa", "#6366f1"]} duration={2} borderWidth={2}>
+        <div className="p-5">
+          <h3 className="text-base font-semibold mb-1">Purple Pulse</h3>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">Custom colors, faster spin.</p>
+        </div>
+      </GradientBorder>
+    </div>
+  );
+}
+
+function SpotlightDemo() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Spotlight delay={1} duration={1.2}>
+        <div className="p-5 rounded-[8px] border border-neutral-200 dark:border-neutral-800 bg-neutral-900 text-white dark:bg-neutral-900">
+          <h3 className="text-base font-semibold mb-1">Beam Sweep</h3>
+          <p className="text-sm text-neutral-400">A light beam sweeps across periodically.</p>
+        </div>
+      </Spotlight>
+      <Spotlight delay={2} color="rgba(99,102,241,0.2)">
+        <div className="p-5 rounded-[8px] border border-neutral-200 dark:border-neutral-800 bg-neutral-900 text-white dark:bg-neutral-900">
+          <h3 className="text-base font-semibold mb-1">Color Beam</h3>
+          <p className="text-sm text-neutral-400">Tinted beam with custom delay.</p>
+        </div>
+      </Spotlight>
+    </div>
+  );
+}
+
+function SwipeCardsDemo() {
+  const [key, setKey] = useState(0);
+  const cards = [
+    { id: "1", content: <div><h3 className="text-lg font-bold mb-1">Card One</h3><p className="text-sm text-neutral-500 dark:text-neutral-400">Swipe me left or right →</p></div> },
+    { id: "2", content: <div><h3 className="text-lg font-bold mb-1">Card Two</h3><p className="text-sm text-neutral-500 dark:text-neutral-400">Spring physics dismiss</p></div> },
+    { id: "3", content: <div><h3 className="text-lg font-bold mb-1">Card Three</h3><p className="text-sm text-neutral-500 dark:text-neutral-400">Stack depth illusion</p></div> },
+    { id: "4", content: <div><h3 className="text-lg font-bold mb-1">Card Four</h3><p className="text-sm text-neutral-500 dark:text-neutral-400">Last one!</p></div> },
+  ];
+  return (
+    <div className="flex flex-col gap-4">
+      <SwipeCards key={key} cards={cards} />
+      <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>Reset cards</Button>
     </div>
   );
 }
@@ -467,6 +611,55 @@ export default function Home() {
           </p>
           <ModeSwitcherDemo />
         </Section>
+
+        <Section title="Parallax Tilt Card">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            3D perspective tilt on hover. Layers shift at different depths. Light reflection follows cursor.
+          </p>
+          <ParallaxTiltDemo />
+        </Section>
+
+        <Section title="Swipe Cards">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Tinder-style card stack. Drag to dismiss with spring physics. Cards rotate as they fly.
+          </p>
+          <SwipeCardsDemo />
+        </Section>
+
+        <Section title="Marquee">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Infinite horizontal scroll with edge fade. Variable speed and direction. Pause on hover.
+          </p>
+          <MarqueeDemo />
+        </Section>
+
+        <Section title="Gradient Border">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Rotating conic gradient border with soft glow. Custom colors and speed.
+          </p>
+          <GradientBorderDemo />
+        </Section>
+
+        <Section title="Spotlight Beam">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Animated light beam sweeps across content. Subtle premium shine effect.
+          </p>
+          <SpotlightDemo />
+        </Section>
+
+        <Section title="Ripple Button">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Material-style click ripple with spring physics. Multiple concurrent ripples.
+          </p>
+          <RippleButtonDemo />
+        </Section>
+
+        <Section title="Scroll Reveal">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Viewport-triggered entrance animations. Fade, slide, scale, and blur with springs.
+          </p>
+          <ScrollRevealDemo />
+        </Section>
       </div>
 
       {/* ================================================================= */}
@@ -553,7 +746,7 @@ export default function Home() {
       </Section>
 
       <footer className="mt-20 pt-8 border-t border-neutral-200 dark:border-neutral-800 text-sm text-neutral-400">
-        <span className="tabular-nums">20 components</span> · Built by{" "}
+        <span className="tabular-nums">27 components</span> · Built by{" "}
         <a href="https://nikkikipple.com" className="underline hover:text-neutral-600 dark:hover:text-neutral-300">
           Nikki Kipple
         </a>
