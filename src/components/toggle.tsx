@@ -134,7 +134,7 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
         tabIndex={0}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
-        className={`relative inline-flex items-center rounded-[8px] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-900 ${
+        className={`relative inline-flex items-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-900 ${
           disabled ? "opacity-50 cursor-default" : "cursor-pointer"
         } ${className}`}
         style={{
@@ -150,7 +150,7 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
       >
         {/* Thumb — slides with snappy spring, squishes on press */}
         <motion.span
-          className="block rounded-[6px] bg-white shadow-sm"
+          className="block rounded-full bg-white shadow-sm"
           style={{
             width: config.thumb,
             height: config.thumb,
