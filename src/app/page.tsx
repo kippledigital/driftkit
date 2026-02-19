@@ -151,7 +151,7 @@ function TableOfContents() {
   return (
     <>
       {/* Desktop sidebar */}
-      <nav className="hidden xl:block fixed left-[max(1rem,calc(50%-38rem))] top-24 w-48 max-h-[calc(100vh-8rem)] overflow-y-auto text-xs">
+      <nav className="hidden xl:block fixed left-[max(1rem,calc(50%-38rem))] top-24 w-48 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-none text-xs" style={{ scrollbarWidth: 'none' }}>
         <p className="text-neutral-600 dark:text-neutral-500 font-semibold uppercase tracking-wider mb-3">Showpieces</p>
         {sections.filter(s => s.group === "showpiece").map((s) => (
           <a
