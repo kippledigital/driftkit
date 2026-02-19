@@ -17,6 +17,9 @@ Built with [Framer Motion](https://www.framer.com/motion/) + [Tailwind CSS](http
 ## Components
 
 - [Button](src/components/button.tsx) — hover lift, press sink, loading states, spring physics
+- [Toggle](src/components/toggle.tsx) — spring-animated switch with iOS-like press squish and color morphing
+- [Dialog](src/components/dialog.tsx) — spring-in modal with backdrop blur, focus trap, escape dismiss
+- [Toast](src/components/toast.tsx) — stacking notifications with drag-to-dismiss, auto-dismiss progress, layout animation
 
 ## Usage
 
