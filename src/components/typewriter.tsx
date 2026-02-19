@@ -1,43 +1,18 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-
-// =============================================================================
-// TYPEWRITER TEXT REVEAL
-// =============================================================================
-// WHY: Typewriter effects create anticipation. The reader watches text appear
-// character by character, which demands attention in a way that instant rendering
-// doesn't. Great for hero sections, quotes, terminal-style UIs, or chatbots.
-//
-// HOW: We reveal characters one at a time using a timer. Each character enters
-// with a tiny spring-animated opacity + y offset. The cursor blinks at the end
-// using a CSS animation (cheaper than JS for a simple blink). When the text is
-// fully typed, the cursor optionally continues blinking or fades out.
-//
-// WHY per-character spring instead of just showing: The micro-animation on each
-// character creates a "settling" effect — each letter appears to land in place
-// rather than just popping in. It's subtle but makes the whole thing feel alive.
-// =============================================================================
 
 const CHAR_SPRING = { type: "spring" as const, stiffness: 600, damping: 35, mass: 0.3 };
 
 export interface TypewriterProps {
-  /** Text to type out */
   text: string;
-  /** Typing speed in ms per character. Default 50 */
   speed?: number;
-  /** Delay before starting in ms. Default 0 */
   delay?: number;
-  /** Show blinking cursor. Default true */
   cursor?: boolean;
-  /** Keep cursor visible after typing completes. Default true */
   persistCursor?: boolean;
-  /** Callback when typing completes */
   onComplete?: () => void;
-  /** Loop: delete and retype. Provide array of strings to cycle through */
   loop?: string[];
-  /** Pause between loops in ms. Default 2000 */
   loopPause?: number;
   className?: string;
 }
@@ -56,22 +31,27 @@ export function Typewriter({
   const prefersReducedMotion = useReducedMotion();
   const [displayedCount, setDisplayedCount] = useState(0);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [phase, setPhase] = useState<"idle" | "typing" | "pausing" | "deleting">("idle");
   const [isComplete, setIsComplete] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const texts = loop && loop.length > 0 ? loop : [text];
   const currentText = texts[currentTextIndex];
 
-  // Reset when text changes
+  // Reset on text prop change (non-loop mode)
   useEffect(() => {
     if (!loop) {
       setDisplayedCount(0);
       setIsComplete(false);
+      setPhase("idle");
     }
   }, [text, loop]);
 
-  const tick = useCallback(() => {
+  // Single effect drives the entire state machine
+  useEffect(() => {
+    // Clear any existing timer on every phase/count change
+    clearTimeout(timerRef.current);
+
     if (prefersReducedMotion) {
       setDisplayedCount(currentText.length);
       setIsComplete(true);
@@ -79,54 +59,48 @@ export function Typewriter({
       return;
     }
 
-    if (!isDeleting) {
-      // Typing forward
-      setDisplayedCount((prev) => {
-        const next = prev + 1;
-        if (next >= currentText.length) {
-          if (loop) {
-            // Pause then start deleting
-            timerRef.current = setTimeout(() => setIsDeleting(true), loopPause);
-          } else {
-            setIsComplete(true);
-            onComplete?.();
-          }
-          return currentText.length;
-        }
-        // Vary speed slightly for natural feel — ±30%
-        const jitter = speed * (0.7 + Math.random() * 0.6);
-        timerRef.current = setTimeout(tick, jitter);
-        return next;
-      });
-    } else {
-      // Deleting (faster)
-      setDisplayedCount((prev) => {
-        const next = prev - 1;
-        if (next <= 0) {
-          setIsDeleting(false);
-          setCurrentTextIndex((i) => (i + 1) % texts.length);
-          timerRef.current = setTimeout(tick, speed);
-          return 0;
-        }
-        timerRef.current = setTimeout(tick, speed * 0.4);
-        return next;
-      });
-    }
-  }, [currentText, isDeleting, loop, loopPause, speed, texts.length, onComplete, prefersReducedMotion]);
-
-  // Start typing
-  useEffect(() => {
-    timerRef.current = setTimeout(tick, delay || speed);
-    return () => clearTimeout(timerRef.current);
-  }, [tick, delay, speed]);
-
-  // Restart when isDeleting changes
-  useEffect(() => {
-    if (isDeleting) {
-      timerRef.current = setTimeout(tick, speed * 0.4);
+    if (phase === "idle") {
+      // Start typing after initial delay
+      timerRef.current = setTimeout(() => setPhase("typing"), delay || 0);
       return () => clearTimeout(timerRef.current);
     }
-  }, [isDeleting, tick, speed]);
+
+    if (phase === "typing") {
+      if (displayedCount >= currentText.length) {
+        // Done typing
+        if (loop) {
+          setPhase("pausing");
+        } else {
+          setIsComplete(true);
+          onComplete?.();
+        }
+        return;
+      }
+      const jitter = speed * (0.7 + Math.random() * 0.6);
+      timerRef.current = setTimeout(() => {
+        setDisplayedCount((c) => c + 1);
+      }, jitter);
+      return () => clearTimeout(timerRef.current);
+    }
+
+    if (phase === "pausing") {
+      timerRef.current = setTimeout(() => setPhase("deleting"), loopPause);
+      return () => clearTimeout(timerRef.current);
+    }
+
+    if (phase === "deleting") {
+      if (displayedCount <= 0) {
+        // Move to next text and start typing
+        setCurrentTextIndex((i) => (i + 1) % texts.length);
+        setPhase("typing");
+        return;
+      }
+      timerRef.current = setTimeout(() => {
+        setDisplayedCount((c) => c - 1);
+      }, speed * 0.4);
+      return () => clearTimeout(timerRef.current);
+    }
+  }, [phase, displayedCount, currentText, currentTextIndex, delay, loop, loopPause, speed, texts.length, onComplete, prefersReducedMotion]);
 
   const showCursor = cursor && (!isComplete || persistCursor || !!loop);
 

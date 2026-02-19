@@ -28,6 +28,12 @@ import { RippleButton } from "@/components/ripple-button";
 import { GradientBorder } from "@/components/gradient-border";
 import { Spotlight } from "@/components/spotlight";
 import { SwipeCards } from "@/components/swipe-cards";
+import { TextShimmer } from "@/components/text-shimmer";
+import { WobbleCard } from "@/components/wobble-card";
+import { AnimatedTabs } from "@/components/animated-tabs";
+import { CommandPalette } from "@/components/command-palette";
+import { ExpandableCard } from "@/components/expandable-card";
+import { CursorTrail } from "@/components/cursor-trail";
 
 const variants: ButtonVariant[] = ["default", "secondary", "ghost", "destructive"];
 const sizes: ButtonSize[] = ["sm", "md", "lg"];
@@ -348,6 +354,121 @@ function SpotlightDemo() {
   );
 }
 
+function TextShimmerDemo() {
+  return (
+    <div className="flex flex-col gap-4">
+      <span className="text-3xl font-bold">
+        <TextShimmer>Motion-first components</TextShimmer>
+      </span>
+      <span className="text-lg">
+        <TextShimmer duration={3}>A gradient that sweeps across text endlessly.</TextShimmer>
+      </span>
+    </div>
+  );
+}
+
+function WobbleCardDemo() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <WobbleCard>
+        <div className="p-6">
+          <h3 className="text-base font-semibold mb-1">Jelly Hover</h3>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            Move your cursor across this card. It wobbles like jelly with spring decay.
+          </p>
+        </div>
+      </WobbleCard>
+      <WobbleCard>
+        <div className="p-6">
+          <h3 className="text-base font-semibold mb-1">Spring Physics</h3>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            Low damping creates the bouncy overshoot. Leave and it springs back.
+          </p>
+        </div>
+      </WobbleCard>
+    </div>
+  );
+}
+
+function AnimatedTabsDemo() {
+  return (
+    <AnimatedTabs
+      items={[
+        { id: "design", label: "Design", content: <p className="text-sm text-neutral-500 dark:text-neutral-400 p-3">Start with motion. Every interaction has weight, velocity, and spring.</p> },
+        { id: "develop", label: "Develop", content: <p className="text-sm text-neutral-500 dark:text-neutral-400 p-3">Copy the component. Paste it. Tweak the spring config. Ship it.</p> },
+        { id: "deploy", label: "Deploy", content: <p className="text-sm text-neutral-500 dark:text-neutral-400 p-3">Zero dependencies beyond Framer Motion. Tree-shakeable. SSR-safe.</p> },
+      ]}
+    />
+  );
+}
+
+function CommandPaletteDemo() {
+  const [open, setOpen] = useState(false);
+  const items = [
+    { id: "1", icon: "📁", label: "Open File", shortcut: "⌘O", onSelect: () => {} },
+    { id: "2", icon: "🔍", label: "Search Components", shortcut: "⌘F", onSelect: () => {} },
+    { id: "3", icon: "🎨", label: "Toggle Theme", shortcut: "⌘D", onSelect: () => {} },
+    { id: "4", icon: "📋", label: "Copy to Clipboard", shortcut: "⌘C", onSelect: () => {} },
+    { id: "5", icon: "⚙️", label: "Settings", onSelect: () => {} },
+    { id: "6", icon: "🚀", label: "Deploy Project", onSelect: () => {} },
+  ];
+  return (
+    <div>
+      <Button variant="secondary" size="sm" onClick={() => setOpen(true)}>
+        Open ⌘K Palette
+      </Button>
+      <CommandPalette items={items} open={open} onClose={() => setOpen(false)} />
+    </div>
+  );
+}
+
+function ExpandableCardDemo() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <ExpandableCard
+        preview={
+          <div>
+            <h3 className="text-base font-semibold">Spring Physics</h3>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Click to expand →</p>
+          </div>
+        }
+        detail={
+          <div className="text-sm text-neutral-500 dark:text-neutral-400 space-y-2">
+            <p>Springs model real-world physics: mass, stiffness, and damping. Unlike easing curves, springs respond to interruption naturally.</p>
+            <p>Change the target mid-animation and the spring redirects — no jarring restart, no queued callbacks.</p>
+          </div>
+        }
+      />
+      <ExpandableCard
+        preview={
+          <div>
+            <h3 className="text-base font-semibold">Layout Animations</h3>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Click to expand →</p>
+          </div>
+        }
+        detail={
+          <div className="text-sm text-neutral-500 dark:text-neutral-400 space-y-2">
+            <p>Framer Motion&apos;s layout animations automatically animate between DOM states — position, size, border-radius all morph smoothly.</p>
+            <p>No FLIP calculations by hand. Just add layout to the component.</p>
+          </div>
+        }
+      />
+    </div>
+  );
+}
+
+function CursorTrailDemo() {
+  const [active, setActive] = useState(false);
+  return (
+    <div>
+      <Button variant="secondary" size="sm" onClick={() => setActive(!active)}>
+        {active ? "Hide Trail" : "Show Cursor Trail"}
+      </Button>
+      {active && <CursorTrail count={8} size={10} color="#6366f1" />}
+    </div>
+  );
+}
+
 function SwipeCardsDemo() {
   const [key, setKey] = useState(0);
   const cards = [
@@ -660,6 +781,48 @@ export default function Home() {
           </p>
           <ScrollRevealDemo />
         </Section>
+
+        <Section title="Text Shimmer">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Animated gradient sweeps across text. Eye-catching for headings and hero sections.
+          </p>
+          <TextShimmerDemo />
+        </Section>
+
+        <Section title="Wobble Card">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Cards that wobble like jelly on hover. Low-damping springs create the bouncy overshoot.
+          </p>
+          <WobbleCardDemo />
+        </Section>
+
+        <Section title="Animated Tabs">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Tab indicator blob morphs between tabs with layout animation. Content cross-fades with springs.
+          </p>
+          <AnimatedTabsDemo />
+        </Section>
+
+        <Section title="Command Palette">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            ⌘K modal with fuzzy search, keyboard navigation, and spring transitions.
+          </p>
+          <CommandPaletteDemo />
+        </Section>
+
+        <Section title="Expandable Card">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Shared layout animation — card morphs from compact to full detail view.
+          </p>
+          <ExpandableCardDemo />
+        </Section>
+
+        <Section title="Cursor Trail">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Decorative dots follow the cursor with staggered spring decay. Each dot is lazier than the last.
+          </p>
+          <CursorTrailDemo />
+        </Section>
       </div>
 
       {/* ================================================================= */}
@@ -746,7 +909,7 @@ export default function Home() {
       </Section>
 
       <footer className="mt-20 pt-8 border-t border-neutral-200 dark:border-neutral-800 text-sm text-neutral-400">
-        <span className="tabular-nums">27 components</span> · Built by{" "}
+        <span className="tabular-nums">33 components</span> · Built by{" "}
         <a href="https://nikkikipple.com" className="underline hover:text-neutral-600 dark:hover:text-neutral-300">
           Nikki Kipple
         </a>
