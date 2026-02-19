@@ -55,10 +55,13 @@ export function GradientBorder({
       />
       {/* Clipped border container — overflow-hidden prevents gradient corner bleed */}
       <div className="relative overflow-hidden rounded-[8px]" style={{ padding: borderWidth }}>
-        {/* Spinning gradient background */}
+        {/* Spinning gradient background — oversized square so rotation covers all corners */}
         <motion.div
-          className="absolute inset-[-4px]"
+          className="absolute"
           style={{
+            inset: "-50%",
+            width: "200%",
+            height: "200%",
             background: `conic-gradient(from 0deg, ${gradientStops})`,
           }}
           animate={prefersReduced ? undefined : { rotate: 360 }}
@@ -74,7 +77,7 @@ export function GradientBorder({
           aria-hidden
         />
         {/* Inner content */}
-        <div className="relative rounded-[6px] bg-white dark:bg-neutral-950 h-full">
+        <div className="relative rounded-[6px] bg-neutral-950 h-full">
           {children}
         </div>
       </div>
