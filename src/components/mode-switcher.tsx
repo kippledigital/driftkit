@@ -82,10 +82,8 @@ export function ModeSwitcher({
         Math.max(y, window.innerHeight - y)
       );
 
-      // Apply theme change
-      document.documentElement.classList.toggle("dark", next === "dark");
-
-      // Create and animate the wipe overlay
+      // Create overlay with the NEW theme color BEFORE toggling the class.
+      // The overlay expands to cover the old theme, then we swap underneath.
       const overlay = document.createElement("div");
       overlay.style.cssText = `
         position: fixed; inset: 0; z-index: 9999; pointer-events: none;
@@ -101,6 +99,12 @@ export function ModeSwitcher({
         ],
         { duration: 500, easing: "ease-out", fill: "forwards" }
       );
+
+      // Toggle the actual theme class midway through the wipe (when overlay
+      // covers enough of the viewport that the swap is invisible)
+      setTimeout(() => {
+        document.documentElement.classList.toggle("dark", next === "dark");
+      }, 250);
 
       anim.onfinish = () => overlay.remove();
     } else {

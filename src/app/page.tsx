@@ -46,11 +46,16 @@ import { SchedulePicker, type ScheduleValue } from "@/components/schedule-picker
 import { DateRangePicker, type DateRange } from "@/components/date-range-picker";
 import { MultiSelect } from "@/components/multi-select";
 import { Stepper } from "@/components/stepper";
+import { Drawer, DrawerHeader, DrawerContent, DrawerFooter } from "@/components/drawer";
+import { ContextMenu, contextMenuItems } from "@/components/context-menu";
+import { Popover } from "@/components/popover";
+import { Breadcrumbs, breadcrumbPatterns } from "@/components/breadcrumbs";
+import { Badge, NotificationBadge } from "@/components/badge";
 
 const variants: ButtonVariant[] = ["default", "secondary", "ghost", "destructive"];
 const sizes: ButtonSize[] = ["sm", "md", "lg"];
 
-const COMPONENT_COUNT = 43;
+const COMPONENT_COUNT = 48;
 
 // =============================================================================
 // SECTION DEFINITIONS (for TOC)
@@ -95,6 +100,11 @@ const sections: SectionDef[] = [
   { id: "date-range-picker", title: "Date Range Picker", group: "showpiece" },
   { id: "multi-select", title: "Multi Select", group: "showpiece" },
   { id: "stepper", title: "Stepper", group: "showpiece" },
+  { id: "drawer", title: "Drawer", group: "showpiece" },
+  { id: "context-menu", title: "Context Menu", group: "showpiece" },
+  { id: "popover", title: "Popover", group: "showpiece" },
+  { id: "breadcrumbs", title: "Breadcrumbs", group: "showpiece" },
+  { id: "badge", title: "Badge", group: "showpiece" },
   // Standard
   { id: "nav-menu", title: "Navigation Menu", group: "standard" },
   { id: "button", title: "Button", group: "standard" },
@@ -632,6 +642,214 @@ function StepperDemo() {
   );
 }
 
+function DrawerDemo() {
+  const [open, setOpen] = useState(false);
+  const [side, setSide] = useState<"left" | "right" | "top" | "bottom">("right");
+  
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-2">
+        {(["right", "left", "top", "bottom"] as const).map((s) => (
+          <Button key={s} size="sm" variant={side === s ? "default" : "secondary"} onClick={() => setSide(s)}>
+            {s}
+          </Button>
+        ))}
+      </div>
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Open {side} drawer
+      </Button>
+      
+      <Drawer open={open} onClose={() => setOpen(false)} side={side}>
+        <DrawerHeader onClose={() => setOpen(false)}>
+          {side.charAt(0).toUpperCase() + side.slice(1)} Drawer
+        </DrawerHeader>
+        <DrawerContent>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+            This drawer slides in from the {side} with spring physics. The backdrop blurs and clicking outside closes it.
+          </p>
+          <div className="space-y-4">
+            <Button variant="secondary" size="sm">Action 1</Button>
+            <Button variant="secondary" size="sm">Action 2</Button>
+            <Button variant="secondary" size="sm">Action 3</Button>
+          </div>
+        </DrawerContent>
+        <DrawerFooter>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button size="sm" onClick={() => setOpen(false)}>Save</Button>
+          </div>
+        </DrawerFooter>
+      </Drawer>
+    </div>
+  );
+}
+
+function ContextMenuDemo() {
+  const [lastAction, setLastAction] = useState<string>("");
+  
+  const items = [
+    contextMenuItems.copy(() => setLastAction("Copied!")),
+    contextMenuItems.cut(() => setLastAction("Cut!")),
+    contextMenuItems.paste(() => setLastAction("Pasted!")),
+    contextMenuItems.separator(),
+    contextMenuItems.rename(() => setLastAction("Renamed!")),
+    contextMenuItems.duplicate(() => setLastAction("Duplicated!")),
+    contextMenuItems.separator(),
+    contextMenuItems.delete(() => setLastAction("Deleted!")),
+  ];
+  
+  return (
+    <div className="flex flex-col gap-4">
+      <ContextMenu items={items}>
+        <div className="p-8 rounded-lg border border-neutral-300 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800 text-center cursor-context-menu">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">Right-click me!</p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-500">Try the context menu with keyboard shortcuts</p>
+        </div>
+      </ContextMenu>
+      {lastAction && (
+        <p className="text-sm text-green-600 dark:text-green-400">Last action: {lastAction}</p>
+      )}
+    </div>
+  );
+}
+
+function PopoverDemo() {
+  const [trigger, setTrigger] = useState<"click" | "hover">("click");
+  
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-2">
+        <Button size="sm" variant={trigger === "click" ? "default" : "secondary"} onClick={() => setTrigger("click")}>
+          Click
+        </Button>
+        <Button size="sm" variant={trigger === "hover" ? "default" : "secondary"} onClick={() => setTrigger("hover")}>
+          Hover
+        </Button>
+      </div>
+      
+      <div className="flex flex-wrap gap-4">
+        <Popover 
+          content={<div className="p-2"><p className="text-sm">This popover appears on {trigger}!</p></div>}
+          trigger={trigger}
+          placement="top"
+        >
+          <Button variant="secondary" size="sm">Top</Button>
+        </Popover>
+        
+        <Popover 
+          content={<div className="p-2"><p className="text-sm">Smart positioning keeps me in view</p></div>}
+          trigger={trigger}
+          placement="bottom"
+        >
+          <Button variant="secondary" size="sm">Bottom</Button>
+        </Popover>
+        
+        <Popover 
+          content={<div className="p-2 max-w-xs"><p className="text-sm">Popovers automatically flip when there's not enough space. Try resizing your window!</p></div>}
+          trigger={trigger}
+          placement="right"
+        >
+          <Button variant="secondary" size="sm">Right</Button>
+        </Popover>
+      </div>
+    </div>
+  );
+}
+
+function BreadcrumbsDemo() {
+  const [current, setCurrent] = useState("/docs/components/breadcrumbs");
+  
+  const items = breadcrumbPatterns.filesystem(current, (path) => setCurrent(path));
+  
+  return (
+    <div className="flex flex-col gap-4">
+      <Breadcrumbs items={items} showHomeIcon />
+      
+      <div className="flex flex-wrap gap-2 text-sm">
+        <span className="text-neutral-600 dark:text-neutral-400">Try:</span>
+        {["/", "/docs", "/docs/components", "/docs/components/buttons"].map((path) => (
+          <button
+            key={path}
+            onClick={() => setCurrent(path)}
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            {path === "/" ? "root" : path}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BadgeDemo() {
+  const [items, setItems] = useState([
+    { id: "1", label: "React", variant: "default" as const },
+    { id: "2", label: "TypeScript", variant: "info" as const },
+    { id: "3", label: "New", variant: "success" as const },
+  ]);
+  
+  const removeItem = (id: string) => {
+    setItems(items => items.filter(item => item.id !== id));
+  };
+  
+  return (
+    <div className="flex flex-col gap-6">
+      <div>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">Variants</p>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="default">Default</Badge>
+          <Badge variant="secondary">Secondary</Badge>
+          <Badge variant="success">Success</Badge>
+          <Badge variant="warning">Warning</Badge>
+          <Badge variant="error">Error</Badge>
+          <Badge variant="info">Info</Badge>
+          <Badge variant="outline">Outline</Badge>
+        </div>
+      </div>
+      
+      <div>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">With Icons & Pulse</p>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="success" icon={<span>✓</span>}>Completed</Badge>
+          <Badge variant="warning" icon={<span>⚠</span>}>Warning</Badge>
+          <Badge variant="error" pulse>Live</Badge>
+        </div>
+      </div>
+      
+      <div>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">Removable Tags</p>
+        <div className="flex flex-wrap gap-2">
+          {items.map(item => (
+            <Badge 
+              key={item.id}
+              variant={item.variant}
+              removable 
+              onRemove={() => removeItem(item.id)}
+            >
+              {item.label}
+            </Badge>
+          ))}
+        </div>
+      </div>
+      
+      <div>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">Notification Badges</p>
+        <div className="flex gap-6">
+          <NotificationBadge count={3}>
+            <Button variant="secondary" size="sm">Messages</Button>
+          </NotificationBadge>
+          <NotificationBadge count={99} max={99}>
+            <Button variant="secondary" size="sm">Notifications</Button>
+          </NotificationBadge>
+          <NotificationBadge dot>
+            <Button variant="secondary" size="sm">Online</Button>
+          </NotificationBadge>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // =============================================================================
 // STANDARD DEMOS
 // =============================================================================
@@ -940,6 +1158,59 @@ const steps = [
 ];
 
 <Stepper steps={steps} onFinish={() => console.log("done")} />`,
+
+  "drawer": `import { Drawer, DrawerHeader, DrawerContent, DrawerFooter } from "@/components/drawer";
+
+<Drawer open={open} onClose={() => setOpen(false)} side="right">
+  <DrawerHeader onClose={() => setOpen(false)}>
+    Title
+  </DrawerHeader>
+  <DrawerContent>
+    <p>Content here</p>
+  </DrawerContent>
+  <DrawerFooter>
+    <Button onClick={() => setOpen(false)}>Close</Button>
+  </DrawerFooter>
+</Drawer>`,
+
+  "context-menu": `import { ContextMenu, contextMenuItems } from "@/components/context-menu";
+
+const items = [
+  contextMenuItems.copy(() => console.log("copy")),
+  contextMenuItems.paste(() => console.log("paste")),
+  contextMenuItems.separator(),
+  contextMenuItems.delete(() => console.log("delete")),
+];
+
+<ContextMenu items={items}>
+  <div>Right-click me!</div>
+</ContextMenu>`,
+
+  "popover": `import { Popover } from "@/components/popover";
+
+<Popover 
+  content={<div className="p-2">Popover content</div>}
+  trigger="click"
+  placement="top"
+>
+  <Button>Click me</Button>
+</Popover>`,
+
+  "breadcrumbs": `import { Breadcrumbs, breadcrumbPatterns } from "@/components/breadcrumbs";
+
+const items = breadcrumbPatterns.filesystem("/docs/components");
+
+<Breadcrumbs items={items} showHomeIcon />`,
+
+  "badge": `import { Badge, NotificationBadge } from "@/components/badge";
+
+<Badge variant="success">Success</Badge>
+<Badge variant="error" pulse>Live</Badge>
+<Badge removable onRemove={() => console.log("removed")}>Tag</Badge>
+
+<NotificationBadge count={3}>
+  <Button>Messages</Button>
+</NotificationBadge>`,
   "nav-menu": `import { NavMenu } from "@/components/nav-menu";
 
 <NavMenu
