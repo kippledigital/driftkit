@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button, type ButtonVariant, type ButtonSize } from "@/components/button";
 import { Toggle } from "@/components/toggle";
 import { Dialog, DialogTitle, DialogDescription, DialogFooter } from "@/components/dialog";
@@ -13,9 +13,216 @@ import { Accordion } from "@/components/accordion";
 import { Input } from "@/components/input";
 import { Skeleton } from "@/components/skeleton";
 import { NavMenu } from "@/components/nav-menu";
+import { MagneticButton } from "@/components/magnetic-button";
+import { GlowCard } from "@/components/glow-card";
+import { NumberTicker } from "@/components/number-ticker";
+import { ModeSwitcher } from "@/components/mode-switcher";
+import { MorphingHamburger } from "@/components/morphing-hamburger";
+import { Typewriter } from "@/components/typewriter";
+import { MagneticDock } from "@/components/magnetic-dock";
+import { StaggeredList } from "@/components/staggered-list";
 
 const variants: ButtonVariant[] = ["default", "secondary", "ghost", "destructive"];
 const sizes: ButtonSize[] = ["sm", "md", "lg"];
+
+// =============================================================================
+// SHOWPIECE DEMOS
+// =============================================================================
+
+function MagneticButtonDemo() {
+  return (
+    <div className="flex flex-wrap gap-4 items-center">
+      <MagneticButton>
+        <Button>Hover near me</Button>
+      </MagneticButton>
+      <MagneticButton intensity={0.5}>
+        <Button variant="secondary">Subtle pull</Button>
+      </MagneticButton>
+      <MagneticButton intensity={1.5}>
+        <Button variant="ghost">Strong pull</Button>
+      </MagneticButton>
+    </div>
+  );
+}
+
+function GlowCardDemo() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <GlowCard>
+        <h3 className="text-base font-semibold mb-1">Surface Glow</h3>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          Move your cursor over this card. A soft radial light follows.
+        </p>
+      </GlowCard>
+      <GlowCard borderGlow glowOpacity={0.6}>
+        <h3 className="text-base font-semibold mb-1">Border Glow</h3>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          The border illuminates near the cursor position.
+        </p>
+      </GlowCard>
+    </div>
+  );
+}
+
+function NumberTickerDemo() {
+  const [value, setValue] = useState(1234);
+  const [price, setPrice] = useState(49.99);
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center gap-4">
+        <span className="text-3xl font-bold tabular-nums">
+          <NumberTicker value={value} />
+        </span>
+        <div className="flex gap-2">
+          <Button size="sm" variant="secondary" onClick={() => setValue((v) => v + 100)}>
+            +100
+          </Button>
+          <Button size="sm" variant="secondary" onClick={() => setValue((v) => v - 100)}>
+            −100
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setValue(Math.floor(Math.random() * 99999))}>
+            Random
+          </Button>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <span className="text-2xl font-semibold">
+          <NumberTicker value={price} prefix="$" decimals={2} />
+        </span>
+        <div className="flex gap-2">
+          <Button size="sm" variant="secondary" onClick={() => setPrice((p) => +(p + 10).toFixed(2))}>
+            +$10
+          </Button>
+          <Button size="sm" variant="secondary" onClick={() => setPrice((p) => +(Math.max(0, p - 10)).toFixed(2))}>
+            −$10
+          </Button>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <span className="text-xl">
+          <NumberTicker value={87} suffix="%" />
+        </span>
+        <span className="text-sm text-neutral-400">Completion rate</span>
+      </div>
+    </div>
+  );
+}
+
+function ModeSwitcherDemo() {
+  return (
+    <div className="flex items-center gap-6">
+      <div className="flex flex-col items-center gap-2">
+        <ModeSwitcher size={48} />
+        <span className="text-xs text-neutral-400">Default</span>
+      </div>
+      <div className="flex flex-col items-center gap-2">
+        <ModeSwitcher size={48} irisWipe />
+        <span className="text-xs text-neutral-400">Iris wipe</span>
+      </div>
+    </div>
+  );
+}
+
+function MorphingHamburgerDemo() {
+  return (
+    <div className="flex items-center gap-6">
+      <div className="flex flex-col items-center gap-2">
+        <MorphingHamburger size={48} />
+        <span className="text-xs text-neutral-400">Click to morph</span>
+      </div>
+      <div className="flex flex-col items-center gap-2">
+        <MorphingHamburger size={40} />
+        <span className="text-xs text-neutral-400">Compact</span>
+      </div>
+    </div>
+  );
+}
+
+function TypewriterDemo() {
+  return (
+    <div className="flex flex-col gap-6">
+      <div>
+        <span className="text-2xl font-bold">
+          <Typewriter
+            text=""
+            loop={["Motion-first components.", "Spring physics everywhere.", "Copy, paste, ship."]}
+            speed={60}
+            loopPause={2500}
+          />
+        </span>
+      </div>
+      <div className="text-base text-neutral-500 dark:text-neutral-400">
+        <Typewriter
+          text="Each character settles into place with spring physics."
+          speed={35}
+          delay={500}
+        />
+      </div>
+    </div>
+  );
+}
+
+function MagneticDockDemo() {
+  const dockItems = [
+    { id: "finder", icon: "📁", label: "Finder" },
+    { id: "safari", icon: "🧭", label: "Safari" },
+    { id: "mail", icon: "✉️", label: "Mail" },
+    { id: "music", icon: "🎵", label: "Music" },
+    { id: "photos", icon: "🖼️", label: "Photos" },
+    { id: "terminal", icon: "⬛", label: "Terminal" },
+    { id: "settings", icon: "⚙️", label: "Settings" },
+  ];
+
+  return (
+    <div className="flex justify-center py-4">
+      <MagneticDock items={dockItems} />
+    </div>
+  );
+}
+
+function StaggeredListDemo() {
+  const [variant, setVariant] = useState<"slide-up" | "fade-blur" | "slide-left">("slide-up");
+  const [key, setKey] = useState(0);
+
+  const items = [
+    { id: "1", content: <div className="p-3 rounded-[8px] border border-neutral-200 dark:border-neutral-800 text-sm">Design tokens defined</div> },
+    { id: "2", content: <div className="p-3 rounded-[8px] border border-neutral-200 dark:border-neutral-800 text-sm">Component API designed</div> },
+    { id: "3", content: <div className="p-3 rounded-[8px] border border-neutral-200 dark:border-neutral-800 text-sm">Spring physics tuned</div> },
+    { id: "4", content: <div className="p-3 rounded-[8px] border border-neutral-200 dark:border-neutral-800 text-sm">Accessibility tested</div> },
+    { id: "5", content: <div className="p-3 rounded-[8px] border border-neutral-200 dark:border-neutral-800 text-sm">Documentation written</div> },
+  ];
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-2">
+        {(["slide-up", "fade-blur", "slide-left"] as const).map((v) => (
+          <Button
+            key={v}
+            size="sm"
+            variant={variant === v ? "default" : "secondary"}
+            onClick={() => { setVariant(v); setKey((k) => k + 1); }}
+          >
+            {v}
+          </Button>
+        ))}
+        <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>
+          Replay
+        </Button>
+      </div>
+      <StaggeredList
+        key={key}
+        items={items}
+        variant={variant}
+        className="flex flex-col gap-2"
+      />
+    </div>
+  );
+}
+
+// =============================================================================
+// STANDARD DEMOS
+// =============================================================================
 
 function LoadingDemo() {
   const [loading, setLoading] = useState(false);
@@ -185,12 +392,86 @@ function AccordionDemo() {
 export default function Home() {
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 px-8 py-16 max-w-3xl mx-auto">
-      <header className="mb-16">
-        <h1 className="text-3xl font-bold tracking-tight mb-2">driftkit</h1>
-        <p className="text-neutral-500 dark:text-neutral-400">
-          Motion-first UI components. Beautiful physics. Copy, paste, ship.
-        </p>
+      <header className="mb-16 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">driftkit</h1>
+          <p className="text-neutral-500 dark:text-neutral-400">
+            Motion-first UI components. Beautiful physics. Copy, paste, ship.
+          </p>
+        </div>
+        <ModeSwitcher irisWipe />
       </header>
+
+      {/* ================================================================= */}
+      {/* SHOWPIECES                                                         */}
+      {/* ================================================================= */}
+
+      <div className="mb-16 pb-16 border-b border-neutral-200 dark:border-neutral-800">
+        <h2 className="text-lg font-semibold mb-1">✦ Showpieces</h2>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-8">
+          Interactive components that push beyond standard UI — magnetic pull, cursor glow, digit rolling, theme morphing, fisheye dock, and more.
+        </p>
+
+        <Section title="Typewriter">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Characters settle into place with spring physics. Loop mode types, deletes, and cycles through phrases.
+          </p>
+          <TypewriterDemo />
+        </Section>
+
+        <Section title="Magnetic Dock">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            macOS-style fisheye magnification. Items scale based on cursor proximity — zero re-renders.
+          </p>
+          <MagneticDockDemo />
+        </Section>
+
+        <Section title="Magnetic Button">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Buttons that subtly pull toward your cursor. Spring physics, max 8px displacement.
+          </p>
+          <MagneticButtonDemo />
+        </Section>
+
+        <Section title="Cursor Glow Card">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Radial gradient spotlight follows the cursor. Zero re-renders — pure motion values.
+          </p>
+          <GlowCardDemo />
+        </Section>
+
+        <Section title="Number Ticker">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Individual digits roll up or down like a slot machine. Direction-aware with spring physics.
+          </p>
+          <NumberTickerDemo />
+        </Section>
+
+        <Section title="Morphing Hamburger">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Three lines fold into an X with per-line spring animation. The icon transforms, not replaces.
+          </p>
+          <MorphingHamburgerDemo />
+        </Section>
+
+        <Section title="Staggered List">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Cascading entrance with three animation variants. Each item overshoots then settles.
+          </p>
+          <StaggeredListDemo />
+        </Section>
+
+        <Section title="Mode Switcher">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Sun↔moon SVG morph with spring physics. The iris wipe variant radiates the theme change outward.
+          </p>
+          <ModeSwitcherDemo />
+        </Section>
+      </div>
+
+      {/* ================================================================= */}
+      {/* STANDARD COMPONENTS                                                */}
+      {/* ================================================================= */}
 
       <Section title="Navigation Menu">
         <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">Sliding indicator follows your mouse with spring physics.</p>
@@ -272,7 +553,7 @@ export default function Home() {
       </Section>
 
       <footer className="mt-20 pt-8 border-t border-neutral-200 dark:border-neutral-800 text-sm text-neutral-400">
-        Built by{" "}
+        <span className="tabular-nums">20 components</span> · Built by{" "}
         <a href="https://nikkikipple.com" className="underline hover:text-neutral-600 dark:hover:text-neutral-300">
           Nikki Kipple
         </a>
