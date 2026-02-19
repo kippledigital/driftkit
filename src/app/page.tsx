@@ -42,11 +42,15 @@ import { SpringCarousel } from "@/components/spring-carousel";
 import { ParallaxScroll, ParallaxItem } from "@/components/parallax-scroll";
 import { MorphingShape } from "@/components/morphing-shape";
 import { CodeBlock } from "@/components/code-block";
+import { SchedulePicker, type ScheduleValue } from "@/components/schedule-picker";
+import { DateRangePicker, type DateRange } from "@/components/date-range-picker";
+import { MultiSelect } from "@/components/multi-select";
+import { Stepper } from "@/components/stepper";
 
 const variants: ButtonVariant[] = ["default", "secondary", "ghost", "destructive"];
 const sizes: ButtonSize[] = ["sm", "md", "lg"];
 
-const COMPONENT_COUNT = 39;
+const COMPONENT_COUNT = 43;
 
 // =============================================================================
 // SECTION DEFINITIONS (for TOC)
@@ -87,6 +91,10 @@ const sections: SectionDef[] = [
   { id: "spring-carousel", title: "Spring Carousel", group: "showpiece" },
   { id: "parallax-scroll", title: "Parallax Scroll", group: "showpiece" },
   { id: "morphing-shape", title: "Morphing Shape", group: "showpiece" },
+  { id: "schedule-picker", title: "Schedule Picker", group: "showpiece" },
+  { id: "date-range-picker", title: "Date Range Picker", group: "showpiece" },
+  { id: "multi-select", title: "Multi Select", group: "showpiece" },
+  { id: "stepper", title: "Stepper", group: "showpiece" },
   // Standard
   { id: "nav-menu", title: "Navigation Menu", group: "standard" },
   { id: "button", title: "Button", group: "standard" },
@@ -554,6 +562,76 @@ function MorphingShapeDemo() {
   );
 }
 
+function SchedulePickerDemo() {
+  const [schedule, setSchedule] = useState<ScheduleValue>({
+    Monday: { enabled: false, slots: [{ from: "09:00", to: "17:00" }] },
+    Tuesday: { enabled: true, slots: [{ from: "09:00", to: "12:00" }, { from: "13:00", to: "17:00" }] },
+    Wednesday: { enabled: true, slots: [{ from: "10:00", to: "16:00" }] },
+    Thursday: { enabled: false, slots: [{ from: "09:00", to: "17:00" }] },
+    Friday: { enabled: false, slots: [{ from: "09:00", to: "17:00" }] },
+    Saturday: { enabled: false, slots: [{ from: "09:00", to: "17:00" }] },
+    Sunday: { enabled: false, slots: [{ from: "09:00", to: "17:00" }] },
+  });
+  return (
+    <div className="flex flex-col gap-6">
+      <SchedulePicker value={schedule} onChange={setSchedule} />
+      <details className="text-xs">
+        <summary className="text-neutral-400 cursor-pointer hover:text-neutral-300 transition-colors">Live data output</summary>
+        <pre className="mt-2 p-3 rounded-lg bg-neutral-950 border border-neutral-800 text-neutral-400 overflow-x-auto text-[11px] leading-relaxed max-h-64 overflow-y-auto">
+          {JSON.stringify(schedule, null, 2)}
+        </pre>
+      </details>
+    </div>
+  );
+}
+
+function DateRangePickerDemo() {
+  const [range, setRange] = useState<DateRange>({ start: null, end: null });
+  return (
+    <div className="flex flex-col gap-4">
+      <DateRangePicker value={range} onChange={setRange} />
+      {range.start && range.end && (
+        <p className="text-xs text-neutral-400">
+          Selected: {range.start.toLocaleDateString()} → {range.end.toLocaleDateString()}
+          {" "}({Math.round((range.end.getTime() - range.start.getTime()) / 86400000)} days)
+        </p>
+      )}
+    </div>
+  );
+}
+
+function MultiSelectDemo() {
+  const [tags, setTags] = useState<string[]>(["React", "TypeScript"]);
+  const suggestions = ["React", "TypeScript", "Framer Motion", "Tailwind", "Next.js", "Vite", "Zustand", "SWR", "Radix"];
+  return (
+    <div className="flex flex-col gap-4 max-w-md">
+      <MultiSelect
+        value={tags}
+        onChange={setTags}
+        suggestions={suggestions}
+        maxTags={8}
+        placeholder="Add technologies..."
+      />
+      <p className="text-xs text-neutral-400">{tags.length} tag{tags.length !== 1 ? "s" : ""}: {tags.join(", ") || "none"}</p>
+    </div>
+  );
+}
+
+function StepperDemo() {
+  const [finished, setFinished] = useState(false);
+  const steps = [
+    { id: "details", label: "Details", content: <div className="p-4 rounded-lg border border-neutral-800 text-sm text-neutral-400"><p className="font-medium text-neutral-200 mb-2">Project Details</p><p>Enter your project name, description, and select a category. All fields are required.</p></div> },
+    { id: "config", label: "Configure", content: <div className="p-4 rounded-lg border border-neutral-800 text-sm text-neutral-400"><p className="font-medium text-neutral-200 mb-2">Configuration</p><p>Choose your framework, set up environment variables, and configure build settings.</p></div> },
+    { id: "review", label: "Review", content: <div className="p-4 rounded-lg border border-neutral-800 text-sm text-neutral-400"><p className="font-medium text-neutral-200 mb-2">Review & Deploy</p><p>Review your settings and deploy. You can always change these later.</p></div> },
+  ];
+  return (
+    <div className="flex flex-col gap-4">
+      <Stepper steps={steps} onFinish={() => setFinished(true)} />
+      {finished && <p className="text-xs text-green-400 text-center">✓ Complete! (reset by navigating back)</p>}
+    </div>
+  );
+}
+
 // =============================================================================
 // STANDARD DEMOS
 // =============================================================================
@@ -829,6 +907,39 @@ const items = [
 
 <MorphingShape size={150} />
 <MorphingShape size={100} color="rgba(244,63,94,0.15)" strokeColor="#f43f5e" />`,
+  "schedule-picker": `import { SchedulePicker } from "@/components/schedule-picker";
+
+const [schedule, setSchedule] = useState({
+  Monday: { enabled: true, slots: [{ from: "09:00", to: "17:00" }] },
+  Tuesday: { enabled: false, slots: [{ from: "09:00", to: "17:00" }] },
+  // ...
+});
+
+<SchedulePicker value={schedule} onChange={setSchedule} />`,
+  "date-range-picker": `import { DateRangePicker } from "@/components/date-range-picker";
+
+const [range, setRange] = useState({ start: null, end: null });
+
+<DateRangePicker value={range} onChange={setRange} />`,
+  "multi-select": `import { MultiSelect } from "@/components/multi-select";
+
+const [tags, setTags] = useState(["React", "TypeScript"]);
+
+<MultiSelect
+  value={tags}
+  onChange={setTags}
+  suggestions={["React", "Next.js", "Tailwind"]}
+  maxTags={8}
+/>`,
+  "stepper": `import { Stepper } from "@/components/stepper";
+
+const steps = [
+  { id: "1", label: "Details", content: <div>Step 1</div> },
+  { id: "2", label: "Config", content: <div>Step 2</div> },
+  { id: "3", label: "Review", content: <div>Step 3</div> },
+];
+
+<Stepper steps={steps} onFinish={() => console.log("done")} />`,
   "nav-menu": `import { NavMenu } from "@/components/nav-menu";
 
 <NavMenu
@@ -1093,6 +1204,22 @@ export default function Home() {
 
           <Section id="morphing-shape" title="Morphing Shape" description="SVG path morphs between circle, square, triangle, star, and diamond with spring physics. Click to cycle." code={codeSnippets["morphing-shape"]}>
             <MorphingShapeDemo />
+          </Section>
+
+          <Section id="schedule-picker" title="Schedule Picker" description="Weekly availability picker with toggleable days and expandable time slots. Spring-animated expand/collapse, slot add/remove." code={codeSnippets["schedule-picker"]}>
+            <SchedulePickerDemo />
+          </Section>
+
+          <Section id="date-range-picker" title="Date Range Picker" description="Two-date range selector with spring-animated calendar dropdown. Visual range indicator and hover preview." code={codeSnippets["date-range-picker"]}>
+            <DateRangePickerDemo />
+          </Section>
+
+          <Section id="multi-select" title="Multi Select" description="Tag input with spring entrance/exit for each pill. Type to add, backspace to remove, with optional suggestions." code={codeSnippets["multi-select"]}>
+            <MultiSelectDemo />
+          </Section>
+
+          <Section id="stepper" title="Stepper" description="Multi-step form with numbered indicators, spring slide transitions, and animated progress bar." code={codeSnippets["stepper"]}>
+            <StepperDemo />
           </Section>
         </div>
 
