@@ -34,25 +34,8 @@ export function GradientBorder({
     .join(", ");
 
   return (
-    <div className={`relative rounded-[8px] ${className}`} style={{ padding: borderWidth }}>
-      {/* Spinning gradient background */}
-      <motion.div
-        className="absolute inset-0 rounded-[8px]"
-        style={{
-          background: `conic-gradient(from 0deg, ${gradientStops})`,
-        }}
-        animate={prefersReduced ? undefined : { rotate: 360 }}
-        transition={
-          prefersReduced
-            ? undefined
-            : {
-                duration,
-                repeat: Infinity,
-                ease: "linear",
-              }
-        }
-      />
-      {/* Extra blur layer for glow */}
+    <div className={`relative ${className}`}>
+      {/* Soft glow layer — sits behind, allowed to bleed slightly */}
       <motion.div
         className="absolute inset-0 rounded-[8px] blur-md opacity-40"
         style={{
@@ -68,10 +51,32 @@ export function GradientBorder({
                 ease: "linear",
               }
         }
+        aria-hidden
       />
-      {/* Inner content */}
-      <div className="relative rounded-[6px] bg-white dark:bg-neutral-950 h-full">
-        {children}
+      {/* Clipped border container — overflow-hidden prevents gradient corner bleed */}
+      <div className="relative overflow-hidden rounded-[8px]" style={{ padding: borderWidth }}>
+        {/* Spinning gradient background */}
+        <motion.div
+          className="absolute inset-[-4px]"
+          style={{
+            background: `conic-gradient(from 0deg, ${gradientStops})`,
+          }}
+          animate={prefersReduced ? undefined : { rotate: 360 }}
+          transition={
+            prefersReduced
+              ? undefined
+              : {
+                  duration,
+                  repeat: Infinity,
+                  ease: "linear",
+                }
+          }
+          aria-hidden
+        />
+        {/* Inner content */}
+        <div className="relative rounded-[6px] bg-white dark:bg-neutral-950 h-full">
+          {children}
+        </div>
       </div>
     </div>
   );
