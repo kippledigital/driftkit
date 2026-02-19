@@ -59,17 +59,19 @@ export interface DriftButtonProps
 // =============================================================================
 
 const baseClasses =
-  "relative inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none select-none";
+  "relative inline-flex items-center justify-center font-medium rounded-[8px] focus:outline-none select-none overflow-hidden";
 
+// No Tailwind hover: classes — Framer Motion handles all hover states.
+// Mixing CSS transitions with spring animations causes visual glitches.
 const variantClasses: Record<ButtonVariant, string> = {
   default:
-    "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100",
+    "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900",
   secondary:
-    "bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700",
+    "bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100",
   ghost:
-    "bg-transparent text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800",
+    "bg-transparent text-neutral-700 dark:text-neutral-300",
   destructive:
-    "bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600",
+    "bg-red-600 text-white dark:bg-red-500",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -182,9 +184,10 @@ export const Button = forwardRef<HTMLButtonElement, DriftButtonProps>(
         ref={ref}
         disabled={isDisabled}
         className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${
-          isDisabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+          isDisabled ? "opacity-60 cursor-default" : "cursor-pointer"
         } ${className}`}
-        // Idle state
+        // Idle state — layout animation smooths width changes during state transitions
+        layout
         initial={false}
         animate={{
           boxShadow: variant === "ghost" ? "none" : shadowIdle,
@@ -194,7 +197,10 @@ export const Button = forwardRef<HTMLButtonElement, DriftButtonProps>(
         // from 1.02 → 0.97 using the current velocity, not from scratch.
         whileHover={isDisabled ? undefined : hoverAnimation}
         whileTap={isDisabled ? undefined : tapAnimation}
-        transition={springs.smooth}
+        transition={{
+          ...springs.smooth,
+          boxShadow: { type: "tween", duration: 0.15, ease: "easeOut" },
+        }}
         onFocus={handleFocus}
         onBlur={handleBlur}
         {...props}
@@ -203,7 +209,7 @@ export const Button = forwardRef<HTMLButtonElement, DriftButtonProps>(
         <AnimatePresence>
           {isFocusVisible && (
             <motion.span
-              className="absolute inset-0 rounded-lg ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-neutral-900"
+              className="absolute inset-0 rounded-[8px] ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-neutral-900"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -213,8 +219,10 @@ export const Button = forwardRef<HTMLButtonElement, DriftButtonProps>(
           )}
         </AnimatePresence>
 
-        {/* Content — AnimatePresence handles loading/success/default transitions */}
-        <AnimatePresence mode="wait" initial={false}>
+        {/* Content — AnimatePresence handles loading/success/default transitions.
+            We use layout + min-width on the button to prevent size jumps when
+            text changes between states (Submit → Loading… → Done). */}
+        <AnimatePresence mode="popLayout" initial={false}>
           {loading ? (
             <motion.span
               key="loading"
