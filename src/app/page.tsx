@@ -267,10 +267,12 @@ function MorphingHamburgerDemo() {
 function TypewriterDemo() {
   return (
     <div className="flex flex-col gap-6">
-      <span className="text-2xl font-bold">
-        <Typewriter text="" loop={["Motion-first components.", "Spring physics everywhere.", "Copy, paste, ship."]} speed={60} loopPause={2500} />
-      </span>
-      <div className="text-base text-neutral-500 dark:text-neutral-400">
+      <div className="h-9 overflow-hidden">
+        <span className="text-2xl font-bold">
+          <Typewriter text="" loop={["Motion-first components.", "Spring physics everywhere.", "Copy, paste, ship."]} speed={60} loopPause={2500} />
+        </span>
+      </div>
+      <div className="h-6 overflow-hidden text-base text-neutral-500 dark:text-neutral-400">
         <Typewriter text="Each character settles into place with spring physics." speed={35} delay={500} />
       </div>
     </div>
@@ -308,7 +310,9 @@ function StaggeredListDemo() {
         ))}
         <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>Replay</Button>
       </div>
-      <StaggeredList key={key} items={items} variant={variant} className="flex flex-col gap-2" />
+      <div className="h-[260px] overflow-hidden">
+        <StaggeredList key={key} items={items} variant={variant} className="flex flex-col gap-2" />
+      </div>
     </div>
   );
 }
@@ -471,7 +475,9 @@ function SwipeCardsDemo() {
   ];
   return (
     <div className="flex flex-col gap-4">
-      <SwipeCards key={key} cards={cards} />
+      <div className="h-[280px] overflow-hidden">
+        <SwipeCards key={key} cards={cards} />
+      </div>
       <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>Reset cards</Button>
     </div>
   );
@@ -899,10 +905,14 @@ function Section({ id, title, description, children, code }: {
 }) {
   return (
     <ScrollReveal variant="fade-up" delay={0.05}>
-      <section id={id} className="scroll-mt-24 mb-16">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 mb-2">{title}</h2>
-        {description && <p className="text-sm text-neutral-400 mb-4">{description}</p>}
-        {children}
+      <section id={id} className="scroll-mt-24 mb-24">
+        <div className="border-t border-neutral-800/60 pt-8 mb-6">
+          <h2 className="text-base font-bold uppercase tracking-wider text-neutral-400 mb-1">{title}</h2>
+          {description && <p className="text-sm text-neutral-500 leading-relaxed">{description}</p>}
+        </div>
+        <div className="rounded-xl border border-neutral-800/40 bg-neutral-900/30 p-6 overflow-hidden">
+          {children}
+        </div>
         {code && <CodeBlock code={code} />}
       </section>
     </ScrollReveal>
@@ -922,13 +932,13 @@ export default function Home() {
         {/* ============================================================= */}
         {/* HERO                                                           */}
         {/* ============================================================= */}
-        <header className="pt-20 pb-24 border-b border-neutral-800">
+        <header className="pt-24 pb-32 border-b border-neutral-800">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-3xl font-bold tracking-tight">driftkit</h1>
             <ModeSwitcher irisWipe />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-6 h-[3.5rem] sm:h-[4rem] overflow-hidden">
             <span className="text-4xl sm:text-5xl font-bold leading-tight block">
               <Typewriter
                 text=""
@@ -967,10 +977,10 @@ export default function Home() {
         {/* ============================================================= */}
         {/* SHOWPIECES                                                     */}
         {/* ============================================================= */}
-        <div className="pt-16 pb-12">
+        <div className="pt-24 pb-16">
           <ScrollReveal variant="fade-up">
-            <div className="mb-12">
-              <h2 className="text-xl font-bold mb-2">✦ Showpieces</h2>
+            <div className="mb-16">
+              <h2 className="text-2xl font-bold mb-3">✦ Showpieces</h2>
               <p className="text-sm text-neutral-400">
                 Interactive components that push beyond standard UI — magnetic pull, cursor glow, digit rolling, theme morphing, fisheye dock, and more.
               </p>
@@ -1089,10 +1099,10 @@ export default function Home() {
         {/* ============================================================= */}
         {/* STANDARD COMPONENTS                                            */}
         {/* ============================================================= */}
-        <div className="pt-12 pb-8 border-t border-neutral-800">
+        <div className="pt-24 pb-16 border-t-2 border-neutral-700/50 mt-8">
           <ScrollReveal variant="fade-up">
-            <div className="mb-12">
-              <h2 className="text-xl font-bold mb-2">Standard Components</h2>
+            <div className="mb-16">
+              <h2 className="text-2xl font-bold mb-3">Standard Components</h2>
               <p className="text-sm text-neutral-400">
                 Essential UI building blocks — each one enhanced with spring physics and micro-interactions.
               </p>
@@ -1181,7 +1191,7 @@ export default function Home() {
         {/* ============================================================= */}
         {/* FOOTER                                                         */}
         {/* ============================================================= */}
-        <footer className="py-12 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-500">
+        <footer className="py-16 mt-8 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-500">
           <div className="flex items-center gap-3">
             <span className="font-bold text-neutral-300">driftkit</span>
             <span>·</span>
