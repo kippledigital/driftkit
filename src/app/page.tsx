@@ -34,6 +34,12 @@ import { AnimatedTabs } from "@/components/animated-tabs";
 import { CommandPalette } from "@/components/command-palette";
 import { ExpandableCard } from "@/components/expandable-card";
 import { CursorTrail } from "@/components/cursor-trail";
+import { LiquidButton } from "@/components/liquid-button";
+import { AnimatedCounter, StatCard } from "@/components/animated-counter";
+import { ProgressRing } from "@/components/progress-ring";
+import { SpringCarousel } from "@/components/spring-carousel";
+import { ParallaxScroll, ParallaxItem } from "@/components/parallax-scroll";
+import { MorphingShape } from "@/components/morphing-shape";
 
 const variants: ButtonVariant[] = ["default", "secondary", "ghost", "destructive"];
 const sizes: ButtonSize[] = ["sm", "md", "lg"];
@@ -485,6 +491,87 @@ function SwipeCardsDemo() {
   );
 }
 
+function LiquidButtonDemo() {
+  return (
+    <div className="flex flex-wrap gap-6 items-center">
+      <LiquidButton color="#6366f1">Hover me</LiquidButton>
+      <LiquidButton color="#f43f5e">Elastic</LiquidButton>
+      <LiquidButton color="#10b981">Organic</LiquidButton>
+    </div>
+  );
+}
+
+function AnimatedCounterDemo() {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <StatCard value={12847} label="Total Users" icon="👥" />
+      <StatCard value={99.9} label="Uptime" suffix="%" decimals={1} icon="⚡" />
+      <StatCard value={3.2} label="Avg Rating" prefix="" suffix="/5" decimals={1} icon="⭐" />
+      <StatCard value={482} label="Components" suffix="+" icon="🧩" />
+    </div>
+  );
+}
+
+function ProgressRingDemo() {
+  const [value, setValue] = useState(72);
+  return (
+    <div className="flex flex-wrap items-center gap-8">
+      <ProgressRing value={value} color="#6366f1" />
+      <ProgressRing value={value} size={80} strokeWidth={6} color="#10b981" />
+      <ProgressRing value={value} size={80} strokeWidth={6} color="#f43f5e" />
+      <div className="flex flex-col gap-2">
+        <Button size="sm" variant="secondary" onClick={() => setValue(Math.min(100, value + 10))}>+10%</Button>
+        <Button size="sm" variant="secondary" onClick={() => setValue(Math.max(0, value - 10))}>−10%</Button>
+        <Button size="sm" variant="ghost" onClick={() => setValue(Math.floor(Math.random() * 100))}>Random</Button>
+      </div>
+    </div>
+  );
+}
+
+function SpringCarouselDemo() {
+  const items = [
+    <div key="1" className="p-6"><h3 className="font-semibold mb-1">Spring Physics</h3><p className="text-sm text-neutral-500 dark:text-neutral-400">Natural motion with mass, stiffness, and damping.</p></div>,
+    <div key="2" className="p-6"><h3 className="font-semibold mb-1">Gesture-Driven</h3><p className="text-sm text-neutral-500 dark:text-neutral-400">Drag to navigate. Velocity determines snap direction.</p></div>,
+    <div key="3" className="p-6"><h3 className="font-semibold mb-1">Copy & Paste</h3><p className="text-sm text-neutral-500 dark:text-neutral-400">Drop into your project. Customize springs to match your brand.</p></div>,
+    <div key="4" className="p-6"><h3 className="font-semibold mb-1">Accessible</h3><p className="text-sm text-neutral-500 dark:text-neutral-400">Keyboard navigation with arrow keys. Focus management built in.</p></div>,
+    <div key="5" className="p-6"><h3 className="font-semibold mb-1">Performant</h3><p className="text-sm text-neutral-500 dark:text-neutral-400">GPU-accelerated transforms. No layout thrashing.</p></div>,
+  ];
+  return <SpringCarousel items={items} />;
+}
+
+function ParallaxScrollDemo() {
+  return (
+    <ParallaxScroll className="h-64 relative rounded-[8px] border border-neutral-200 dark:border-neutral-800 overflow-hidden bg-neutral-50 dark:bg-neutral-900">
+      <div className="absolute inset-0 flex items-center justify-center">
+        <ParallaxItem speed={-0.3} className="absolute top-4 left-8">
+          <div className="w-16 h-16 rounded-[8px] bg-indigo-200 dark:bg-indigo-900/50 flex items-center justify-center text-2xl">✦</div>
+        </ParallaxItem>
+        <ParallaxItem speed={0.5} className="absolute top-12 right-12">
+          <div className="w-12 h-12 rounded-full bg-rose-200 dark:bg-rose-900/50 flex items-center justify-center text-lg">◆</div>
+        </ParallaxItem>
+        <ParallaxItem speed={-0.6} className="absolute bottom-8 left-1/4">
+          <div className="w-20 h-20 rounded-[8px] bg-emerald-200 dark:bg-emerald-900/50 flex items-center justify-center text-3xl">○</div>
+        </ParallaxItem>
+        <ParallaxItem speed={0.3} className="absolute bottom-4 right-1/4">
+          <div className="w-14 h-14 rounded-full bg-amber-200 dark:bg-amber-900/50 flex items-center justify-center text-xl">△</div>
+        </ParallaxItem>
+        <ParallaxItem speed={0}>
+          <p className="text-sm font-medium text-neutral-400">Scroll to see parallax</p>
+        </ParallaxItem>
+      </div>
+    </ParallaxScroll>
+  );
+}
+
+function MorphingShapeDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-8">
+      <MorphingShape size={150} />
+      <MorphingShape size={100} color="rgba(244, 63, 94, 0.15)" strokeColor="#f43f5e" />
+    </div>
+  );
+}
+
 // =============================================================================
 // STANDARD DEMOS
 // =============================================================================
@@ -823,6 +910,48 @@ export default function Home() {
           </p>
           <CursorTrailDemo />
         </Section>
+
+        <Section title="Liquid Button">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            SVG blob shape that morphs and stretches toward your cursor with a gooey filter. Pure spring physics.
+          </p>
+          <LiquidButtonDemo />
+        </Section>
+
+        <Section title="Animated Counter">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Numbers count up with spring physics when scrolled into view. Stat cards with staggered entrance.
+          </p>
+          <AnimatedCounterDemo />
+        </Section>
+
+        <Section title="Progress Ring">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Circular progress with spring animation. The arc overshoots then settles into place.
+          </p>
+          <ProgressRingDemo />
+        </Section>
+
+        <Section title="Spring Carousel">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Drag-to-navigate carousel with spring snap physics. Active card scales up, others recede.
+          </p>
+          <SpringCarouselDemo />
+        </Section>
+
+        <Section title="Parallax Scroll">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            Elements move at different speeds as you scroll. Spring-smoothed for buttery parallax.
+          </p>
+          <ParallaxScrollDemo />
+        </Section>
+
+        <Section title="Morphing Shape">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+            SVG path morphs between circle, square, triangle, star, and diamond with spring physics. Click to cycle.
+          </p>
+          <MorphingShapeDemo />
+        </Section>
       </div>
 
       {/* ================================================================= */}
@@ -909,7 +1038,7 @@ export default function Home() {
       </Section>
 
       <footer className="mt-20 pt-8 border-t border-neutral-200 dark:border-neutral-800 text-sm text-neutral-400">
-        <span className="tabular-nums">33 components</span> · Built by{" "}
+        <span className="tabular-nums">39 components</span> · Built by{" "}
         <a href="https://nikkikipple.com" className="underline hover:text-neutral-600 dark:hover:text-neutral-300">
           Nikki Kipple
         </a>
