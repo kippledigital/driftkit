@@ -142,22 +142,22 @@ function TableOfContents() {
     <>
       {/* Desktop sidebar */}
       <nav className="hidden xl:block fixed left-[max(1rem,calc(50%-38rem))] top-24 w-48 max-h-[calc(100vh-8rem)] overflow-y-auto text-xs">
-        <p className="text-neutral-500 font-semibold uppercase tracking-wider mb-3">Showpieces</p>
+        <p className="text-neutral-600 dark:text-neutral-500 font-semibold uppercase tracking-wider mb-3">Showpieces</p>
         {sections.filter(s => s.group === "showpiece").map((s) => (
           <a
             key={s.id}
             href={`#${s.id}`}
-            className={`block py-0.5 transition-colors ${activeId === s.id ? "text-white font-medium" : "text-neutral-600 hover:text-neutral-400"}`}
+            className={`block py-0.5 transition-colors ${activeId === s.id ? "text-neutral-900 dark:text-white font-medium" : "text-neutral-500 dark:text-neutral-600 hover:text-neutral-700 dark:hover:text-neutral-400"}`}
           >
             {s.title}
           </a>
         ))}
-        <p className="text-neutral-500 font-semibold uppercase tracking-wider mb-3 mt-5">Standard</p>
+        <p className="text-neutral-600 dark:text-neutral-500 font-semibold uppercase tracking-wider mb-3 mt-5">Standard</p>
         {sections.filter(s => s.group === "standard").map((s) => (
           <a
             key={s.id}
             href={`#${s.id}`}
-            className={`block py-0.5 transition-colors ${activeId === s.id ? "text-white font-medium" : "text-neutral-600 hover:text-neutral-400"}`}
+            className={`block py-0.5 transition-colors ${activeId === s.id ? "text-neutral-900 dark:text-white font-medium" : "text-neutral-500 dark:text-neutral-600 hover:text-neutral-700 dark:hover:text-neutral-400"}`}
           >
             {s.title}
           </a>
@@ -168,7 +168,7 @@ function TableOfContents() {
       <div className="xl:hidden fixed bottom-6 right-6 z-50">
         <button
           onClick={() => setOpen(!open)}
-          className="w-10 h-10 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300 flex items-center justify-center shadow-lg cursor-pointer hover:bg-neutral-700 transition-colors"
+          className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 flex items-center justify-center shadow-lg cursor-pointer hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors"
         >
           ≡
         </button>
@@ -176,17 +176,17 @@ function TableOfContents() {
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="absolute bottom-12 right-0 w-56 max-h-80 overflow-y-auto bg-neutral-900 border border-neutral-800 rounded-lg p-3 shadow-xl text-xs"
+            className="absolute bottom-12 right-0 w-56 max-h-80 overflow-y-auto bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 rounded-lg p-3 shadow-xl text-xs"
           >
-            <p className="text-neutral-500 font-semibold uppercase tracking-wider mb-2">Showpieces</p>
+            <p className="text-neutral-600 dark:text-neutral-500 font-semibold uppercase tracking-wider mb-2">Showpieces</p>
             {sections.filter(s => s.group === "showpiece").map((s) => (
-              <a key={s.id} href={`#${s.id}`} onClick={() => setOpen(false)} className="block py-0.5 text-neutral-400 hover:text-white transition-colors">
+              <a key={s.id} href={`#${s.id}`} onClick={() => setOpen(false)} className="block py-0.5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
                 {s.title}
               </a>
             ))}
-            <p className="text-neutral-500 font-semibold uppercase tracking-wider mb-2 mt-3">Standard</p>
+            <p className="text-neutral-600 dark:text-neutral-500 font-semibold uppercase tracking-wider mb-2 mt-3">Standard</p>
             {sections.filter(s => s.group === "standard").map((s) => (
-              <a key={s.id} href={`#${s.id}`} onClick={() => setOpen(false)} className="block py-0.5 text-neutral-400 hover:text-white transition-colors">
+              <a key={s.id} href={`#${s.id}`} onClick={() => setOpen(false)} className="block py-0.5 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
                 {s.title}
               </a>
             ))}
@@ -216,11 +216,11 @@ function GlowCardDemo() {
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <GlowCard>
         <h3 className="text-base font-semibold mb-1">Surface Glow</h3>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">Move your cursor over this card. A soft radial light follows.</p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">Move your cursor over this card. A soft radial light follows.</p>
       </GlowCard>
       <GlowCard borderGlow glowOpacity={0.6}>
         <h3 className="text-base font-semibold mb-1">Border Glow</h3>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">The border illuminates near the cursor position.</p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">The border illuminates near the cursor position.</p>
       </GlowCard>
     </div>
   );
@@ -248,7 +248,7 @@ function NumberTickerDemo() {
       </div>
       <div className="flex items-center gap-4">
         <span className="text-xl"><NumberTicker value={87} suffix="%" /></span>
-        <span className="text-sm text-neutral-400">Completion rate</span>
+        <span className="text-sm text-neutral-600 dark:text-neutral-400">Completion rate</span>
       </div>
     </div>
   );
@@ -257,8 +257,8 @@ function NumberTickerDemo() {
 function ModeSwitcherDemo() {
   return (
     <div className="flex items-center gap-6">
-      <div className="flex flex-col items-center gap-2"><ModeSwitcher size={48} /><span className="text-xs text-neutral-400">Default</span></div>
-      <div className="flex flex-col items-center gap-2"><ModeSwitcher size={48} irisWipe /><span className="text-xs text-neutral-400">Iris wipe</span></div>
+      <div className="flex flex-col items-center gap-2"><ModeSwitcher size={48} /><span className="text-xs text-neutral-600 dark:text-neutral-400">Default</span></div>
+      <div className="flex flex-col items-center gap-2"><ModeSwitcher size={48} irisWipe /><span className="text-xs text-neutral-600 dark:text-neutral-400">Iris wipe</span></div>
     </div>
   );
 }
@@ -266,8 +266,8 @@ function ModeSwitcherDemo() {
 function MorphingHamburgerDemo() {
   return (
     <div className="flex items-center gap-6">
-      <div className="flex flex-col items-center gap-2"><MorphingHamburger size={48} /><span className="text-xs text-neutral-400">Click to morph</span></div>
-      <div className="flex flex-col items-center gap-2"><MorphingHamburger size={40} /><span className="text-xs text-neutral-400">Compact</span></div>
+      <div className="flex flex-col items-center gap-2"><MorphingHamburger size={48} /><span className="text-xs text-neutral-600 dark:text-neutral-400">Click to morph</span></div>
+      <div className="flex flex-col items-center gap-2"><MorphingHamburger size={40} /><span className="text-xs text-neutral-600 dark:text-neutral-400">Compact</span></div>
     </div>
   );
 }
@@ -280,7 +280,7 @@ function TypewriterDemo() {
           <Typewriter text="" loop={["Motion-first components.", "Spring physics everywhere.", "Copy, paste, ship."]} speed={60} loopPause={2500} />
         </span>
       </div>
-      <div className="h-6 overflow-hidden text-base text-neutral-500 dark:text-neutral-400">
+      <div className="h-6 overflow-hidden text-base text-neutral-600 dark:text-neutral-400">
         <Typewriter text="Each character settles into place with spring physics." speed={35} delay={500} />
       </div>
     </div>
@@ -304,11 +304,11 @@ function StaggeredListDemo() {
   const [variant, setVariant] = useState<"slide-up" | "fade-blur" | "slide-left">("slide-up");
   const [key, setKey] = useState(0);
   const items = [
-    { id: "1", content: <div className="p-3 rounded-lg border border-neutral-800 text-sm">Design tokens defined</div> },
-    { id: "2", content: <div className="p-3 rounded-lg border border-neutral-800 text-sm">Component API designed</div> },
-    { id: "3", content: <div className="p-3 rounded-lg border border-neutral-800 text-sm">Spring physics tuned</div> },
-    { id: "4", content: <div className="p-3 rounded-lg border border-neutral-800 text-sm">Accessibility tested</div> },
-    { id: "5", content: <div className="p-3 rounded-lg border border-neutral-800 text-sm">Documentation written</div> },
+    { id: "1", content: <div className="p-3 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm">Design tokens defined</div> },
+    { id: "2", content: <div className="p-3 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm">Component API designed</div> },
+    { id: "3", content: <div className="p-3 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm">Spring physics tuned</div> },
+    { id: "4", content: <div className="p-3 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm">Accessibility tested</div> },
+    { id: "5", content: <div className="p-3 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm">Documentation written</div> },
   ];
   return (
     <div className="flex flex-col gap-4">
@@ -331,13 +331,13 @@ function ParallaxTiltDemo() {
       <ParallaxTiltCard className="h-48">
         <div className="p-6 h-full flex flex-col justify-end">
           <ParallaxLayer depth={2}><h3 className="text-lg font-bold">3D Tilt</h3></ParallaxLayer>
-          <ParallaxLayer depth={1}><p className="text-sm text-neutral-400">Hover and move your cursor. Layers shift at different depths.</p></ParallaxLayer>
+          <ParallaxLayer depth={1}><p className="text-sm text-neutral-600 dark:text-neutral-400">Hover and move your cursor. Layers shift at different depths.</p></ParallaxLayer>
         </div>
       </ParallaxTiltCard>
       <ParallaxTiltCard maxTilt={20} className="h-48">
         <div className="p-6 h-full flex flex-col justify-center items-center text-center">
           <ParallaxLayer depth={3}><span className="text-4xl">✦</span></ParallaxLayer>
-          <ParallaxLayer depth={1}><p className="text-sm text-neutral-400 mt-2">Extra tilt + deep parallax</p></ParallaxLayer>
+          <ParallaxLayer depth={1}><p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2">Extra tilt + deep parallax</p></ParallaxLayer>
         </div>
       </ParallaxTiltCard>
     </div>
@@ -353,7 +353,7 @@ function ScrollRevealDemo() {
       <div key={key} className="grid grid-cols-2 gap-3">
         {rvariants.map((v, i) => (
           <ScrollReveal key={v} variant={v} delay={i * 0.1}>
-            <div className="p-4 rounded-lg border border-neutral-800 text-sm text-center">{v}</div>
+            <div className="p-4 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm text-center">{v}</div>
           </ScrollReveal>
         ))}
       </div>
@@ -366,10 +366,10 @@ function MarqueeDemo() {
   return (
     <div className="flex flex-col gap-4">
       <Marquee speed={30}>
-        {items.map((item) => (<MarqueeItem key={item}><span className="px-4 py-2 rounded-full border border-neutral-800 text-sm whitespace-nowrap">{item}</span></MarqueeItem>))}
+        {items.map((item) => (<MarqueeItem key={item}><span className="px-4 py-2 rounded-full border border-neutral-300 dark:border-neutral-800 text-sm whitespace-nowrap">{item}</span></MarqueeItem>))}
       </Marquee>
       <Marquee speed={20} direction="right">
-        {items.map((item) => (<MarqueeItem key={item}><span className="px-4 py-2 rounded-full bg-neutral-800 text-sm whitespace-nowrap">{item}</span></MarqueeItem>))}
+        {items.map((item) => (<MarqueeItem key={item}><span className="px-4 py-2 rounded-full bg-neutral-300 dark:bg-neutral-800 text-sm whitespace-nowrap">{item}</span></MarqueeItem>))}
       </Marquee>
     </div>
   );
@@ -396,8 +396,8 @@ function GradientBorderDemo() {
 function SpotlightDemo() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <Spotlight delay={1} duration={1.2}><div className="p-5 rounded-lg border border-neutral-800 bg-neutral-900 text-white"><h3 className="text-base font-semibold mb-1">Beam Sweep</h3><p className="text-sm text-neutral-400">A light beam sweeps across periodically.</p></div></Spotlight>
-      <Spotlight delay={2} color="rgba(99,102,241,0.2)"><div className="p-5 rounded-lg border border-neutral-800 bg-neutral-900 text-white"><h3 className="text-base font-semibold mb-1">Color Beam</h3><p className="text-sm text-neutral-400">Tinted beam with custom delay.</p></div></Spotlight>
+      <Spotlight delay={1} duration={1.2}><div className="p-5 rounded-lg border border-neutral-300 dark:border-neutral-800 bg-neutral-200 dark:bg-neutral-900 text-neutral-900 dark:text-white"><h3 className="text-base font-semibold mb-1">Beam Sweep</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">A light beam sweeps across periodically.</p></div></Spotlight>
+      <Spotlight delay={2} color="rgba(99,102,241,0.2)"><div className="p-5 rounded-lg border border-neutral-300 dark:border-neutral-800 bg-neutral-200 dark:bg-neutral-900 text-neutral-900 dark:text-white"><h3 className="text-base font-semibold mb-1">Color Beam</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Tinted beam with custom delay.</p></div></Spotlight>
     </div>
   );
 }
@@ -423,9 +423,9 @@ function WobbleCardDemo() {
 function AnimatedTabsDemo() {
   return (
     <AnimatedTabs items={[
-      { id: "design", label: "Design", content: <p className="text-sm text-neutral-400 p-3">Start with motion. Every interaction has weight, velocity, and spring.</p> },
-      { id: "develop", label: "Develop", content: <p className="text-sm text-neutral-400 p-3">Copy the component. Paste it. Tweak the spring config. Ship it.</p> },
-      { id: "deploy", label: "Deploy", content: <p className="text-sm text-neutral-400 p-3">Zero dependencies beyond Framer Motion. Tree-shakeable. SSR-safe.</p> },
+      { id: "design", label: "Design", content: <p className="text-sm text-neutral-600 dark:text-neutral-400 p-3">Start with motion. Every interaction has weight, velocity, and spring.</p> },
+      { id: "develop", label: "Develop", content: <p className="text-sm text-neutral-600 dark:text-neutral-400 p-3">Copy the component. Paste it. Tweak the spring config. Ship it.</p> },
+      { id: "deploy", label: "Deploy", content: <p className="text-sm text-neutral-600 dark:text-neutral-400 p-3">Zero dependencies beyond Framer Motion. Tree-shakeable. SSR-safe.</p> },
     ]} />
   );
 }
@@ -452,12 +452,12 @@ function ExpandableCardDemo() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <ExpandableCard
-        preview={<div><h3 className="text-base font-semibold">Spring Physics</h3><p className="text-sm text-neutral-400">Click to expand →</p></div>}
-        detail={<div className="text-sm text-neutral-400 space-y-2"><p>Springs model real-world physics: mass, stiffness, and damping. Unlike easing curves, springs respond to interruption naturally.</p><p>Change the target mid-animation and the spring redirects — no jarring restart.</p></div>}
+        preview={<div><h3 className="text-base font-semibold">Spring Physics</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Click to expand →</p></div>}
+        detail={<div className="text-sm text-neutral-600 dark:text-neutral-400 space-y-2"><p>Springs model real-world physics: mass, stiffness, and damping. Unlike easing curves, springs respond to interruption naturally.</p><p>Change the target mid-animation and the spring redirects — no jarring restart.</p></div>}
       />
       <ExpandableCard
-        preview={<div><h3 className="text-base font-semibold">Layout Animations</h3><p className="text-sm text-neutral-400">Click to expand →</p></div>}
-        detail={<div className="text-sm text-neutral-400 space-y-2"><p>Framer Motion&apos;s layout animations automatically animate between DOM states — position, size, border-radius all morph smoothly.</p><p>No FLIP calculations by hand. Just add layout to the component.</p></div>}
+        preview={<div><h3 className="text-base font-semibold">Layout Animations</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Click to expand →</p></div>}
+        detail={<div className="text-sm text-neutral-600 dark:text-neutral-400 space-y-2"><p>Framer Motion&apos;s layout animations automatically animate between DOM states — position, size, border-radius all morph smoothly.</p><p>No FLIP calculations by hand. Just add layout to the component.</p></div>}
       />
     </div>
   );
@@ -476,10 +476,10 @@ function CursorTrailDemo() {
 function SwipeCardsDemo() {
   const [key, setKey] = useState(0);
   const cards = [
-    { id: "1", content: <div><h3 className="text-lg font-bold mb-1">Card One</h3><p className="text-sm text-neutral-400">Swipe me left or right →</p></div> },
-    { id: "2", content: <div><h3 className="text-lg font-bold mb-1">Card Two</h3><p className="text-sm text-neutral-400">Spring physics dismiss</p></div> },
-    { id: "3", content: <div><h3 className="text-lg font-bold mb-1">Card Three</h3><p className="text-sm text-neutral-400">Stack depth illusion</p></div> },
-    { id: "4", content: <div><h3 className="text-lg font-bold mb-1">Card Four</h3><p className="text-sm text-neutral-400">Last one!</p></div> },
+    { id: "1", content: <div><h3 className="text-lg font-bold mb-1">Card One</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Swipe me left or right →</p></div> },
+    { id: "2", content: <div><h3 className="text-lg font-bold mb-1">Card Two</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Spring physics dismiss</p></div> },
+    { id: "3", content: <div><h3 className="text-lg font-bold mb-1">Card Three</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Stack depth illusion</p></div> },
+    { id: "4", content: <div><h3 className="text-lg font-bold mb-1">Card Four</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Last one!</p></div> },
   ];
   return (
     <div className="flex flex-col gap-4">
@@ -530,24 +530,24 @@ function ProgressRingDemo() {
 
 function SpringCarouselDemo() {
   const items = [
-    <div key="1" className="p-6"><h3 className="font-semibold mb-1">Spring Physics</h3><p className="text-sm text-neutral-400">Natural motion with mass, stiffness, and damping.</p></div>,
-    <div key="2" className="p-6"><h3 className="font-semibold mb-1">Gesture-Driven</h3><p className="text-sm text-neutral-400">Drag to navigate. Velocity determines snap direction.</p></div>,
-    <div key="3" className="p-6"><h3 className="font-semibold mb-1">Copy & Paste</h3><p className="text-sm text-neutral-400">Drop into your project. Customize springs to match your brand.</p></div>,
-    <div key="4" className="p-6"><h3 className="font-semibold mb-1">Accessible</h3><p className="text-sm text-neutral-400">Keyboard navigation with arrow keys. Focus management built in.</p></div>,
-    <div key="5" className="p-6"><h3 className="font-semibold mb-1">Performant</h3><p className="text-sm text-neutral-400">GPU-accelerated transforms. No layout thrashing.</p></div>,
+    <div key="1" className="p-6"><h3 className="font-semibold mb-1">Spring Physics</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Natural motion with mass, stiffness, and damping.</p></div>,
+    <div key="2" className="p-6"><h3 className="font-semibold mb-1">Gesture-Driven</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Drag to navigate. Velocity determines snap direction.</p></div>,
+    <div key="3" className="p-6"><h3 className="font-semibold mb-1">Copy & Paste</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Drop into your project. Customize springs to match your brand.</p></div>,
+    <div key="4" className="p-6"><h3 className="font-semibold mb-1">Accessible</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Keyboard navigation with arrow keys. Focus management built in.</p></div>,
+    <div key="5" className="p-6"><h3 className="font-semibold mb-1">Performant</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">GPU-accelerated transforms. No layout thrashing.</p></div>,
   ];
   return <SpringCarousel items={items} />;
 }
 
 function ParallaxScrollDemo() {
   return (
-    <ParallaxScroll className="h-64 relative rounded-lg border border-neutral-800 overflow-hidden bg-neutral-900">
+    <ParallaxScroll className="h-64 relative rounded-lg border border-neutral-300 dark:border-neutral-800 overflow-hidden bg-neutral-200 dark:bg-neutral-900">
       <div className="absolute inset-0 flex items-center justify-center">
         <ParallaxItem speed={-0.3} className="absolute top-4 left-8"><div className="w-16 h-16 rounded-lg bg-indigo-900/50 flex items-center justify-center text-2xl">✦</div></ParallaxItem>
         <ParallaxItem speed={0.5} className="absolute top-12 right-12"><div className="w-12 h-12 rounded-full bg-rose-900/50 flex items-center justify-center text-lg">◆</div></ParallaxItem>
         <ParallaxItem speed={-0.6} className="absolute bottom-8 left-1/4"><div className="w-20 h-20 rounded-lg bg-emerald-900/50 flex items-center justify-center text-3xl">○</div></ParallaxItem>
         <ParallaxItem speed={0.3} className="absolute bottom-4 right-1/4"><div className="w-14 h-14 rounded-full bg-amber-900/50 flex items-center justify-center text-xl">△</div></ParallaxItem>
-        <ParallaxItem speed={0}><p className="text-sm font-medium text-neutral-400">Scroll to see parallax</p></ParallaxItem>
+        <ParallaxItem speed={0}><p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Scroll to see parallax</p></ParallaxItem>
       </div>
     </ParallaxScroll>
   );
@@ -576,8 +576,8 @@ function SchedulePickerDemo() {
     <div className="flex flex-col gap-6">
       <SchedulePicker value={schedule} onChange={setSchedule} />
       <details className="text-xs">
-        <summary className="text-neutral-400 cursor-pointer hover:text-neutral-300 transition-colors">Live data output</summary>
-        <pre className="mt-2 p-3 rounded-lg bg-neutral-950 border border-neutral-800 text-neutral-400 overflow-x-auto text-[11px] leading-relaxed max-h-64 overflow-y-auto">
+        <summary className="text-neutral-600 dark:text-neutral-400 cursor-pointer hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors">Live data output</summary>
+        <pre className="mt-2 p-3 rounded-lg bg-neutral-100 dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 overflow-x-auto text-[11px] leading-relaxed max-h-64 overflow-y-auto">
           {JSON.stringify(schedule, null, 2)}
         </pre>
       </details>
@@ -591,7 +591,7 @@ function DateRangePickerDemo() {
     <div className="flex flex-col gap-4">
       <DateRangePicker value={range} onChange={setRange} />
       {range.start && range.end && (
-        <p className="text-xs text-neutral-400">
+        <p className="text-xs text-neutral-600 dark:text-neutral-400">
           Selected: {range.start.toLocaleDateString()} → {range.end.toLocaleDateString()}
           {" "}({Math.round((range.end.getTime() - range.start.getTime()) / 86400000)} days)
         </p>
@@ -612,7 +612,7 @@ function MultiSelectDemo() {
         maxTags={8}
         placeholder="Add technologies..."
       />
-      <p className="text-xs text-neutral-400">{tags.length} tag{tags.length !== 1 ? "s" : ""}: {tags.join(", ") || "none"}</p>
+      <p className="text-xs text-neutral-600 dark:text-neutral-400">{tags.length} tag{tags.length !== 1 ? "s" : ""}: {tags.join(", ") || "none"}</p>
     </div>
   );
 }
@@ -620,14 +620,14 @@ function MultiSelectDemo() {
 function StepperDemo() {
   const [finished, setFinished] = useState(false);
   const steps = [
-    { id: "details", label: "Details", content: <div className="p-4 rounded-lg border border-neutral-800 text-sm text-neutral-400"><p className="font-medium text-neutral-200 mb-2">Project Details</p><p>Enter your project name, description, and select a category. All fields are required.</p></div> },
-    { id: "config", label: "Configure", content: <div className="p-4 rounded-lg border border-neutral-800 text-sm text-neutral-400"><p className="font-medium text-neutral-200 mb-2">Configuration</p><p>Choose your framework, set up environment variables, and configure build settings.</p></div> },
-    { id: "review", label: "Review", content: <div className="p-4 rounded-lg border border-neutral-800 text-sm text-neutral-400"><p className="font-medium text-neutral-200 mb-2">Review & Deploy</p><p>Review your settings and deploy. You can always change these later.</p></div> },
+    { id: "details", label: "Details", content: <div className="p-4 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm text-neutral-600 dark:text-neutral-400"><p className="font-medium text-neutral-800 dark:text-neutral-200 mb-2">Project Details</p><p>Enter your project name, description, and select a category. All fields are required.</p></div> },
+    { id: "config", label: "Configure", content: <div className="p-4 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm text-neutral-600 dark:text-neutral-400"><p className="font-medium text-neutral-800 dark:text-neutral-200 mb-2">Configuration</p><p>Choose your framework, set up environment variables, and configure build settings.</p></div> },
+    { id: "review", label: "Review", content: <div className="p-4 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm text-neutral-600 dark:text-neutral-400"><p className="font-medium text-neutral-800 dark:text-neutral-200 mb-2">Review & Deploy</p><p>Review your settings and deploy. You can always change these later.</p></div> },
   ];
   return (
     <div className="flex flex-col gap-4">
       <Stepper steps={steps} onFinish={() => setFinished(true)} />
-      {finished && <p className="text-xs text-green-400 text-center">✓ Complete! (reset by navigating back)</p>}
+      {finished && <p className="text-xs text-green-600 dark:text-green-400 text-center">✓ Complete! (reset by navigating back)</p>}
     </div>
   );
 }
@@ -724,10 +724,10 @@ function SkeletonDemo() {
     <div className="flex flex-col gap-4 max-w-sm">
       <div className="flex gap-3 items-start">
         <Skeleton variant="avatar" loaded={loaded}><div className="w-10 h-10 rounded-full bg-blue-500" /></Skeleton>
-        <Skeleton variant="text" lines={2} loaded={loaded}><div><p className="text-sm font-medium">Nikki Kipple</p><p className="text-xs text-neutral-500">Design Engineer & Educator</p></div></Skeleton>
+        <Skeleton variant="text" lines={2} loaded={loaded}><div><p className="text-sm font-medium">Nikki Kipple</p><p className="text-xs text-neutral-600 dark:text-neutral-500">Design Engineer & Educator</p></div></Skeleton>
       </div>
       <Skeleton variant="card" height={80} loaded={loaded}>
-        <div className="p-4 rounded-lg border border-neutral-800"><p className="text-sm">This content was loaded with a spring crossfade.</p></div>
+        <div className="p-4 rounded-lg border border-neutral-300 dark:border-neutral-800"><p className="text-sm">This content was loaded with a spring crossfade.</p></div>
       </Skeleton>
       <Button size="sm" variant="secondary" onClick={() => setLoaded(!loaded)}>{loaded ? "Show skeleton" : "Load content"}</Button>
     </div>
@@ -742,9 +742,9 @@ function NavMenuDemo() {
 function TabsDemo() {
   return (
     <Tabs items={[
-      { value: "preview", label: "Preview", content: <div className="p-4 text-sm text-neutral-500">Live preview of the component with spring animations.</div> },
-      { value: "code", label: "Code", content: <div className="p-4 text-sm font-mono text-neutral-500">{'<Button variant="default">Click me</Button>'}</div> },
-      { value: "props", label: "Props", content: <div className="p-4 text-sm text-neutral-500">variant, size, loading, success, disabled</div> },
+      { value: "preview", label: "Preview", content: <div className="p-4 text-sm text-neutral-600 dark:text-neutral-500">Live preview of the component with spring animations.</div> },
+      { value: "code", label: "Code", content: <div className="p-4 text-sm font-mono text-neutral-600 dark:text-neutral-500">{'<Button variant="default">Click me</Button>'}</div> },
+      { value: "props", label: "Props", content: <div className="p-4 text-sm text-neutral-600 dark:text-neutral-500">variant, size, loading, success, disabled</div> },
     ]} />
   );
 }
@@ -1017,11 +1017,11 @@ function Section({ id, title, description, children, code }: {
   return (
     <ScrollReveal variant="fade-up" delay={0.05}>
       <section id={id} className="scroll-mt-24 mb-24">
-        <div className="border-t border-neutral-800/60 pt-8 mb-6">
-          <h2 className="text-base font-bold uppercase tracking-wider text-neutral-400 mb-1">{title}</h2>
-          {description && <p className="text-sm text-neutral-500 leading-relaxed">{description}</p>}
+        <div className="border-t border-neutral-200/60 dark:border-neutral-800/60 pt-8 mb-6">
+          <h2 className="text-base font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1">{title}</h2>
+          {description && <p className="text-sm text-neutral-600 dark:text-neutral-500 leading-relaxed">{description}</p>}
         </div>
-        <div className="rounded-xl border border-neutral-800/40 bg-neutral-900/30 p-6 overflow-hidden">
+        <div className="rounded-xl border border-neutral-200/40 dark:border-neutral-800/40 bg-neutral-100/30 dark:bg-neutral-900/30 p-6 overflow-hidden">
           {children}
         </div>
         {code && <CodeBlock code={code} />}
@@ -1039,11 +1039,11 @@ export default function Home() {
     <>
       <TableOfContents />
 
-      <main className="min-h-screen bg-neutral-950 text-neutral-100 max-w-3xl mx-auto px-6 sm:px-8">
+      <main className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 max-w-3xl mx-auto px-6 sm:px-8">
         {/* ============================================================= */}
         {/* HERO                                                           */}
         {/* ============================================================= */}
-        <header className="pt-24 pb-32 border-b border-neutral-800">
+        <header className="pt-24 pb-32 border-b border-neutral-200 dark:border-neutral-800">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-3xl font-bold tracking-tight">driftkit</h1>
             <ModeSwitcher irisWipe />
@@ -1064,7 +1064,7 @@ export default function Home() {
             </span>
           </div>
 
-          <p className="text-lg text-neutral-400 max-w-xl mb-8 leading-relaxed">
+          <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-xl mb-8 leading-relaxed">
             A growing collection of beautifully animated React components built with Framer Motion and Tailwind CSS.
             Every interaction is powered by spring physics — no easing curves, no keyframes, just natural motion.
           </p>
@@ -1072,12 +1072,12 @@ export default function Home() {
           <div className="flex items-center gap-6 flex-wrap">
             <a
               href="#typewriter"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-neutral-950 font-medium text-sm hover:bg-neutral-200 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 font-medium text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors"
             >
               Browse Components →
             </a>
-            <div className="flex items-center gap-2 text-neutral-400">
-              <span className="text-2xl font-bold text-white tabular-nums">
+            <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
+              <span className="text-2xl font-bold text-neutral-900 dark:text-white tabular-nums">
                 <NumberTicker value={COMPONENT_COUNT} />
               </span>
               <span className="text-sm">components and counting</span>
@@ -1092,7 +1092,7 @@ export default function Home() {
           <ScrollReveal variant="fade-up">
             <div className="mb-16">
               <h2 className="text-2xl font-bold mb-3">✦ Showpieces</h2>
-              <p className="text-sm text-neutral-400">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
                 Interactive components that push beyond standard UI — magnetic pull, cursor glow, digit rolling, theme morphing, fisheye dock, and more.
               </p>
             </div>
@@ -1226,11 +1226,11 @@ export default function Home() {
         {/* ============================================================= */}
         {/* STANDARD COMPONENTS                                            */}
         {/* ============================================================= */}
-        <div className="pt-24 pb-16 border-t-2 border-neutral-700/50 mt-8">
+        <div className="pt-24 pb-16 border-t-2 border-neutral-300/50 dark:border-neutral-700/50 mt-8">
           <ScrollReveal variant="fade-up">
             <div className="mb-16">
               <h2 className="text-2xl font-bold mb-3">Standard Components</h2>
-              <p className="text-sm text-neutral-400">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
                 Essential UI building blocks — each one enhanced with spring physics and micro-interactions.
               </p>
             </div>
@@ -1243,19 +1243,19 @@ export default function Home() {
           <Section id="button" title="Button" code={codeSnippets["button"]}>
             <div className="space-y-6">
               <div>
-                <p className="text-xs text-neutral-500 mb-3 uppercase tracking-wider">Variants</p>
+                <p className="text-xs text-neutral-600 dark:text-neutral-500 mb-3 uppercase tracking-wider">Variants</p>
                 <div className="flex flex-wrap gap-3">
                   {variants.map((v) => <Button key={v} variant={v}>{v.charAt(0).toUpperCase() + v.slice(1)}</Button>)}
                 </div>
               </div>
               <div>
-                <p className="text-xs text-neutral-500 mb-3 uppercase tracking-wider">Sizes</p>
+                <p className="text-xs text-neutral-600 dark:text-neutral-500 mb-3 uppercase tracking-wider">Sizes</p>
                 <div className="flex flex-wrap items-center gap-3">
                   {sizes.map((s) => <Button key={s} size={s}>Size {s}</Button>)}
                 </div>
               </div>
               <div>
-                <p className="text-xs text-neutral-500 mb-3 uppercase tracking-wider">Loading → Success</p>
+                <p className="text-xs text-neutral-600 dark:text-neutral-500 mb-3 uppercase tracking-wider">Loading → Success</p>
                 <LoadingDemo />
               </div>
             </div>
@@ -1297,11 +1297,11 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Card variant="interactive">
                 <CardHeader><h3 className="text-base font-semibold">Interactive</h3></CardHeader>
-                <CardContent><p className="text-sm text-neutral-500">Hover lift + press sink.</p></CardContent>
+                <CardContent><p className="text-sm text-neutral-600 dark:text-neutral-500">Hover lift + press sink.</p></CardContent>
               </Card>
               <FlipCard
-                front={<div className="p-6"><h3 className="font-semibold">Front</h3><p className="text-sm text-neutral-500">Click to flip →</p></div>}
-                back={<div className="p-6"><h3 className="font-semibold">Back</h3><p className="text-sm text-neutral-500">Click to flip back →</p></div>}
+                front={<div className="p-6"><h3 className="font-semibold">Front</h3><p className="text-sm text-neutral-600 dark:text-neutral-500">Click to flip →</p></div>}
+                back={<div className="p-6"><h3 className="font-semibold">Back</h3><p className="text-sm text-neutral-600 dark:text-neutral-500">Click to flip back →</p></div>}
               />
             </div>
           </Section>
@@ -1318,22 +1318,22 @@ export default function Home() {
         {/* ============================================================= */}
         {/* FOOTER                                                         */}
         {/* ============================================================= */}
-        <footer className="py-16 mt-8 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-500">
+        <footer className="py-16 mt-8 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-600 dark:text-neutral-500">
           <div className="flex items-center gap-3">
-            <span className="font-bold text-neutral-300">driftkit</span>
+            <span className="font-bold text-neutral-700 dark:text-neutral-300">driftkit</span>
             <span>·</span>
             <span className="tabular-nums"><NumberTicker value={COMPONENT_COUNT} /> components</span>
           </div>
           <div className="flex items-center gap-4">
             <span>
               Built by{" "}
-              <a href="https://nikkikipple.com" className="text-neutral-300 hover:text-white underline underline-offset-2 transition-colors">
+              <a href="https://nikkikipple.com" className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white underline underline-offset-2 transition-colors">
                 Nikki Kipple
               </a>
             </span>
             <a
               href="https://github.com/nikkikipple/driftkit"
-              className="text-neutral-400 hover:text-white transition-colors"
+              className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
               target="_blank"
               rel="noopener noreferrer"
             >
