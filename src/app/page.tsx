@@ -5,6 +5,9 @@ import { Button, type ButtonVariant, type ButtonSize } from "@/components/button
 import { Toggle } from "@/components/toggle";
 import { Dialog, DialogTitle, DialogDescription, DialogFooter } from "@/components/dialog";
 import { useToast } from "@/components/toast";
+import { Tooltip } from "@/components/tooltip";
+import { Dropdown, type DropdownItem } from "@/components/dropdown";
+import { Card, CardHeader, CardContent, CardFooter, FlipCard } from "@/components/card";
 
 const variants: ButtonVariant[] = ["default", "secondary", "ghost", "destructive"];
 const sizes: ButtonSize[] = ["sm", "md", "lg"];
@@ -83,6 +86,30 @@ function DialogDemo() {
           </Button>
         </DialogFooter>
       </Dialog>
+    </div>
+  );
+}
+
+function DropdownDemo() {
+  const items: DropdownItem[] = [
+    { label: "Edit", onClick: () => {} },
+    { label: "Duplicate", onClick: () => {} },
+    { separator: true, label: "Archive", onClick: () => {} },
+    { label: "Delete", onClick: () => {} },
+    { separator: true, label: "Disabled item", disabled: true },
+  ];
+
+  return (
+    <div className="flex gap-4">
+      <Dropdown
+        trigger={<Button variant="secondary" size="sm">Open menu</Button>}
+        items={items}
+      />
+      <Dropdown
+        trigger={<Button variant="secondary" size="sm">Right-aligned</Button>}
+        items={items}
+        align="right"
+      />
     </div>
   );
 }
@@ -207,6 +234,95 @@ export default function Home() {
           Dialog
         </h2>
         <DialogDemo />
+      </section>
+
+      {/* Tooltip */}
+      <section className="mb-12">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-400 mb-4">
+          Tooltip
+        </h2>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+          Spring pop-in with auto-flip positioning. Hover to see.
+        </p>
+        <div className="flex flex-wrap gap-6">
+          <Tooltip content="Top tooltip" position="top">
+            <Button variant="secondary" size="sm">Top</Button>
+          </Tooltip>
+          <Tooltip content="Bottom tooltip" position="bottom">
+            <Button variant="secondary" size="sm">Bottom</Button>
+          </Tooltip>
+          <Tooltip content="Left tooltip" position="left">
+            <Button variant="secondary" size="sm">Left</Button>
+          </Tooltip>
+          <Tooltip content="Right tooltip" position="right">
+            <Button variant="secondary" size="sm">Right</Button>
+          </Tooltip>
+          <Tooltip content="I follow your cursor ✨" followCursor>
+            <Button variant="ghost" size="sm">Follow cursor</Button>
+          </Tooltip>
+        </div>
+      </section>
+
+      {/* Dropdown */}
+      <section className="mb-12">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-400 mb-4">
+          Dropdown Menu
+        </h2>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+          Origin-aware spring with staggered items. Full keyboard support.
+        </p>
+        <DropdownDemo />
+      </section>
+
+      {/* Card */}
+      <section className="mb-12">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-400 mb-4">
+          Card
+        </h2>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+          Interactive cards with hover lift + press sink. Click the flip card to flip.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Card variant="interactive">
+            <CardHeader>
+              <h3 className="text-base font-semibold">Interactive Card</h3>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                Hover to lift, press to sink. Spring physics make it feel physical.
+              </p>
+            </CardContent>
+            <CardFooter>
+              <span className="text-xs text-neutral-400">Hover me</span>
+            </CardFooter>
+          </Card>
+          <Card variant="static">
+            <CardHeader>
+              <h3 className="text-base font-semibold">Static Card</h3>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                No motion — just clean layout. Use for display-only content.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="mt-4 max-w-xs">
+          <FlipCard
+            front={
+              <div className="p-6">
+                <h3 className="text-base font-semibold mb-1">Flip Card — Front</h3>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">Click to flip →</p>
+              </div>
+            }
+            back={
+              <div className="p-6">
+                <h3 className="text-base font-semibold mb-1">Flip Card — Back</h3>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">Click to flip back →</p>
+              </div>
+            }
+          />
+        </div>
       </section>
 
       {/* Toast */}
