@@ -213,7 +213,7 @@ function TableOfContents() {
 
 function MagneticButtonDemo() {
   return (
-    <div className="flex flex-wrap gap-4 items-center">
+    <div className="flex flex-wrap gap-8 items-center">
       <MagneticButton><Button>Hover near me</Button></MagneticButton>
       <MagneticButton intensity={0.5}><Button variant="secondary">Subtle pull</Button></MagneticButton>
       <MagneticButton intensity={1.5}><Button variant="ghost">Strong pull</Button></MagneticButton>
