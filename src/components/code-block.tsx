@@ -25,7 +25,7 @@ export function CodeBlock({ code, label = "Code" }: CodeBlockProps) {
       <motion.button
         onClick={() => setOpen(!open)}
         className={`
-          relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer
+          relative inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium cursor-pointer
           border transition-colors
           ${open 
             ? "bg-neutral-100 dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100" 
