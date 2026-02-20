@@ -25,8 +25,8 @@ interface SpotlightProps {
 export function Spotlight({
   children,
   className = "",
-  duration = 1.5,
-  delay = 3,
+  duration = 2.5,
+  delay = 4,
   color = "rgba(255,255,255,0.15)",
   beamWidth = 30,
 }: SpotlightProps) {
@@ -50,7 +50,9 @@ export function Spotlight({
             delay,
             repeat: Infinity,
             repeatDelay: delay,
-            ease: "easeInOut",
+            type: "spring",
+            stiffness: 30,
+            damping: 15,
           }}
         />
       )}
