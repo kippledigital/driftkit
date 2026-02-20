@@ -120,7 +120,8 @@ export function NumberTicker({
 
   return (
     <span
-      className={`inline-flex items-baseline tabular-nums ${fontSize || ""} ${className}`}
+      className={`inline-flex items-baseline ${fontSize || ""} ${className}`}
+      style={{ fontVariantNumeric: "tabular-nums" }}
       aria-label={`${prefix}${formatted}${suffix}`}
       role="status"
     >
@@ -140,7 +141,13 @@ export function NumberTicker({
         return (
           <span
             key={`pos-${i}`}
-            style={{ display: "inline-block", position: "relative", overflow: "hidden" }}
+            style={{ 
+              display: "inline-block", 
+              position: "relative", 
+              overflow: "hidden",
+              width: "1ch",
+              textAlign: "center"
+            }}
           >
             <AnimatePresence mode="popLayout" initial={false}>
               <AnimatedChar

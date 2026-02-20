@@ -42,7 +42,11 @@ export function AnimatedCounter({
   }, [isInView, hasTriggered, spring, target]);
 
   return (
-    <motion.span ref={ref} className={`tabular-nums ${className}`}>
+    <motion.span 
+      ref={ref} 
+      className={className}
+      style={{ fontVariantNumeric: "tabular-nums", minWidth: "max-content" }}
+    >
       {display}
     </motion.span>
   );
