@@ -8,7 +8,7 @@ import { Dialog, DialogTitle, DialogDescription, DialogFooter } from "@/componen
 import { useToast } from "@/components/toast";
 import { Tooltip } from "@/components/tooltip";
 import { Dropdown, type DropdownItem } from "@/components/dropdown";
-import { Card, CardHeader, CardContent, CardFooter, FlipCard } from "@/components/card";
+import { Card, CardImage, CardContent, CardActions, CardGrid, CardHeader, CardFooter, FlipCard } from "@/components/card";
 import { Tabs } from "@/components/tabs";
 import { Accordion } from "@/components/accordion";
 import { Input } from "@/components/input";
@@ -854,6 +854,211 @@ function BadgeDemo() {
 // STANDARD DEMOS
 // =============================================================================
 
+function CardDemo() {
+  const [variant, setVariant] = useState<"default" | "outlined" | "elevated">("default");
+  const [showGrid, setShowGrid] = useState(false);
+  const [gridKey, setGridKey] = useState(0);
+
+  // Sample card data for the grid demo
+  const cardData = [
+    {
+      id: 1,
+      image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=240&fit=crop",
+      title: "Design System",
+      description: "A comprehensive guide to building scalable design systems with motion-first components.",
+    },
+    {
+      id: 2,
+      image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=400&h=240&fit=crop",
+      title: "Spring Physics",
+      description: "Understanding mass, stiffness, and damping for natural motion that feels alive.",
+    },
+    {
+      id: 3,
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=240&fit=crop",
+      title: "User Experience",
+      description: "Crafting interactions that delight users through thoughtful animation and feedback.",
+    },
+    {
+      id: 4,
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=240&fit=crop",
+      title: "Performance",
+      description: "Optimizing animations for smooth 60fps experiences across all devices and browsers.",
+    },
+    {
+      id: 5,
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=240&fit=crop",
+      title: "Accessibility",
+      description: "Ensuring animations respect user preferences and work with assistive technologies.",
+    },
+    {
+      id: 6,
+      image: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=240&fit=crop",
+      title: "Implementation",
+      description: "Copy-paste components that integrate seamlessly with your existing React projects.",
+    },
+  ];
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Variant Controls */}
+      <div className="flex flex-wrap gap-3">
+        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Variants:</p>
+        {(["default", "outlined", "elevated"] as const).map((v) => (
+          <Button
+            key={v}
+            size="sm"
+            variant={variant === v ? "default" : "secondary"}
+            onClick={() => setVariant(v)}
+          >
+            {v}
+          </Button>
+        ))}
+      </div>
+
+      {/* Single Card Demos */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Basic Card */}
+        <Card variant={variant}>
+          <CardContent
+            title="Motion-First Design"
+            description="Every component starts with spring physics. Animation isn't added afterward—it's the foundation."
+          >
+            <div className="flex gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+              <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+              <div className="w-2 h-2 rounded-full bg-red-500"></div>
+            </div>
+          </CardContent>
+          <CardActions>
+            <Button size="sm" variant="secondary">Learn More</Button>
+            <Button size="sm" variant="ghost">View Code</Button>
+          </CardActions>
+        </Card>
+
+        {/* Card with Image */}
+        <Card variant={variant}>
+          <CardImage
+            src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=240&fit=crop"
+            alt="Design system components"
+          />
+          <CardContent
+            title="Beautiful Components"
+            description="Craft-level attention to detail in every hover state, transition, and spring curve."
+          />
+          <CardActions>
+            <Button size="sm">Get Started</Button>
+          </CardActions>
+        </Card>
+
+        {/* Interactive Card */}
+        <Card variant={variant}>
+          <CardContent>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold">
+                DK
+              </div>
+              <div>
+                <h3 className="font-semibold text-neutral-900 dark:text-white">Driftkit</h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">Motion component library</p>
+              </div>
+            </div>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+              Hover over me to see the subtle scale and lift animation with spring physics.
+            </p>
+            <div className="flex items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400">
+              <span className="flex items-center gap-1">
+                <span>⭐</span> 4.9
+              </span>
+              <span>•</span>
+              <span>48 components</span>
+              <span>•</span>
+              <span className="text-green-600 dark:text-green-400">Active</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Grid Demo Toggle */}
+      <div className="flex items-center gap-3">
+        <Button
+          size="sm"
+          variant={showGrid ? "default" : "secondary"}
+          onClick={() => setShowGrid(!showGrid)}
+        >
+          {showGrid ? "Hide Grid Demo" : "Show Grid Demo"}
+        </Button>
+        {showGrid && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setGridKey(k => k + 1)}
+          >
+            Replay Animation
+          </Button>
+        )}
+      </div>
+
+      {/* Staggered Grid Demo */}
+      {showGrid && (
+        <div className="space-y-4">
+          <div className="border-t border-neutral-200 dark:border-neutral-800 pt-6">
+            <h4 className="text-lg font-semibold text-neutral-900 dark:text-white mb-2">
+              Staggered Grid Animation
+            </h4>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
+              Cards enter with fade + slide up animation, staggered for a premium feel.
+            </p>
+          </div>
+
+          <CardGrid key={gridKey} columns={3} gap="md" staggerDelay={0.15}>
+            {cardData.map((card) => (
+              <Card key={card.id} variant={variant}>
+                <CardImage src={card.image} alt={card.title} />
+                <CardContent title={card.title} description={card.description} />
+                <CardActions>
+                  <Button size="sm">Read More</Button>
+                  <Button size="sm" variant="ghost">Share</Button>
+                </CardActions>
+              </Card>
+            ))}
+          </CardGrid>
+        </div>
+      )}
+
+      {/* Legacy FlipCard Demo */}
+      <div className="border-t border-neutral-200 dark:border-neutral-800 pt-6">
+        <h4 className="text-lg font-semibold text-neutral-900 dark:text-white mb-2">
+          Flip Card (Legacy)
+        </h4>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+          3D flip animation for reveal interactions.
+        </p>
+        <div className="max-w-sm">
+          <FlipCard
+            front={
+              <div className="p-6">
+                <h3 className="font-semibold text-neutral-900 dark:text-white mb-2">Front Side</h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  Click to flip and see the back →
+                </p>
+              </div>
+            }
+            back={
+              <div className="p-6">
+                <h3 className="font-semibold text-neutral-900 dark:text-white mb-2">Back Side</h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  Smooth 3D rotation with spring physics ←
+                </p>
+              </div>
+            }
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LoadingDemo() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -1257,12 +1462,27 @@ const items = breadcrumbPatterns.filesystem("/docs/components");
   trigger={<button>Open</button>}
   items={[{ label: "Edit", onClick: () => {} }]}
 />`,
-  "card": `import { Card, CardHeader, CardContent, FlipCard } from "@/components/card";
+  "card": `import { Card, CardImage, CardContent, CardActions, CardGrid } from "@/components/card";
 
-<Card variant="interactive">
-  <CardHeader><h3>Title</h3></CardHeader>
-  <CardContent><p>Content</p></CardContent>
-</Card>`,
+// Single card with image and actions
+<Card variant="default">
+  <CardImage src="/image.jpg" alt="Description" />
+  <CardContent 
+    title="Card Title"
+    description="Card description with motion-first design."
+  />
+  <CardActions>
+    <Button>Primary</Button>
+    <Button variant="ghost">Secondary</Button>
+  </CardActions>
+</Card>
+
+// Staggered grid with entrance animations
+<CardGrid columns={3} staggerDelay={0.15}>
+  <Card><CardContent title="Card 1" /></Card>
+  <Card><CardContent title="Card 2" /></Card>
+  <Card><CardContent title="Card 3" /></Card>
+</CardGrid>`,
   "skeleton": `import { Skeleton } from "@/components/skeleton";
 
 <Skeleton variant="text" lines={2} loaded={false}>
@@ -1564,17 +1784,8 @@ export default function Home() {
             <DropdownDemo />
           </Section>
 
-          <Section id="card" title="Card" code={codeSnippets["card"]}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Card variant="interactive">
-                <CardHeader><h3 className="text-base font-semibold">Interactive</h3></CardHeader>
-                <CardContent><p className="text-sm text-neutral-600 dark:text-neutral-500">Hover lift + press sink.</p></CardContent>
-              </Card>
-              <FlipCard
-                front={<div className="p-6"><h3 className="font-semibold">Front</h3><p className="text-sm text-neutral-600 dark:text-neutral-500">Click to flip →</p></div>}
-                back={<div className="p-6"><h3 className="font-semibold">Back</h3><p className="text-sm text-neutral-600 dark:text-neutral-500">Click to flip back →</p></div>}
-              />
-            </div>
+          <Section id="card" title="Card" description="Motion-first cards with hover lift, press feedback, and staggered grid animations. Three variants with image slots and structured content areas." code={codeSnippets["card"]}>
+            <CardDemo />
           </Section>
 
           <Section id="skeleton" title="Skeleton" description="Shimmer loading with spring crossfade reveal." code={codeSnippets["skeleton"]}>
