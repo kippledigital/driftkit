@@ -45,7 +45,7 @@ export function SwipeCards({
   };
 
   return (
-    <div className={`relative h-[280px] w-full ${className}`}>
+    <div className={`relative h-[300px] w-full overflow-visible ${className}`} style={{ padding: "20px" }}>
       <AnimatePresence>
         {cards.slice(0, 3).map((card, i) => (
           <SwipeCard
@@ -85,7 +85,7 @@ function SwipeCard({
 }) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-300, 0, 300], [-18, 0, 18]);
-  const opacity = useTransform(x, [-300, -100, 0, 100, 300], [0.5, 1, 1, 1, 0.5]);
+  const opacity = useTransform(x, [-300, -150, 0, 150, 300], [0.3, 1, 1, 1, 0.3]);
 
   // Stack offset
   const stackScale = 1 - index * 0.05;
@@ -101,7 +101,7 @@ function SwipeCard({
 
   return (
     <motion.div
-      className="absolute inset-0"
+      className="absolute"
       style={{
         x: isTop ? x : 0,
         rotate: isTop ? rotate : 0,
@@ -109,10 +109,16 @@ function SwipeCard({
         scale: stackScale,
         y: stackY,
         zIndex: total - index,
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
       }}
       drag={isTop && !prefersReduced ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.8}
+      dragElastic={0.4}
+      dragMomentum={false}
+      dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
       onDragEnd={isTop ? handleDragEnd : undefined}
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: stackScale, opacity: 1, y: stackY }}
