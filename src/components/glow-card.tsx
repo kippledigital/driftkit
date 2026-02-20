@@ -58,7 +58,7 @@ export function GlowCard({
   // WHY useMotionTemplate: It lets us compose a CSS string from motion values
   // reactively. When mouseX/mouseY update, the background string updates
   // automatically without any React re-render.
-  const defaultColor = glowColor || "rgba(255,255,255,0.8)";
+  const defaultColor = glowColor || "rgba(99,102,241,0.6)";
 
   const surfaceGlow = useMotionTemplate`radial-gradient(${glowSize}px circle at ${mouseX}px ${mouseY}px, ${defaultColor}, transparent 80%)`;
   const borderGlowBg = useMotionTemplate`radial-gradient(${glowSize}px circle at ${mouseX}px ${mouseY}px, ${defaultColor}, transparent 80%)`;
@@ -91,7 +91,7 @@ export function GlowCard({
       >
         {/* Glow layer — sits behind the inner card, only visible at the 1px border */}
         <motion.div
-          className="absolute inset-0 rounded-[8px] opacity-0 transition-opacity duration-300"
+          className="absolute inset-0 rounded-[8px] transition-opacity duration-300"
           style={{
             background: borderGlowBg,
             opacity: glowOpacity,
