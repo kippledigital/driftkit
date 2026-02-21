@@ -29,19 +29,24 @@ function TrailDot({ x, y, size, color, index, total }: { x: number; y: number; s
 
   const scale = 1 - (index / total) * 0.6;
   const opacity = 1 - (index / total) * 0.8;
+  
+  // Generate rainbow color based on dot index
+  const hue = (index / total) * 360;
+  const rainbowColor = `hsl(${hue}, 85%, 60%)`;
 
   return (
     <motion.div
       className="fixed pointer-events-none z-50 rounded-full"
       style={{
+        left: 0,
+        top: 0,
         x: springX,
         y: springY,
         width: size * scale,
         height: size * scale,
         opacity,
-        backgroundColor: color,
-        translateX: "-50%",
-        translateY: "-50%",
+        backgroundColor: color === "currentColor" ? rainbowColor : color,
+        transform: "translate(-50%, -50%)",
       }}
     />
   );
