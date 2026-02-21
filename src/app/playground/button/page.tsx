@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/button";
 import { ControlPanel } from "@/components/control-panel";
 import { CodeDisplay } from "@/components/code-display";
+import { ComponentSwitcher } from "@/components/component-switcher";
 
 export interface PhysicsConfig {
   tension: number;
@@ -193,157 +194,171 @@ export default function ButtonPlayground() {
   }, [config]);
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white">
-      {/* Header */}
-      <header className="border-b border-neutral-800 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-white">Button Playground</h1>
-              <p className="text-neutral-400 mt-1">
-                Experiment with spring physics and motion properties
-              </p>
-            </div>
-            <a
-              href="/"
-              className="text-neutral-400 hover:text-white transition-colors text-sm"
-            >
-              ← Back to Components
-            </a>
-          </div>
-        </div>
-      </header>
+    <div className="h-screen bg-neutral-950 text-white flex flex-col overflow-hidden">
+      {/* Component Switcher */}
+      <ComponentSwitcher currentComponent="button" />
 
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
-          {/* Left Panel - Component Preview */}
-          <div className="lg:col-span-2 bg-neutral-900 rounded-lg border border-neutral-800 p-8">
-            <div className="h-full flex flex-col">
-              <h2 className="text-lg font-semibold mb-6 text-white">Live Preview</h2>
-              
-              <div className="flex-1 flex items-center justify-center">
-                <div className="grid grid-cols-2 gap-8">
-                  {/* All variants showcase */}
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-medium text-neutral-300 text-center">Variants</h3>
-                    <div className="space-y-3">
-                      {["default", "secondary", "ghost", "outline"].map((variant) => (
-                        <motion.button
-                          key={variant}
-                          className={`px-4 py-2 font-medium transition-colors ${
-                            variant === "default" 
-                              ? "bg-white text-black" 
-                              : variant === "secondary"
-                              ? "bg-neutral-700 text-white"
-                              : variant === "ghost"
-                              ? "bg-transparent text-white hover:bg-neutral-800"
-                              : "bg-transparent text-white border border-neutral-600"
-                          }`}
-                          style={{
-                            borderRadius: `${config.borderRadius}px`,
-                          }}
-                          whileHover={{
-                            scale: config.scaleHover,
-                          }}
-                          whileTap={{
-                            scale: config.scalePress,
-                          }}
-                          transition={{
-                            type: "spring",
-                            stiffness: config.tension,
-                            damping: config.damping,
-                            mass: config.mass,
-                          }}
-                        >
-                          {variant.charAt(0).toUpperCase() + variant.slice(1)}
-                        </motion.button>
-                      ))}
-                    </div>
+      {/* Main Layout Grid */}
+      <div className="flex-1 grid grid-cols-[1fr_320px] grid-rows-[1fr_150px] gap-3 p-3 min-h-0">
+        {/* Live Preview - Top Left */}
+        <div className="bg-neutral-900 rounded border border-neutral-800 p-4 overflow-hidden">
+          <div className="h-full flex flex-col">
+            <h2 className="text-sm font-mono text-neutral-300 mb-3">Live Preview</h2>
+            
+            <div className="flex-1 flex items-center justify-center min-h-0">
+              <div className="grid grid-cols-2 gap-6">
+                {/* Variants */}
+                <div className="space-y-3">
+                  <h3 className="text-xs font-mono text-neutral-400 text-center">Variants</h3>
+                  <div className="space-y-2">
+                    {["default", "secondary", "ghost", "outline"].map((variant) => (
+                      <motion.button
+                        key={variant}
+                        className={`px-3 py-1.5 text-sm font-medium transition-colors ${
+                          variant === "default" 
+                            ? "bg-white text-black" 
+                            : variant === "secondary"
+                            ? "bg-neutral-700 text-white"
+                            : variant === "ghost"
+                            ? "bg-transparent text-white hover:bg-neutral-800"
+                            : "bg-transparent text-white border border-neutral-600"
+                        }`}
+                        style={{
+                          borderRadius: `${config.borderRadius}px`,
+                        }}
+                        whileHover={{
+                          scale: config.scaleHover,
+                        }}
+                        whileTap={{
+                          scale: config.scalePress,
+                        }}
+                        transition={{
+                          type: "spring",
+                          stiffness: config.tension,
+                          damping: config.damping,
+                          mass: config.mass,
+                        }}
+                      >
+                        {variant.charAt(0).toUpperCase() + variant.slice(1)}
+                      </motion.button>
+                    ))}
                   </div>
+                </div>
 
-                  {/* Interactive states */}
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-medium text-neutral-300 text-center">States</h3>
-                    <div className="space-y-3">
-                      <motion.button
-                        className="px-4 py-2 bg-white text-black font-medium"
-                        style={{ borderRadius: `${config.borderRadius}px` }}
-                        whileHover={{ scale: config.scaleHover }}
-                        whileTap={{ scale: config.scalePress }}
-                        transition={{
-                          type: "spring",
-                          stiffness: config.tension,
-                          damping: config.damping,
-                          mass: config.mass,
-                        }}
-                      >
-                        Normal
-                      </motion.button>
-                      
-                      <motion.button
-                        className="px-4 py-2 bg-white text-black font-medium flex items-center gap-2"
-                        style={{ borderRadius: `${config.borderRadius}px` }}
-                        whileHover={{ scale: config.scaleHover }}
-                        whileTap={{ scale: config.scalePress }}
-                        transition={{
-                          type: "spring",
-                          stiffness: config.tension,
-                          damping: config.damping,
-                          mass: config.mass,
-                        }}
-                        onClick={handleDemoClick}
-                      >
-                        {demoState.loading ? (
-                          <>
-                            <motion.div
-                              className="w-4 h-4 border-2 border-black border-t-transparent rounded-full"
-                              animate={{ rotate: 360 }}
-                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            />
-                            Loading...
-                          </>
-                        ) : demoState.success ? (
-                          <>
-                            <span className="text-green-600">✓</span>
-                            Success!
-                          </>
-                        ) : (
-                          "Click me"
-                        )}
-                      </motion.button>
-                      
-                      <motion.button
-                        className="px-4 py-2 bg-neutral-600 text-neutral-400 font-medium cursor-not-allowed"
-                        style={{ borderRadius: `${config.borderRadius}px` }}
-                        disabled
-                      >
-                        Disabled
-                      </motion.button>
-                    </div>
+                {/* States */}
+                <div className="space-y-3">
+                  <h3 className="text-xs font-mono text-neutral-400 text-center">States</h3>
+                  <div className="space-y-2">
+                    <motion.button
+                      className="px-3 py-1.5 text-sm bg-white text-black font-medium"
+                      style={{ borderRadius: `${config.borderRadius}px` }}
+                      whileHover={{ scale: config.scaleHover }}
+                      whileTap={{ scale: config.scalePress }}
+                      transition={{
+                        type: "spring",
+                        stiffness: config.tension,
+                        damping: config.damping,
+                        mass: config.mass,
+                      }}
+                    >
+                      Normal
+                    </motion.button>
+                    
+                    <motion.button
+                      className="px-3 py-1.5 text-sm bg-white text-black font-medium flex items-center gap-2"
+                      style={{ borderRadius: `${config.borderRadius}px` }}
+                      whileHover={{ scale: config.scaleHover }}
+                      whileTap={{ scale: config.scalePress }}
+                      transition={{
+                        type: "spring",
+                        stiffness: config.tension,
+                        damping: config.damping,
+                        mass: config.mass,
+                      }}
+                      onClick={handleDemoClick}
+                    >
+                      {demoState.loading ? (
+                        <>
+                          <motion.div
+                            className="w-3 h-3 border border-black border-t-transparent rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          />
+                          <span className="text-xs">Loading...</span>
+                        </>
+                      ) : demoState.success ? (
+                        <>
+                          <span className="text-green-600">✓</span>
+                          <span className="text-xs">Success!</span>
+                        </>
+                      ) : (
+                        "Interactive"
+                      )}
+                    </motion.button>
+                    
+                    <motion.button
+                      className="px-3 py-1.5 text-sm bg-neutral-600 text-neutral-400 font-medium cursor-not-allowed"
+                      style={{ borderRadius: `${config.borderRadius}px` }}
+                      disabled
+                    >
+                      Disabled
+                    </motion.button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Right Panel - Controls */}
-          <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-6">
-            <ControlPanel
-              title="Physics Controls"
-              config={config}
-              controls={controlsConfig}
-              onChange={handleConfigChange}
-            />
-          </div>
         </div>
 
-        {/* Bottom Panel - Code Output */}
-        <div className="mt-6 bg-neutral-900 rounded-lg border border-neutral-800 p-6">
-          <CodeDisplay
-            title="Generated Code"
-            code={generateCode}
-            language="tsx"
+        {/* Physics Controls - Top Right */}
+        <div className="bg-neutral-900 rounded border border-neutral-800 p-4 overflow-y-auto">
+          <ControlPanel
+            title="Physics Controls"
+            config={config}
+            controls={controlsConfig}
+            onChange={handleConfigChange}
           />
+        </div>
+
+        {/* Generated Code - Bottom (spans both columns) */}
+        <div className="col-span-2 bg-neutral-900 rounded border border-neutral-800 p-4 overflow-hidden">
+          <div className="h-full flex flex-col">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-mono text-neutral-300">Generated Code</h2>
+              <motion.button
+                className="px-2 py-1 text-xs font-mono bg-neutral-800 text-neutral-300 hover:bg-neutral-700 rounded transition-colors"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(generateCode);
+                  } catch (err) {
+                    // Fallback for older browsers
+                    const textArea = document.createElement("textarea");
+                    textArea.value = generateCode;
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(textArea);
+                  }
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Copy
+              </motion.button>
+            </div>
+            
+            <div className="flex-1 bg-neutral-950 border border-neutral-800 rounded overflow-hidden">
+              <div className="px-2 py-1 bg-neutral-900 border-b border-neutral-800">
+                <span className="text-xs font-mono text-neutral-400 uppercase">tsx</span>
+              </div>
+              
+              <div className="p-3 h-full overflow-y-auto">
+                <pre className="text-xs font-mono text-neutral-200 leading-relaxed">
+                  <code>{generateCode}</code>
+                </pre>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
