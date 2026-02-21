@@ -88,6 +88,6 @@ export function RippleButton({
           />
         ))}
       </AnimatePresence>
-    </button>
+    </motion.button>
   );
 }
