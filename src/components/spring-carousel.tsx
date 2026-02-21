@@ -10,6 +10,9 @@ interface SpringCarouselProps {
   className?: string;
 }
 
+// Consistent spring configuration for smooth tracking
+const SPRING_CONFIG = { stiffness: 300, damping: 20, mass: 0.4 };
+
 export function SpringCarousel({
   items,
   itemWidth = 260,
@@ -19,16 +22,28 @@ export function SpringCarousel({
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const x = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 200, damping: 25, mass: 0.5 });
+  const springX = useSpring(x, SPRING_CONFIG);
 
-  const totalWidth = items.length * (itemWidth + gap) - gap;
+  // Calculate proper constraints - ensure we don't overshoot
+  const getConstraints = useCallback(() => {
+    if (!containerRef.current) return { left: 0, right: 0 };
+    
+    const containerWidth = containerRef.current.offsetWidth;
+    const contentWidth = items.length * (itemWidth + gap) - gap;
+    const maxScroll = Math.max(0, contentWidth - containerWidth);
+    
+    return {
+      left: -maxScroll,
+      right: 0,
+    };
+  }, [items.length, itemWidth, gap]);
 
   const snapTo = useCallback(
     (index: number) => {
       const clamped = Math.max(0, Math.min(items.length - 1, index));
       setActiveIndex(clamped);
       const target = -clamped * (itemWidth + gap);
-      animate(x, target, { type: "spring", stiffness: 200, damping: 25, mass: 0.5 });
+      animate(x, target, { type: "spring", ...SPRING_CONFIG });
     },
     [items.length, itemWidth, gap, x]
   );
@@ -39,9 +54,12 @@ export function SpringCarousel({
       const offset = info.offset.x;
       let newIndex = activeIndex;
 
-      if (Math.abs(velocity) > 300) {
+      // More sensitive velocity threshold for better responsiveness
+      if (Math.abs(velocity) > 200) {
         newIndex = velocity > 0 ? activeIndex - 1 : activeIndex + 1;
-      } else if (Math.abs(offset) > itemWidth / 3) {
+      } 
+      // Reduced offset threshold for easier swiping
+      else if (Math.abs(offset) > itemWidth / 4) {
         newIndex = offset > 0 ? activeIndex - 1 : activeIndex + 1;
       }
 
@@ -66,11 +84,9 @@ export function SpringCarousel({
         className="flex cursor-grab active:cursor-grabbing"
         style={{ x: springX, gap }}
         drag="x"
-        dragConstraints={{
-          left: -(totalWidth - itemWidth),
-          right: 0,
-        }}
-        dragElastic={0.1}
+        dragConstraints={getConstraints()}
+        dragElastic={0.3}
+        dragMomentum={false}
         onDragEnd={handleDragEnd}
       >
         {items.map((item, i) => (
