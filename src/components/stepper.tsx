@@ -107,19 +107,38 @@ function ProgressBar({
   current,
   total,
   reduced,
+  direction,
 }: {
   current: number;
   total: number;
   reduced: boolean;
+  direction: number;
 }) {
   const progress = total <= 1 ? (current === total - 1 ? 1 : 0) : current / (total - 1);
+
+  // Gentler transitions - less bounce, especially when going backwards
+  const progressTransition = reduced 
+    ? { duration: 0.1 } 
+    : direction < 0 
+      ? {
+          type: "spring" as const,
+          stiffness: 250,
+          damping: 40,
+          mass: 1.2,
+        }
+      : {
+          type: "spring" as const,
+          stiffness: 280,
+          damping: 35,
+          mass: 1,
+        };
 
   return (
     <div className="h-1 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
       <motion.div
         className="h-full bg-neutral-900 dark:bg-white rounded-full"
         animate={{ width: `${progress * 100}%` }}
-        transition={reduced ? { duration: 0.1 } : springs.smooth}
+        transition={progressTransition}
       />
     </div>
   );
@@ -204,7 +223,7 @@ export function Stepper({
       </div>
 
       {/* Progress bar */}
-      <ProgressBar current={current} total={steps.length} reduced={prefersReducedMotion} />
+      <ProgressBar current={current} total={steps.length} reduced={prefersReducedMotion} direction={direction} />
 
       {/* Content area */}
       <div className="relative overflow-hidden min-h-[120px]">
@@ -220,8 +239,16 @@ export function Stepper({
               prefersReducedMotion
                 ? { duration: 0.1 }
                 : {
-                    x: springs.snappy,
-                    opacity: { duration: 0.2 },
+                    x: {
+                      type: "spring" as const,
+                      stiffness: 300,
+                      damping: 30,
+                      mass: 1.2,
+                    },
+                    opacity: { 
+                      duration: 0.25, 
+                      ease: [0.25, 0.1, 0.25, 1] // Custom eased curve
+                    },
                   }
             }
           >
