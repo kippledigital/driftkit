@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useId } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export interface ExpandableCardProps {
@@ -9,12 +9,16 @@ export interface ExpandableCardProps {
   /** Expanded detail content */
   detail: React.ReactNode;
   className?: string;
+  /** Unique identifier for this card (optional, will generate if not provided) */
+  id?: string;
 }
 
 const SPRING = { type: "spring" as const, stiffness: 400, damping: 30, mass: 0.8 };
 
-export function ExpandableCard({ preview, detail, className = "" }: ExpandableCardProps) {
+export function ExpandableCard({ preview, detail, className = "", id }: ExpandableCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const uniqueId = useId();
+  const cardId = id || uniqueId;
 
   return (
     <>
@@ -31,13 +35,23 @@ export function ExpandableCard({ preview, detail, className = "" }: ExpandableCa
       </AnimatePresence>
       <motion.div
         layout
-        layoutId="expandable-card"
+        layoutId={`expandable-card-${cardId}`}
         onClick={() => setExpanded(!expanded)}
-        className={`cursor-pointer rounded-[8px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden ${
-          expanded ? "fixed inset-4 sm:inset-auto sm:top-[15vh] sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-lg z-50" : ""
-        } ${className}`}
+        className={`cursor-pointer rounded-[8px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden ${className}`}
+        style={
+          expanded
+            ? {
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "calc(100% - 32px)",
+                maxWidth: "32rem",
+                zIndex: 50,
+              }
+            : {}
+        }
         transition={SPRING}
-        style={expanded ? { zIndex: 50 } : undefined}
       >
         <motion.div layout="position" className="p-5">
           {preview}
