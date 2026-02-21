@@ -151,11 +151,11 @@ export default function ButtonPlayground() {
     success: false,
   });
 
-  const handleConfigChange = useCallback((key: keyof PhysicsConfig, value: any) => {
+  const handleConfigChange = useCallback((key: string, value: string | number) => {
     setConfig(prev => {
       if (key === "preset") {
-        // Apply preset configuration
-        return { ...presets[value], preset: value };
+        const presetKey = value as keyof typeof presets;
+        return { ...presets[presetKey], preset: presetKey };
       }
       return { ...prev, [key]: value };
     });
