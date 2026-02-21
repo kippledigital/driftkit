@@ -36,6 +36,8 @@ export function AnimatedTabs({ items, defaultId, className = "" }: AnimatedTabsP
                 layoutId="animated-tab-blob"
                 className="absolute inset-0 rounded-[6px] bg-white dark:bg-neutral-700 shadow-sm"
                 transition={TAB_SPRING}
+                initial={{ filter: "blur(0px)" }}
+                whileLayout={{ filter: "blur(1.5px)" }}
                 style={{ zIndex: -1 }}
               />
             )}
