@@ -8,6 +8,7 @@ import React, {
   type ReactNode,
   type KeyboardEvent,
 } from "react";
+import { createPortal } from "react-dom";
 import {
   motion,
   AnimatePresence,
@@ -74,7 +75,9 @@ export function Dropdown({
   const prefersReducedMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [triggerPos, setTriggerPos] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // WHY click-outside: Standard UX pattern — menus should dismiss when you
@@ -164,7 +167,18 @@ export function Dropdown({
   );
 
   const toggleOpen = useCallback(() => {
-    setOpen((prev) => !prev);
+    setOpen((prev) => {
+      if (!prev && triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect();
+        setTriggerPos({
+          x: rect.left + window.scrollX,
+          y: rect.top + window.scrollY,
+          width: rect.width,
+          height: rect.height,
+        });
+      }
+      return !prev;
+    });
   }, []);
 
   // WHY origin-aware animation: The menu springs from scale 0.95 at the top
@@ -203,6 +217,7 @@ export function Dropdown({
     >
       {/* Trigger */}
       <div
+        ref={triggerRef}
         onClick={toggleOpen}
         role="button"
         aria-haspopup="menu"
@@ -215,13 +230,15 @@ export function Dropdown({
 
       {/* Menu */}
       <AnimatePresence>
-        {open && (
+        {open && typeof window !== "undefined" && createPortal(
           <motion.div
             role="menu"
-            className={`absolute z-50 mt-2 min-w-[180px] rounded-[8px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-lg py-1 ${
-              align === "right" ? "right-0" : "left-0"
-            } ${className}`}
+            className={`fixed z-[9999] min-w-[180px] rounded-[8px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-lg py-1 ${className}`}
             style={{
+              left: align === "right" 
+                ? triggerPos.x + triggerPos.width - 180 // Align right edge
+                : triggerPos.x, // Align left edge
+              top: triggerPos.y + triggerPos.height + 8, // 8px gap
               transformOrigin: align === "right" ? "top right" : "top left",
             }}
             variants={menuVariants}
@@ -290,7 +307,8 @@ export function Dropdown({
                 </motion.button>
               </React.Fragment>
             ))}
-          </motion.div>
+          </motion.div>,
+          document.body
         )}
       </AnimatePresence>
     </div>
