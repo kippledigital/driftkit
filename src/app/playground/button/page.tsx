@@ -199,18 +199,14 @@ export default function ButtonPlayground() {
       <ComponentSwitcher currentComponent="button" />
 
       {/* Main Layout Grid */}
-      <div className="flex-1 grid grid-cols-[1fr_320px] grid-rows-[1fr_150px] gap-3 p-3 min-h-0">
+      <div className="flex-1 grid grid-cols-[1fr_280px] grid-rows-[auto_1fr] gap-3 p-3 min-h-0">
         {/* Live Preview - Top Left */}
-        <div className="bg-neutral-900 rounded border border-neutral-800 p-4 overflow-hidden">
-          <div className="h-full flex flex-col">
-            <h2 className="text-sm font-mono text-neutral-300 mb-3">Live Preview</h2>
-            
-            <div className="flex-1 flex items-center justify-center min-h-0">
-              <div className="grid grid-cols-2 gap-6">
-                {/* Variants */}
-                <div className="space-y-3">
-                  <h3 className="text-xs font-mono text-neutral-400 text-center">Variants</h3>
-                  <div className="space-y-2">
+        <div className="bg-neutral-900 rounded border border-neutral-800 p-4">
+          <h2 className="text-sm font-mono text-neutral-300 mb-4">Live Preview</h2>
+          <div className="flex gap-8 items-start">
+              <div>
+                  <h3 className="text-xs font-mono text-neutral-400 mb-2">Variants</h3>
+                  <div className="flex flex-wrap gap-2">
                     {["default", "secondary", "ghost", "outline"].map((variant) => (
                       <motion.button
                         key={variant}
@@ -243,12 +239,11 @@ export default function ButtonPlayground() {
                       </motion.button>
                     ))}
                   </div>
-                </div>
+              </div>
 
-                {/* States */}
-                <div className="space-y-3">
-                  <h3 className="text-xs font-mono text-neutral-400 text-center">States</h3>
-                  <div className="space-y-2">
+              <div>
+                  <h3 className="text-xs font-mono text-neutral-400 mb-2">States</h3>
+                  <div className="flex flex-wrap gap-2">
                     <motion.button
                       className="px-3 py-1.5 text-sm bg-white text-black font-medium"
                       style={{ borderRadius: `${config.borderRadius}px` }}
@@ -304,9 +299,7 @@ export default function ButtonPlayground() {
                       Disabled
                     </motion.button>
                   </div>
-                </div>
               </div>
-            </div>
           </div>
         </div>
 
@@ -321,9 +314,9 @@ export default function ButtonPlayground() {
         </div>
 
         {/* Generated Code - Bottom (spans both columns) */}
-        <div className="col-span-2 bg-neutral-900 rounded border border-neutral-800 p-4 overflow-hidden">
-          <div className="h-full flex flex-col">
-            <div className="flex items-center justify-between mb-3">
+        <div className="col-span-2 bg-neutral-900 rounded border border-neutral-800 p-4 min-h-0 flex flex-col">
+          <div className="flex-1 flex flex-col min-h-0">
+            <div className="flex items-center justify-between mb-2">
               <h2 className="text-sm font-mono text-neutral-300">Generated Code</h2>
               <motion.button
                 className="px-2 py-1 text-xs font-mono bg-neutral-800 text-neutral-300 hover:bg-neutral-700 rounded transition-colors"
@@ -347,16 +340,10 @@ export default function ButtonPlayground() {
               </motion.button>
             </div>
             
-            <div className="flex-1 bg-neutral-950 border border-neutral-800 rounded overflow-hidden">
-              <div className="px-2 py-1 bg-neutral-900 border-b border-neutral-800">
-                <span className="text-xs font-mono text-neutral-400 uppercase">tsx</span>
-              </div>
-              
-              <div className="p-3 h-full overflow-y-auto">
-                <pre className="text-xs font-mono text-neutral-200 leading-relaxed">
-                  <code>{generateCode}</code>
-                </pre>
-              </div>
+            <div className="flex-1 bg-neutral-950 border border-neutral-800 rounded overflow-auto min-h-0">
+              <pre className="p-3 text-xs font-mono text-neutral-200 leading-relaxed">
+                <code>{generateCode}</code>
+              </pre>
             </div>
           </div>
         </div>
