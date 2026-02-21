@@ -43,15 +43,33 @@ function TagPill({
 }) {
   return (
     <motion.span
+      layoutId={`tag-${tag}`}
       layout={!reduced}
-      initial={reduced ? false : { opacity: 0, scale: 0.7 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.7 }}
+      initial={reduced ? false : { opacity: 0, scale: 0.8, y: -4 }}
+      animate={{ 
+        opacity: 1, 
+        scale: 1, 
+        y: 0,
+        filter: "blur(0px)"
+      }}
+      exit={reduced ? { opacity: 0 } : { 
+        opacity: 0, 
+        scale: 0.8, 
+        y: -4, 
+        filter: "blur(2px)" 
+      }}
       transition={{
-        layout: springs.quick,
+        layout: {
+          type: "spring",
+          stiffness: 400,
+          damping: 30,
+          mass: 0.8,
+        },
         scale: springs.snappy,
-        opacity: { duration: 0.12 },
-        delay: index * 0.03,
+        opacity: { duration: 0.15, ease: "easeOut" },
+        y: springs.snappy,
+        filter: { duration: 0.1 },
+        delay: index * 0.02,
       }}
       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-neutral-100 dark:bg-neutral-800 text-xs font-medium text-neutral-700 dark:text-neutral-300 shrink-0"
     >
@@ -163,7 +181,7 @@ export function MultiSelect({
         <AnimatePresence initial={false} mode="popLayout">
           {tags.map((tag, i) => (
             <TagPill
-              key={tag}
+              key={`tag-${tag}-${i}`}
               tag={tag}
               index={i}
               onRemove={() => removeTag(i)}
