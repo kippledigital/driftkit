@@ -52,16 +52,18 @@ export function RippleButton({
       setRipples((prev) => [...prev, newRipple]);
       setTimeout(() => {
         setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
-      }, 800);
+      }, 1000);
     },
     [disabled, onClick, prefersReduced]
   );
 
   return (
-    <button
+    <motion.button
       onClick={handleClick}
       disabled={disabled}
-      className={`relative overflow-hidden rounded-[8px] bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-5 py-2.5 text-sm font-medium transition-colors hover:bg-neutral-800 dark:hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      className={`relative overflow-hidden rounded-[8px] bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 px-5 py-2.5 text-sm font-medium transition-colors hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      whileTap={!disabled && !prefersReduced ? { scale: 0.95 } : {}}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
     >
       <span className="relative z-10">{children}</span>
       <AnimatePresence>
