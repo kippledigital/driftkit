@@ -3,9 +3,11 @@
 import { motion, useSpring, useTransform } from "framer-motion";
 import { useEffect } from "react";
 
+type ProgressRingSize = "sm" | "md" | "lg" | "xl";
+
 interface ProgressRingProps {
   value: number; // 0-100
-  size?: number;
+  size?: number | ProgressRingSize;
   strokeWidth?: number;
   color?: string;
   trackColor?: string;
@@ -13,16 +15,30 @@ interface ProgressRingProps {
   className?: string;
 }
 
+// Predefined size configurations for consistent layouts
+const sizePresets: Record<ProgressRingSize, { size: number; strokeWidth: number; fontSize: string }> = {
+  sm: { size: 80, strokeWidth: 6, fontSize: "text-sm" },
+  md: { size: 120, strokeWidth: 8, fontSize: "text-lg" },
+  lg: { size: 160, strokeWidth: 10, fontSize: "text-xl" },
+  xl: { size: 200, strokeWidth: 12, fontSize: "text-2xl" },
+};
+
 export function ProgressRing({
   value,
-  size = 120,
-  strokeWidth = 8,
+  size = "md",
+  strokeWidth,
   color = "#6366f1",
   trackColor = "currentColor",
   showLabel = true,
   className = "",
 }: ProgressRingProps) {
-  const radius = (size - strokeWidth) / 2;
+  // Resolve size and strokeWidth from presets or custom values
+  const sizeConfig = typeof size === "string" ? sizePresets[size] : null;
+  const actualSize = sizeConfig?.size ?? (typeof size === "number" ? size : 120);
+  const actualStrokeWidth = strokeWidth ?? sizeConfig?.strokeWidth ?? 8;
+  const fontSize = sizeConfig?.fontSize ?? "text-lg";
+  
+  const radius = (actualSize - actualStrokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
   const spring = useSpring(0, { stiffness: 60, damping: 15 });
@@ -38,23 +54,23 @@ export function ProgressRing({
 
   return (
     <div className={`relative inline-flex items-center justify-center ${className}`}>
-      <svg width={size} height={size} className="-rotate-90">
+      <svg width={actualSize} height={actualSize} className="-rotate-90">
         <circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={actualSize / 2}
+          cy={actualSize / 2}
           r={radius}
           fill="none"
           stroke={trackColor}
-          strokeWidth={strokeWidth}
+          strokeWidth={actualStrokeWidth}
           opacity={0.1}
         />
         <motion.circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={actualSize / 2}
+          cy={actualSize / 2}
           r={radius}
           fill="none"
           stroke={color}
-          strokeWidth={strokeWidth}
+          strokeWidth={actualStrokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
           style={{ strokeDashoffset }}
@@ -62,12 +78,41 @@ export function ProgressRing({
       </svg>
       {showLabel && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <motion.span className="text-lg font-bold tabular-nums">
+          <motion.span className={`font-bold tabular-nums ${fontSize}`}>
             {displayValue}
           </motion.span>
-          <span className="text-xs text-neutral-400">%</span>
+          <span className="text-xs text-neutral-400 ml-0.5">%</span>
         </div>
       )}
     </div>
   );
 }
+
+// Helper component for creating consistent ring layouts
+interface ProgressRingGroupProps {
+  variant?: "uniform" | "graduated" | "mixed";
+  className?: string;
+  children: React.ReactNode;
+}
+
+export function ProgressRingGroup({ 
+  variant = "uniform", 
+  className = "",
+  children 
+}: ProgressRingGroupProps) {
+  const baseClasses = "flex items-center justify-center gap-6";
+  const variantClasses = {
+    uniform: "flex-row", // all same size, horizontal
+    graduated: "flex-row items-end", // different sizes, aligned to bottom
+    mixed: "flex-wrap justify-center", // flexible layout
+  };
+  
+  return (
+    <div className={`${baseClasses} ${variantClasses[variant]} ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+// Export size presets for external use
+export { sizePresets };
