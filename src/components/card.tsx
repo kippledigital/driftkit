@@ -1,104 +1,209 @@
 "use client";
 
-import React, { useState, forwardRef, type ReactNode } from "react";
+import React, { forwardRef, type ReactNode } from "react";
 import {
   motion,
   AnimatePresence,
   useReducedMotion,
   type HTMLMotionProps,
+  type Variants,
 } from "framer-motion";
 
 // =============================================================================
 // SPRING PHYSICS
 // =============================================================================
-// Hover lift uses "smooth" spring — stiffness 300, damping 30, mass 1.
-// WHY: The card should rise gently on hover, like a physical card being picked
-// up. translateY -2px + increased shadow creates a convincing elevation change.
-// Smooth spring gives it weight — not bouncy, just deliberate.
+// Card animations use three distinct spring configurations:
 //
-// Press sink uses "snappy" spring — stiffness 500, damping 30, mass 0.5.
-// WHY: Press feedback should be immediate and tactile. The card sinks back to
-// its resting position (y: 0, shadow flattened) to communicate "you're pressing
-// this." Low mass makes it responsive.
+// "smooth" — stiffness 300, damping 30, mass 1
+//   Used for hover lift. The card should rise gracefully like a physical object
+//   being picked up. Not bouncy, just deliberate and premium feeling.
 //
-// Flip uses "smooth" spring for rotateY.
-// WHY: Card flips should feel weighty and satisfying — like actually turning
-// a card over. The smooth spring's mass (1) gives it inertia, and the damping
-// prevents oscillation that would make text hard to read.
+// "snappy" — stiffness 500, damping 30, mass 0.5  
+//   Used for press/tap feedback. Tactile response needs to be immediate.
+//   Lower mass makes it feel nimble and responsive.
+//
+// "gentle" — stiffness 250, damping 35, mass 1.2
+//   Used for enter animations. Cards should settle into view naturally,
+//   not aggressively. Higher damping prevents overshoot on entry.
 // =============================================================================
 
 const springs = {
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
   smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
+  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
+  gentle: { type: "spring" as const, stiffness: 250, damping: 35, mass: 1.2 },
 };
 
 // =============================================================================
-// SHADOW VALUES
+// SHADOW VALUES & ANIMATION STATES
 // =============================================================================
-// WHY shadow progression: Idle → Hover → Press maps to a physical elevation
-// metaphor. Idle has minimal shadow (resting on surface). Hover lifts it
-// (deeper, softer shadow). Press pushes it back down (flattened shadow).
-const shadowIdle = "0 1px 3px 0 rgba(0,0,0,0.08), 0 1px 2px -1px rgba(0,0,0,0.08)";
-const shadowHover = "0 8px 24px -4px rgba(0,0,0,0.12), 0 2px 6px -2px rgba(0,0,0,0.06)";
-const shadowPress = "0 1px 2px 0 rgba(0,0,0,0.05)";
+// Three-tier shadow system communicates elevation:
+// • Idle: Subtle shadow, card rests on surface
+// • Hover: Elevated shadow with soft spread
+// • Press: Flattened back to surface
+//
+// Scale transforms are micro (0.02) to avoid feeling cartoony.
+// translateY -4px on hover creates convincing elevation illusion.
+
+const shadows = {
+  idle: "0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)",
+  hover: "0 10px 25px -3px rgba(0,0,0,0.15), 0 4px 6px -4px rgba(0,0,0,0.1)",
+  press: "0 1px 2px 0 rgba(0,0,0,0.05), 0 1px 1px -1px rgba(0,0,0,0.04)",
+};
+
+// Enter animation variants for individual cards and staggered grids
+const enterVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+    scale: 0.95,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: springs.gentle,
+  },
+};
 
 // =============================================================================
 // TYPES
 // =============================================================================
 
-export type CardVariant = "interactive" | "static";
+export type CardVariant = "default" | "outlined" | "elevated";
+export type CardSize = "sm" | "md" | "lg";
 
 export interface CardProps extends Omit<HTMLMotionProps<"div">, "children"> {
   variant?: CardVariant;
+  size?: CardSize;
+  children: ReactNode;
+  className?: string;
+  /** Disable hover and press interactions */
+  static?: boolean;
+  /** Enable enter animation (use with CardGrid for stagger) */
+  animated?: boolean;
+  /** Animation delay for staggered entrances */
+  delay?: number;
+}
+
+export interface CardImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+}
+
+export interface CardContentProps {
+  title?: string;
+  description?: string;
+  children?: ReactNode;
+  className?: string;
+}
+
+export interface CardActionsProps {
   children: ReactNode;
   className?: string;
 }
 
-export interface FlipCardProps {
-  front: ReactNode;
-  back: ReactNode;
-  /** Controlled flip state. If omitted, click toggles. */
-  flipped?: boolean;
-  onFlip?: (flipped: boolean) => void;
+export interface CardGridProps {
+  children: ReactNode;
+  columns?: 1 | 2 | 3 | 4;
+  gap?: "sm" | "md" | "lg";
+  staggerDelay?: number;
   className?: string;
 }
+
+// =============================================================================
+// STYLES
+// =============================================================================
+
+const baseClasses =
+  "relative overflow-hidden rounded-[8px] select-none";
+
+const variantClasses: Record<CardVariant, string> = {
+  default: "bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800",
+  outlined: "bg-transparent border-2 border-neutral-300 dark:border-neutral-700",
+  elevated: "bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800",
+};
+
+const sizeClasses: Record<CardSize, string> = {
+  sm: "text-sm",
+  md: "text-base",
+  lg: "text-lg",
+};
 
 // =============================================================================
 // CARD COMPONENT
 // =============================================================================
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ variant = "static", children, className = "", ...props }, ref) => {
+  (
+    {
+      variant = "default",
+      size = "md",
+      children,
+      className = "",
+      static: isStatic = false,
+      animated = false,
+      delay = 0,
+      ...props
+    },
+    ref
+  ) => {
     const prefersReducedMotion = useReducedMotion();
-    const isInteractive = variant === "interactive";
 
-    // WHY conditional animations: Static cards shouldn't have hover/press —
-    // they're for layout/display only. Interactive cards get the full physics
-    // treatment. This keeps the API explicit about intent.
-    const hoverAnimation =
-      isInteractive && !prefersReducedMotion
-        ? { y: -2, boxShadow: shadowHover }
-        : {};
+    // Determine if this card should have interactions
+    const isInteractive = !isStatic;
 
-    const tapAnimation =
-      isInteractive && !prefersReducedMotion
-        ? { y: 0, boxShadow: shadowPress }
-        : {};
+    // Base shadow varies by variant
+    const getBaseShadow = () => {
+      if (variant === "elevated") return shadows.hover;
+      if (variant === "outlined") return "none";
+      return shadows.idle;
+    };
+
+    // Hover animation - combines scale, translateY, and shadow
+    const hoverAnimation = !prefersReducedMotion && isInteractive
+      ? {
+          scale: 1.02,
+          y: -4,
+          boxShadow: variant === "outlined" ? "none" : shadows.hover,
+        }
+      : {};
+
+    // Press animation - subtle sink back down
+    const tapAnimation = !prefersReducedMotion && isInteractive
+      ? {
+          scale: 0.98,
+          y: 0,
+          boxShadow: variant === "outlined" ? "none" : shadows.press,
+        }
+      : {};
 
     return (
       <motion.div
         ref={ref}
-        className={`rounded-[8px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 overflow-hidden ${
+        className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${
           isInteractive ? "cursor-pointer" : ""
         } ${className}`}
-        initial={false}
-        animate={{ boxShadow: shadowIdle }}
+        
+        // Initial state
+        initial={animated ? "hidden" : false}
+        animate={animated ? "visible" : { boxShadow: getBaseShadow() }}
+        variants={animated ? enterVariants : undefined}
+        
+        // Custom delay for staggered entrance
+        transition={animated ? { ...springs.gentle, delay } : undefined}
+        
+        // Interaction states
         whileHover={hoverAnimation}
         whileTap={isInteractive ? tapAnimation : undefined}
-        transition={{
-          ...springs.smooth,
-          boxShadow: { type: "tween", duration: 0.2, ease: "easeOut" },
+        
+        // Smooth transitions between states
+        style={{
+          transition: !prefersReducedMotion 
+            ? "box-shadow 0.2s ease-out" 
+            : undefined,
         }}
+        
         {...props}
       >
         {children}
@@ -112,70 +217,113 @@ Card.displayName = "Card";
 // =============================================================================
 // SUB-COMPONENTS
 // =============================================================================
-// WHY composable sub-components: Card is a layout primitive. Users need to
-// structure content (header, body, footer) without fighting the component.
-// Each sub-component handles its own padding/spacing so the parent Card
-// stays clean — just border + radius + shadow.
 
-export function CardHeader({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`px-6 pt-6 pb-2 ${className}`}>
-      {children}
-    </div>
-  );
-}
+export const CardImage = ({ src, alt, className = "" }: CardImageProps) => (
+  <div className={`relative w-full aspect-[16/10] overflow-hidden ${className}`}>
+    <img
+      src={src}
+      alt={alt}
+      className="w-full h-full object-cover"
+    />
+  </div>
+);
 
-export function CardContent({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`px-6 py-2 ${className}`}>
-      {children}
-    </div>
-  );
-}
+export const CardContent = ({ title, description, children, className = "" }: CardContentProps) => (
+  <div className={`p-6 ${className}`}>
+    {title && (
+      <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-2 leading-tight">
+        {title}
+      </h3>
+    )}
+    {description && (
+      <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4">
+        {description}
+      </p>
+    )}
+    {children}
+  </div>
+);
 
-export function CardFooter({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`px-6 pt-2 pb-6 ${className}`}>
-      {children}
-    </div>
-  );
-}
+export const CardActions = ({ children, className = "" }: CardActionsProps) => (
+  <div className={`px-6 pb-6 flex items-center gap-3 ${className}`}>
+    {children}
+  </div>
+);
 
 // =============================================================================
-// FLIP CARD
+// CARD GRID - Staggered entrance animations
 // =============================================================================
-// WHY separate FlipCard: The flip animation requires a fundamentally different
-// DOM structure (two faces with backface-visibility) and interaction model.
-// Composing it into the base Card would bloat the simple case. Instead, FlipCard
-// is a sibling component that can use Card internally for each face.
 
+export const CardGrid = ({ 
+  children, 
+  columns = 2, 
+  gap = "md",
+  staggerDelay = 0.1,
+  className = "" 
+}: CardGridProps) => {
+  const gridCols = {
+    1: "grid-cols-1",
+    2: "grid-cols-1 sm:grid-cols-2",
+    3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+    4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+  };
+
+  const gridGap = {
+    sm: "gap-3",
+    md: "gap-6",
+    lg: "gap-8",
+  };
+
+  // Clone children with staggered delays
+  const staggeredChildren = React.Children.map(children, (child, index) => {
+    if (React.isValidElement(child) && child.type === Card) {
+      return React.cloneElement(child as React.ReactElement<CardProps>, {
+        animated: true,
+        delay: index * staggerDelay,
+      });
+    }
+    return child;
+  });
+
+  return (
+    <div className={`grid ${gridCols[columns]} ${gridGap[gap]} ${className}`}>
+      {staggeredChildren}
+    </div>
+  );
+};
+
+// =============================================================================
+// LEGACY SUPPORT - Keep existing components for backward compatibility
+// =============================================================================
+
+export const CardHeader = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
+  <div className={`px-6 pt-6 pb-2 ${className}`}>
+    {children}
+  </div>
+);
+
+export const CardFooter = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
+  <div className={`px-6 pt-2 pb-6 ${className}`}>
+    {children}
+  </div>
+);
+
+// FlipCard remains unchanged for now
 export function FlipCard({
   front,
   back,
   flipped: controlledFlipped,
   onFlip,
   className = "",
-}: FlipCardProps) {
+}: {
+  front: ReactNode;
+  back: ReactNode;
+  flipped?: boolean;
+  onFlip?: (flipped: boolean) => void;
+  className?: string;
+}) {
   const prefersReducedMotion = useReducedMotion();
-  const [internalFlipped, setInternalFlipped] = useState(false);
+  const [internalFlipped, setInternalFlipped] = React.useState(false);
   const isFlipped = controlledFlipped ?? internalFlipped;
 
   const handleClick = () => {
@@ -196,7 +344,6 @@ export function FlipCard({
         transition={prefersReducedMotion ? { duration: 0 } : springs.smooth}
         style={{ transformStyle: "preserve-3d" }}
       >
-        {/* Front face */}
         <div
           className="rounded-[8px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 overflow-hidden"
           style={{ backfaceVisibility: "hidden" }}
@@ -204,7 +351,6 @@ export function FlipCard({
           {front}
         </div>
 
-        {/* Back face — rotated 180° so it's hidden when front is showing */}
         <div
           className="absolute inset-0 rounded-[8px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 overflow-hidden"
           style={{
