@@ -28,12 +28,12 @@ interface ScrollRevealProps {
 }
 
 const hiddenVariants: Record<RevealVariant, Record<string, number | string>> = {
-  "fade-up": { opacity: 0, y: 40 },
-  "fade-down": { opacity: 0, y: -40 },
-  "fade-left": { opacity: 0, x: -40 },
-  "fade-right": { opacity: 0, x: 40 },
-  scale: { opacity: 0, scale: 0.85 },
-  blur: { opacity: 0, filter: "blur(10px)" },
+  "fade-up": { opacity: 0, y: 60, filter: "blur(4px)" },
+  "fade-down": { opacity: 0, y: -60, filter: "blur(4px)" },
+  "fade-left": { opacity: 0, x: -60, filter: "blur(4px)" },
+  "fade-right": { opacity: 0, x: 60, filter: "blur(4px)" },
+  scale: { opacity: 0, scale: 0.7, filter: "blur(6px)" },
+  blur: { opacity: 0, filter: "blur(20px)" },
 };
 
 const visibleVariant = {
