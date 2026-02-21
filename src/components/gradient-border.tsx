@@ -41,14 +41,15 @@ export function GradientBorder({
         style={{
           background: `conic-gradient(from 0deg, ${gradientStops})`,
         }}
-        animate={prefersReduced ? undefined : { rotate: 360 }}
+        animate={prefersReduced ? {} : { rotate: 360 }}
         transition={
           prefersReduced
-            ? undefined
+            ? {}
             : {
                 duration,
                 repeat: Infinity,
                 ease: "linear",
+                repeatType: "loop"
               }
         }
         aria-hidden
@@ -64,14 +65,15 @@ export function GradientBorder({
             height: "200%",
             background: `conic-gradient(from 0deg, ${gradientStops})`,
           }}
-          animate={prefersReduced ? undefined : { rotate: 360 }}
+          animate={prefersReduced ? {} : { rotate: 360 }}
           transition={
             prefersReduced
-              ? undefined
+              ? {}
               : {
                   duration,
                   repeat: Infinity,
                   ease: "linear",
+                  repeatType: "loop"
                 }
           }
           aria-hidden

@@ -213,7 +213,7 @@ function TableOfContents() {
 
 function MagneticButtonDemo() {
   return (
-    <div className="flex flex-wrap gap-4 items-center">
+    <div className="flex flex-wrap gap-8 items-center">
       <MagneticButton><Button>Hover near me</Button></MagneticButton>
       <MagneticButton intensity={0.5}><Button variant="secondary">Subtle pull</Button></MagneticButton>
       <MagneticButton intensity={1.5}><Button variant="ghost">Strong pull</Button></MagneticButton>
@@ -372,14 +372,34 @@ function ScrollRevealDemo() {
 }
 
 function MarqueeDemo() {
-  const items = ["React", "Framer Motion", "Tailwind", "Spring Physics", "Copy & Paste", "Zero Dependencies", "Motion-First"];
+  const items = [
+    { text: "React", color: "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200" },
+    { text: "Framer Motion", color: "bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200" },
+    { text: "Tailwind", color: "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-800 dark:text-cyan-200" },
+    { text: "Spring Physics", color: "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200" },
+    { text: "Copy & Paste", color: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200" },
+    { text: "Zero Dependencies", color: "bg-rose-100 dark:bg-rose-900/30 text-rose-800 dark:text-rose-200" },
+    { text: "Motion-First", color: "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200" },
+  ];
   return (
     <div className="flex flex-col gap-4">
       <Marquee speed={30}>
-        {items.map((item) => (<MarqueeItem key={item}><span className="px-4 py-2 rounded-full border border-neutral-300 dark:border-neutral-800 text-sm whitespace-nowrap">{item}</span></MarqueeItem>))}
+        {items.map((item) => (
+          <MarqueeItem key={item.text}>
+            <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap shadow-sm border border-white/20 ${item.color}`}>
+              {item.text}
+            </span>
+          </MarqueeItem>
+        ))}
       </Marquee>
       <Marquee speed={20} direction="right">
-        {items.map((item) => (<MarqueeItem key={item}><span className="px-4 py-2 rounded-full bg-neutral-300 dark:bg-neutral-800 text-sm whitespace-nowrap">{item}</span></MarqueeItem>))}
+        {items.map((item) => (
+          <MarqueeItem key={item.text}>
+            <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shadow-sm ${item.color.replace('100', '200').replace('900/30', '800/40')}`}>
+              {item.text}
+            </span>
+          </MarqueeItem>
+        ))}
       </Marquee>
     </div>
   );

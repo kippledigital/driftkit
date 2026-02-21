@@ -40,17 +40,17 @@ const containerVariants: Variants = {
 };
 
 const itemVariantsSlideUp: Variants = {
-  hidden: { opacity: 0, y: 16, scale: 0.97 },
+  hidden: { opacity: 0, y: 16, filter: "blur(4px)" },
   show: {
     opacity: 1,
     y: 0,
-    scale: 1,
+    filter: "blur(0px)",
     transition: { type: "spring", stiffness: 400, damping: 25, mass: 0.8 },
   },
   exit: {
     opacity: 0,
     y: -8,
-    scale: 0.97,
+    filter: "blur(4px)",
     transition: { type: "spring", stiffness: 500, damping: 30, mass: 0.5 },
   },
 };
@@ -70,15 +70,17 @@ const itemVariantsFade: Variants = {
 };
 
 const itemVariantsSlideLeft: Variants = {
-  hidden: { opacity: 0, x: -20 },
+  hidden: { opacity: 0, x: -20, filter: "blur(4px)" },
   show: {
     opacity: 1,
     x: 0,
+    filter: "blur(0px)",
     transition: { type: "spring", stiffness: 400, damping: 25 },
   },
   exit: {
     opacity: 0,
     x: 20,
+    filter: "blur(4px)",
     transition: { type: "spring", stiffness: 500, damping: 30 },
   },
 };

@@ -41,7 +41,7 @@ export interface MagneticDockProps {
   items: DockItem[];
   /** Max scale for the hovered item. Default 1.5 */
   maxScale?: number;
-  /** Distance in px that affects scaling. Default 140 */
+  /** Distance in px that affects scaling. Default 80 */
   magneticRange?: number;
   className?: string;
 }
@@ -81,17 +81,13 @@ function DockIcon({
 
   const scale = useSpring(rawScale, DOCK_SPRING);
 
-  // Scale the width too for layout shift
-  const width = useTransform(scale, (s: number) => s * itemWidth);
-  const springWidth = useSpring(width, DOCK_SPRING);
-
   return (
     <motion.button
       ref={ref}
       onClick={item.onClick}
-      className="group relative flex flex-col items-center justify-end cursor-pointer
+      className="group relative flex flex-col items-center justify-center cursor-pointer
         focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-[8px]"
-      style={{ width: springWidth, height: springWidth }}
+      style={{ width: itemWidth, height: itemWidth }}
       whileTap={prefersReducedMotion ? undefined : { scale: maxScale * 0.85 }}
       transition={DOCK_SPRING}
       aria-label={item.label}
@@ -122,7 +118,7 @@ function DockIcon({
 export function MagneticDock({
   items,
   maxScale = 1.5,
-  magneticRange = 140,
+  magneticRange = 80,
   className = "",
 }: MagneticDockProps) {
   const mouseX = useMotionValue(-999);
@@ -141,7 +137,7 @@ export function MagneticDock({
 
   return (
     <motion.div
-      className={`inline-flex items-end gap-1 px-3 py-2 rounded-2xl
+      className={`inline-flex items-center gap-2 px-3 py-2 rounded-2xl
         bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md
         border border-neutral-200 dark:border-neutral-800
         shadow-lg ${className}`}
