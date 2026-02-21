@@ -35,10 +35,17 @@ export function AnimatedTabs({ items, defaultId, className = "" }: AnimatedTabsP
               <motion.div
                 layoutId="animated-tab-blob"
                 className="absolute inset-0 rounded-[6px] bg-white dark:bg-neutral-700 shadow-sm"
-                transition={TAB_SPRING}
-                initial={{ filter: "blur(0px)" }}
-                whileLayout={{ filter: "blur(1.5px)" }}
-                style={{ zIndex: -1 }}
+                transition={{
+                  ...TAB_SPRING,
+                  filter: { duration: 0.2, ease: "easeInOut" }
+                }}
+                animate={{ 
+                  filter: "blur(0px)"
+                }}
+                style={{ 
+                  zIndex: -1,
+                  filter: "blur(1.5px)"
+                }}
               />
             )}
             {item.label}

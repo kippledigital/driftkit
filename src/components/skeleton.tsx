@@ -34,7 +34,7 @@ export interface DriftSkeletonProps {
 
 // Shimmer gradient — CSS animation for ambient effect
 const shimmerClass =
-  "before:absolute before:inset-0 before:translate-x-[-100%] before:animate-[shimmer_1.5s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent";
+  "before:absolute before:inset-0 before:translate-x-[-100%] before:animate-[shimmer_1.5s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/50 dark:before:via-white/30 before:to-transparent";
 
 const pulseClass = "animate-pulse";
 
@@ -53,7 +53,7 @@ function SkeletonBase({
     <div
       className={`
         relative overflow-hidden
-        bg-neutral-200 dark:bg-neutral-800
+        bg-neutral-300/60 dark:bg-neutral-700/80
         ${rounded}
         ${pulse ? pulseClass : shimmerClass}
         ${className}

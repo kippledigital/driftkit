@@ -42,9 +42,9 @@ export interface DriftInputProps
 // =============================================================================
 
 const sizeClasses: Record<InputSize, { input: string; label: string }> = {
-  sm: { input: "text-sm px-3 py-1.5 pt-4", label: "text-xs left-3" },
-  md: { input: "text-sm px-4 py-2 pt-5", label: "text-xs left-4" },
-  lg: { input: "text-base px-4 py-2.5 pt-6", label: "text-sm left-4" },
+  sm: { input: "text-sm px-3 pt-4 pb-1.5", label: "text-xs left-3" },
+  md: { input: "text-sm px-4 pt-5 pb-2", label: "text-xs left-4" },
+  lg: { input: "text-base px-4 pt-6 pb-2.5", label: "text-sm left-4" },
 };
 
 const borderColors: Record<InputState, string> = {
@@ -153,7 +153,8 @@ export const Input = forwardRef<HTMLInputElement, DriftInputProps>(
             className={`
               relative w-full rounded-[8px] border bg-white dark:bg-neutral-900
               text-neutral-900 dark:text-neutral-100
-              outline-none
+              outline-none leading-tight
+              placeholder:text-neutral-400 dark:placeholder:text-neutral-500
               ${sizeClasses[size].input}
               ${borderColors[state]}
               ${props.disabled ? "opacity-60 cursor-default" : ""}

@@ -3,12 +3,13 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
+// All paths now have exactly 10 points with same command structure for smooth morphing
 const shapes = {
-  circle: "M 50,10 C 71.5,10 90,28.5 90,50 C 90,71.5 71.5,90 50,90 C 28.5,90 10,71.5 10,50 C 10,28.5 28.5,10 50,10 Z",
-  square: "M 15,15 C 15,15 85,15 85,15 C 85,15 85,85 85,85 C 85,85 15,85 15,85 C 15,85 15,15 15,15 Z",
-  triangle: "M 50,10 C 50,10 90,85 90,85 C 90,85 10,85 10,85 C 10,85 50,10 50,10 Z",
-  star: "M 50,5 C 50,5 61,35 61,35 C 61,35 95,35 95,35 C 95,35 68,55 68,55 C 68,55 79,90 79,90 C 79,90 50,68 50,68 C 50,68 21,90 21,90 C 21,90 32,55 32,55 C 32,55 5,35 5,35 C 5,35 39,35 39,35 Z",
-  diamond: "M 50,5 C 50,5 90,50 90,50 C 90,50 50,95 50,95 C 50,95 10,50 10,50 C 10,50 50,5 50,5 Z",
+  circle: "M 50,15 L 67,19 L 85,35 L 89,50 L 85,65 L 67,81 L 50,85 L 33,81 L 15,65 L 11,50 Z",
+  square: "M 20,20 L 50,20 L 80,20 L 80,35 L 80,50 L 80,65 L 80,80 L 50,80 L 20,80 L 20,50 Z",
+  triangle: "M 50,15 L 58,25 L 66,35 L 74,55 L 82,75 L 68,80 L 50,82 L 32,80 L 18,75 L 26,45 Z",
+  star: "M 50,10 L 55,30 L 75,30 L 61,45 L 67,65 L 50,55 L 33,65 L 39,45 L 25,30 L 45,30 Z",
+  diamond: "M 50,15 L 65,25 L 75,40 L 80,50 L 75,60 L 65,75 L 50,85 L 35,75 L 25,60 L 20,50 Z",
 };
 
 type ShapeName = keyof typeof shapes;
@@ -37,22 +38,26 @@ export function MorphingShape({
     <div className={`flex flex-col items-center gap-4 ${className}`}>
       <button
         onClick={next}
-        className="cursor-pointer bg-transparent border-none p-0"
+        className="cursor-pointer bg-transparent border-none p-0 hover:scale-105 transition-transform"
         aria-label="Morph to next shape"
       >
         <svg width={size} height={size} viewBox="0 0 100 100">
-          <AnimatePresence mode="wait">
-            <motion.path
-              key={currentShape}
-              d={shapes[currentShape]}
-              fill={color}
-              stroke={strokeColor}
-              strokeWidth={1.5}
-              initial={{ d: shapes[shapeNames[(shapeIndex - 1 + shapeNames.length) % shapeNames.length]] }}
-              animate={{ d: shapes[currentShape] }}
-              transition={{ type: "spring", stiffness: 80, damping: 12, mass: 0.8 }}
-            />
-          </AnimatePresence>
+          <motion.path
+            d={shapes[currentShape]}
+            fill={color}
+            stroke={strokeColor}
+            strokeWidth={2}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            animate={{ d: shapes[currentShape] }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 100, 
+              damping: 15, 
+              mass: 0.6,
+              duration: 0.8 
+            }}
+          />
         </svg>
       </button>
       <span className="text-xs text-neutral-400 capitalize">{currentShape} — click to morph</span>

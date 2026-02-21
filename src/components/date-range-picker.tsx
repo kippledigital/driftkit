@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 // =============================================================================
@@ -183,7 +184,9 @@ export function DateRangePicker({
   const [open, setOpen] = useState(false);
   const [selecting, setSelecting] = useState<"start" | "end" | null>(null);
   const [hoverDate, setHoverDate] = useState<Date | null>(null);
+  const [dropdownPos, setDropdownPos] = useState<{x: number; y: number; width: number}>({ x: 0, y: 0, width: 0 });
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const today = useMemo(() => new Date(), []);
   const [viewYear, setViewYear] = useState(range.start?.getFullYear() ?? today.getFullYear());
@@ -238,6 +241,14 @@ export function DateRangePicker({
   }, [open]);
 
   const handleOpen = useCallback(() => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setDropdownPos({
+        x: rect.left + window.scrollX,
+        y: rect.bottom + window.scrollY + 8,
+        width: rect.width,
+      });
+    }
     setOpen(true);
     setSelecting("start");
     if (range.start) {
@@ -250,6 +261,7 @@ export function DateRangePicker({
     <div ref={ref} className={`relative inline-block ${className}`} style={{ fontFamily: "Satoshi, sans-serif" }}>
       {/* Trigger */}
       <motion.button
+        ref={triggerRef}
         type="button"
         onClick={handleOpen}
         className="flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm cursor-pointer hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors min-w-[280px]"
@@ -281,13 +293,18 @@ export function DateRangePicker({
 
       {/* Calendar dropdown */}
       <AnimatePresence>
-        {open && (
+        {open && typeof window !== "undefined" && createPortal(
           <motion.div
             initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.96 }}
             transition={springs.snappy}
-            className="absolute top-full left-0 mt-2 z-50 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shadow-xl"
+            className="fixed z-[9999] rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shadow-xl"
+            style={{
+              left: dropdownPos.x,
+              top: dropdownPos.y,
+              minWidth: Math.max(dropdownPos.width, 280),
+            }}
           >
             <Calendar
               year={viewYear}
@@ -305,7 +322,8 @@ export function DateRangePicker({
                 {selecting === "start" ? "Select start date" : "Select end date"}
               </div>
             )}
-          </motion.div>
+          </motion.div>,
+          document.body
         )}
       </AnimatePresence>
     </div>

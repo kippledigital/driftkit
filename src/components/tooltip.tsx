@@ -7,6 +7,7 @@ import React, {
   useEffect,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 import {
   motion,
   AnimatePresence,
@@ -81,40 +82,39 @@ function getFlippedPosition(
   }
 }
 
-// WHY inline styles for positioning: Tailwind can't do dynamic pixel values.
-// We calculate exact positions from the trigger's bounding rect so the tooltip
-// is always precisely aligned regardless of layout context.
-function getPositionStyles(
-  pos: TooltipPosition
+// Position calculation for fixed positioning in portal
+function getFixedPositionStyles(
+  pos: TooltipPosition,
+  triggerPos: { x: number; y: number; width: number; height: number }
 ): React.CSSProperties {
   switch (pos) {
     case "top":
       return {
-        bottom: "100%",
-        left: "50%",
-        transform: "translateX(-50%)",
-        marginBottom: TOOLTIP_OFFSET,
+        position: "fixed",
+        left: triggerPos.x + triggerPos.width / 2,
+        top: triggerPos.y - TOOLTIP_OFFSET,
+        transform: "translate(-50%, -100%)",
       };
     case "bottom":
       return {
-        top: "100%",
-        left: "50%",
+        position: "fixed",
+        left: triggerPos.x + triggerPos.width / 2,
+        top: triggerPos.y + triggerPos.height + TOOLTIP_OFFSET,
         transform: "translateX(-50%)",
-        marginTop: TOOLTIP_OFFSET,
       };
     case "left":
       return {
-        right: "100%",
-        top: "50%",
-        transform: "translateY(-50%)",
-        marginRight: TOOLTIP_OFFSET,
+        position: "fixed",
+        left: triggerPos.x - TOOLTIP_OFFSET,
+        top: triggerPos.y + triggerPos.height / 2,
+        transform: "translate(-100%, -50%)",
       };
     case "right":
       return {
-        left: "100%",
-        top: "50%",
+        position: "fixed",
+        left: triggerPos.x + triggerPos.width + TOOLTIP_OFFSET,
+        top: triggerPos.y + triggerPos.height / 2,
         transform: "translateY(-50%)",
-        marginLeft: TOOLTIP_OFFSET,
       };
   }
 }
@@ -156,6 +156,7 @@ export function Tooltip({
   const [visible, setVisible] = useState(false);
   const [resolvedPos, setResolvedPos] = useState(position);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [triggerPos, setTriggerPos] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const triggerRef = useRef<HTMLSpanElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -168,6 +169,12 @@ export function Tooltip({
       if (triggerRef.current) {
         const rect = triggerRef.current.getBoundingClientRect();
         setResolvedPos(getFlippedPosition(position, rect));
+        setTriggerPos({
+          x: rect.left + window.scrollX,
+          y: rect.top + window.scrollY,
+          width: rect.width,
+          height: rect.height,
+        });
       }
       setVisible(true);
     }, delay);
@@ -181,7 +188,11 @@ export function Tooltip({
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
       if (followCursor) {
-        setCursorPos({ x: e.clientX, y: e.clientY });
+        // Use page coordinates for correct positioning with scrolling
+        setCursorPos({ 
+          x: e.pageX,
+          y: e.pageY
+        });
       }
     },
     [followCursor]
@@ -224,26 +235,28 @@ export function Tooltip({
         left: cursorPos.x + 12,
         top: cursorPos.y - 8,
         transform: "none",
-        margin: 0,
       }
-    : {};
+    : getFixedPositionStyles(resolvedPos, triggerPos);
 
   return (
-    <span
-      ref={triggerRef}
-      className="relative inline-flex"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onMouseMove={handleMouseMove}
-    >
-      {children}
+    <>
+      <span
+        ref={triggerRef}
+        className="relative inline-flex"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onMouseMove={handleMouseMove}
+      >
+        {children}
+      </span>
+      
+      {/* Portal the tooltip to avoid parent container clipping */}
       <AnimatePresence>
-        {visible && (
+        {visible && typeof window !== "undefined" && createPortal(
           <motion.div
             role="tooltip"
-            className={`absolute z-50 px-3 py-1.5 text-xs font-medium rounded-[8px] bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 whitespace-nowrap pointer-events-none ${className}`}
+            className={`z-[9999] px-3 py-1.5 text-xs font-medium rounded-[8px] bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 whitespace-nowrap pointer-events-none ${className}`}
             style={{
-              ...(!followCursor ? getPositionStyles(resolvedPos) : {}),
               ...followCursorStyle,
               transformOrigin: originMap[resolvedPos],
             }}
@@ -266,10 +279,11 @@ export function Tooltip({
                 aria-hidden
               />
             )}
-          </motion.div>
+          </motion.div>,
+          document.body
         )}
       </AnimatePresence>
-    </span>
+    </>
   );
 }
 
