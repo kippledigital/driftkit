@@ -260,7 +260,10 @@ export function Accordion({
               whileTap={
                 item.disabled || prefersReducedMotion
                   ? undefined
-                  : { scale: 0.985 }
+                  : { 
+                      scale: 0.985,
+                      transformOrigin: "left center"
+                    }
               }
               transition={springs.quick}
             >
