@@ -46,9 +46,9 @@ function ComponentPreview({ componentName, example }: { componentName: string; e
 
 function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
   return (
-    <div className="relative">
-      <pre className="bg-neutral-900 dark:bg-neutral-950 text-neutral-100 p-4 rounded-lg overflow-x-auto text-sm">
-        <code>{code}</code>
+    <div className="relative -mx-4 md:mx-0">
+      <pre className="bg-neutral-900 dark:bg-neutral-950 text-neutral-100 p-4 md:rounded-lg overflow-x-auto text-sm">
+        <code className="whitespace-pre">{code}</code>
       </pre>
       <button
         onClick={() => navigator.clipboard.writeText(code)}
@@ -87,7 +87,7 @@ export default function ComponentPage({ params }: PageProps) {
   const info = componentInfo || fallbackComponent;
 
   return (
-    <div className="px-8 py-12">
+    <div className="px-4 md:px-8 py-6 md:py-12">
       <div className="max-w-4xl">
         {/* Header */}
         <div className="mb-8">
@@ -99,17 +99,19 @@ export default function ComponentPage({ params }: PageProps) {
             <span className="text-neutral-900 dark:text-white">{info.displayName}</span>
           </div>
           
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h1 className="text-4xl font-medium text-neutral-900 dark:text-white mb-2">
-                {info.displayName}
-              </h1>
-              <p className="text-lg text-neutral-600 dark:text-neutral-400">
-                {info.description}
-              </p>
-            </div>
-            <div className="text-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 px-2 py-1 rounded">
-              {info.category}
+          <div className="mb-4">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1 min-w-0 mr-4">
+                <h1 className="text-3xl md:text-4xl font-medium text-neutral-900 dark:text-white mb-2 break-words">
+                  {info.displayName}
+                </h1>
+                <p className="text-base md:text-lg text-neutral-600 dark:text-neutral-400">
+                  {info.description}
+                </p>
+              </div>
+              <div className="text-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 px-2 py-1 rounded shrink-0">
+                {info.category}
+              </div>
             </div>
           </div>
         </div>
@@ -156,8 +158,8 @@ export default function ComponentPage({ params }: PageProps) {
         {info.props.length > 0 && (
           <section className="mb-12">
             <h2 className="text-2xl font-medium text-neutral-900 dark:text-white mb-6">Props</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
+            <div className="overflow-x-auto -mx-4 md:mx-0">
+              <table className="w-full border-collapse min-w-[600px]">
                 <thead>
                   <tr className="border-b border-neutral-200 dark:border-neutral-800">
                     <th className="text-left py-3 pr-6 font-medium text-neutral-900 dark:text-white">Name</th>

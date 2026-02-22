@@ -108,7 +108,7 @@ export default function DocsPage() {
   );
 
   return (
-    <div className="px-8 py-12">
+    <div className="px-4 md:px-8 py-6 md:py-12">
       <div className="max-w-4xl">
         <div className="mb-12">
           <h1 className="text-4xl font-medium text-neutral-900 dark:text-white mb-4">
@@ -134,7 +134,7 @@ export default function DocsPage() {
                 </p>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {components.map(({ name, description }) => (
                   <Link
                     key={name}
