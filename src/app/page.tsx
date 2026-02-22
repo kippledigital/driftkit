@@ -55,7 +55,7 @@ import { Badge, NotificationBadge } from "@/components/badge";
 const variants: ButtonVariant[] = ["default", "secondary", "ghost", "destructive"];
 const sizes: ButtonSize[] = ["sm", "md", "lg"];
 
-const COMPONENT_COUNT = 48;
+const COMPONENT_COUNT = 52;
 
 // =============================================================================
 // SECTION DEFINITIONS (for TOC)
@@ -105,6 +105,10 @@ const sections: SectionDef[] = [
   { id: "popover", title: "Popover", group: "showpiece" },
   { id: "breadcrumbs", title: "Breadcrumbs", group: "showpiece" },
   { id: "badge", title: "Badge", group: "showpiece" },
+  { id: "code-block", title: "Code Block", group: "showpiece" },
+  { id: "code-display", title: "Code Display", group: "showpiece" },
+  { id: "component-switcher", title: "Component Switcher", group: "showpiece" },
+  { id: "control-panel", title: "Control Panel", group: "showpiece" },
   // Standard
   { id: "nav-menu", title: "Navigation Menu", group: "standard" },
   { id: "button", title: "Button", group: "standard" },
