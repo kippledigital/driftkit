@@ -1,0 +1,34 @@
+# Source files
+src/
+pages/
+public/
+styles/
+
+# Build output (keep dist/)
+.next/
+out/
+
+# Development
+node_modules/
+.env*
+.vercel/
+
+# Config files
+next.config.ts
+tsconfig.json
+tsup.config.ts
+tailwind.config.*
+postcss.config.*
+eslint.config.*
+
+# Documentation and demos
+CONTRIBUTING.md
+package-npm.json
+
+# Git
+.git/
+.gitignore
+
+# Others
+*.log
+*.tsbuildinfo
