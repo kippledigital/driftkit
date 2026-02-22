@@ -3,33 +3,28 @@
   "version": "0.1.0",
   "description": "Motion-first React components with spring physics. Copy, paste, ship.",
   "type": "module",
-  "main": "./src/components/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./src/components/index.ts",
-      "require": "./src/components/index.ts"
-    },
-    "./components/*": {
-      "import": "./src/components/*.tsx",
-      "require": "./src/components/*.tsx"
-    },
-    "./components": {
-      "import": "./src/components/index.ts",
-      "require": "./src/components/index.ts"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [
-    "src/components",
+    "dist",
     "README.md",
-    "LICENSE",
-    "package.json"
+    "LICENSE"
   ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:lib": "tsup",
     "start": "next start",
     "lint": "eslint",
-    "prepare": "npm run build"
+    "prepublishOnly": "npm run build:lib"
   },
   "keywords": [
     "motion",
@@ -73,6 +68,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwindcss": "^4",
+    "tsup": "^8.0.0",
     "typescript": "^5"
   }
 }
