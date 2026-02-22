@@ -51,9 +51,9 @@
     "url": "https://github.com/kippledigital/driftkit/issues"
   },
   "peerDependencies": {
+    "framer-motion": ">=10.0.0",
     "react": ">=18.0.0",
-    "react-dom": ">=18.0.0",
-    "framer-motion": ">=10.0.0"
+    "react-dom": ">=18.0.0"
   },
   "dependencies": {},
   "devDependencies": {
@@ -69,6 +69,6 @@
     "react-dom": "19.2.3",
     "tailwindcss": "^4",
     "tsup": "^8.0.0",
-    "typescript": "^5"
+    "typescript": "5.9.3"
   }
 }

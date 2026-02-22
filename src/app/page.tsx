@@ -1592,6 +1592,12 @@ export default function Home() {
               Browse Components →
             </a>
             <a
+              href="/docs"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white font-medium text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+            >
+              📚 Documentation
+            </a>
+            <a
               href="/playground/button"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium text-sm hover:from-indigo-700 hover:to-purple-700 transition-colors shadow-lg shadow-indigo-500/25"
             >

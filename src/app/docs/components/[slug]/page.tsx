@@ -65,27 +65,26 @@ function CodeBlock({ code, language = "tsx" }: { code: string; language?: string
 }
 
 export default function ComponentPage({ params }: PageProps) {
+  if (!getAllComponentNames().includes(params.slug)) {
+    notFound();
+  }
+
   const componentInfo = getComponentInfo(params.slug);
   
-  if (!componentInfo) {
-    // For components not in detailed data, provide basic fallback
-    const fallbackComponent = {
-      name: params.slug,
-      displayName: params.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
-      description: "A motion-first UI component built with Framer Motion.",
-      importPath: `import { ${params.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} } from "driftkit";`,
-      props: [],
-      examples: [`<${params.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} />`],
-      category: "Utility",
-      githubUrl: `https://github.com/kippledigital/driftkit/blob/main/src/components/${params.slug}.tsx`
-    };
-    
-    if (!getAllComponentNames().includes(params.slug)) {
-      notFound();
-    }
-    
-    // Use fallback data for components not yet detailed  
-    const info = componentInfo || fallbackComponent;
+  // Create fallback for components without detailed info
+  const fallbackComponent = {
+    name: params.slug,
+    displayName: params.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+    description: "A motion-first UI component built with Framer Motion.",
+    importPath: `import { ${params.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} } from "driftkit";`,
+    props: [],
+    examples: [`<${params.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} />`],
+    category: "Utility",
+    githubUrl: `https://github.com/kippledigital/driftkit/blob/main/src/components/${params.slug}.tsx`
+  };
+  
+  // Use component info or fallback
+  const info = componentInfo || fallbackComponent;
 
   return (
     <div className="px-8 py-12">
