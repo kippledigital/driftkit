@@ -1667,11 +1667,6 @@ export default function Home() {
         {/* HERO                                                           */}
         {/* ============================================================= */}
         <header className="pt-24 pb-32 border-b border-neutral-200 dark:border-neutral-800">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold tracking-tight">driftkit</h1>
-            <ModeSwitcher irisWipe />
-          </div>
-
           <div className="mb-6 h-[3.5rem] sm:h-[4rem] overflow-hidden">
             <span className="text-4xl sm:text-5xl font-bold leading-tight block">
               <Typewriter
