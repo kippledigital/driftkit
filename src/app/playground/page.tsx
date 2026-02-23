@@ -733,7 +733,6 @@ export default function PhysicsPlayground() {
               ))}
             </div>
             <ShareButton />
-            <CodeOutput config={config} />
           </div>
 
           {/* Right — Preview area */}
@@ -782,14 +781,17 @@ export default function PhysicsPlayground() {
               </div>
             </div>
 
-            {/* Custom preview (big) */}
+            {/* Custom preview (big) — click to play */}
             <div className="p-4">
-              <div className="rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 h-48 mb-4 relative overflow-hidden">
+              <button
+                onClick={play}
+                className="w-full rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 h-56 mb-4 relative overflow-hidden group cursor-pointer transition-colors hover:border-indigo-300 dark:hover:border-indigo-700"
+              >
                 {(() => {
                   const Demo = demoComponents[demoKey] || ToastDemo;
                   const springTransition = { type: "spring" as const, stiffness: config.stiffness, damping: config.damping, mass: config.mass };
                   return (
-                    <div className="w-full h-full flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center scale-125">
                       <div className="w-full max-w-sm h-full">
                         <Demo isPlaying={isPlaying} color="#6366f1" springTransition={springTransition} />
                       </div>
@@ -801,7 +803,12 @@ export default function PhysicsPlayground() {
                     🎛️ Custom
                   </span>
                 </div>
-              </div>
+                <div className="absolute bottom-2 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-[10px] font-medium text-indigo-500 bg-white/80 dark:bg-neutral-900/80 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                    Click to play
+                  </span>
+                </div>
+              </button>
 
               {/* Preset grid 2×2 */}
               <div className="grid grid-cols-2 gap-3">
@@ -813,7 +820,10 @@ export default function PhysicsPlayground() {
                   return (
                     <motion.button
                       key={key}
-                      onClick={() => handlePreset(key)}
+                      onClick={() => {
+                        handlePreset(key);
+                        play();
+                      }}
                       className={`relative text-left rounded-xl border-2 overflow-hidden transition-colors ${
                         isActive
                           ? "border-indigo-500 dark:border-indigo-400 shadow-md shadow-indigo-500/10"
@@ -841,6 +851,11 @@ export default function PhysicsPlayground() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* Code output — full width */}
+        <section>
+          <CodeOutput config={config} />
         </section>
       </main>
     </div>
