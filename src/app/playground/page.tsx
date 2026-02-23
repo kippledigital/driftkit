@@ -222,7 +222,7 @@ const demoComponents: Record<string, React.FC<{ isPlaying: boolean; color: strin
 function ComparisonCard({ 
   config, 
   meta, 
-  isPlaying, 
+  isPlaying: globalPlaying, 
   isActive, 
   onClick,
   demoType = "custom",
@@ -236,6 +236,15 @@ function ComparisonCard({
   demoType?: string;
   isCustom?: boolean;
 }) {
+  const [localPlaying, setLocalPlaying] = useState(false);
+  const isPlaying = globalPlaying || localPlaying;
+
+  const handleClick = useCallback(() => {
+    onClick();
+    setLocalPlaying(true);
+    setTimeout(() => setLocalPlaying(false), 1500);
+  }, [onClick]);
+
   const springTransition = {
     type: "spring" as const,
     stiffness: config.stiffness,
@@ -248,7 +257,7 @@ function ComparisonCard({
 
   return (
     <motion.button
-      onClick={onClick}
+      onClick={handleClick}
       className={`relative text-left w-full rounded-xl border-2 overflow-hidden transition-colors ${
         isActive
           ? "border-indigo-500 dark:border-indigo-400 shadow-lg shadow-indigo-500/10"
