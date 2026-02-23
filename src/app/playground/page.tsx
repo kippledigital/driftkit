@@ -215,12 +215,106 @@ function ToastDemo({ isPlaying, color, springTransition }: { isPlaying: boolean;
   );
 }
 
+function DropdownDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+  const [playCount, setPlayCount] = useState(0);
+  useEffect(() => { if (isPlaying) setPlayCount(c => c + 1); }, [isPlaying]);
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-4">
+      <div className="w-full">
+        <div className="w-full h-7 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 flex items-center px-2 justify-between">
+          <span className="text-[10px] text-neutral-500">Select option...</span>
+          <span className="text-[8px] text-neutral-400">▼</span>
+        </div>
+        <motion.div
+          key={playCount}
+          className="w-full mt-1 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-lg overflow-hidden"
+          initial={{ opacity: 0, scaleY: 0.6, originY: 0 }}
+          animate={playCount > 0 ? { opacity: 1, scaleY: 1 } : {}}
+          transition={springTransition}
+        >
+          {["Design", "Engineering", "Marketing"].map((item, i) => (
+            <div key={item} className="px-2 py-1.5 text-[10px] text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700" style={i === 0 ? { backgroundColor: color + "15", color } : {}}>
+              {item}
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+function ModalDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+  const [playCount, setPlayCount] = useState(0);
+  useEffect(() => { if (isPlaying) setPlayCount(c => c + 1); }, [isPlaying]);
+  return (
+    <div className="flex items-center justify-center h-full relative">
+      <motion.div
+        key={playCount}
+        className="w-24 rounded-lg bg-white dark:bg-neutral-800 shadow-2xl border border-neutral-200 dark:border-neutral-700 p-2.5"
+        initial={{ opacity: 0, scale: 0.75, y: 10 }}
+        animate={playCount > 0 ? { opacity: 1, scale: 1, y: 0 } : {}}
+        transition={springTransition}
+      >
+        <div className="w-full h-1.5 rounded-full mb-2" style={{ backgroundColor: color, opacity: 0.6 }} />
+        <div className="w-14 h-1 rounded-full bg-neutral-200 dark:bg-neutral-600 mb-1" />
+        <div className="w-16 h-1 rounded-full bg-neutral-200 dark:bg-neutral-600 mb-2.5" />
+        <div className="flex gap-1.5 justify-end">
+          <div className="px-2 py-0.5 rounded text-[8px] bg-neutral-100 dark:bg-neutral-700 text-neutral-500">Cancel</div>
+          <div className="px-2 py-0.5 rounded text-[8px] text-white font-medium" style={{ backgroundColor: color }}>Confirm</div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function TabsDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+  const [playCount, setPlayCount] = useState(0);
+  useEffect(() => { if (isPlaying) setPlayCount(c => c + 1); }, [isPlaying]);
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-3">
+      <div className="w-full">
+        <div className="flex border-b border-neutral-200 dark:border-neutral-700 relative">
+          {["Overview", "Details", "Settings"].map((tab, i) => (
+            <div key={tab} className={`px-3 py-1.5 text-[10px] relative ${i === 1 ? "font-semibold" : "text-neutral-400"}`}
+              style={i === 1 ? { color } : {}}>
+              {tab}
+              {i === 1 && (
+                <motion.div
+                  key={playCount}
+                  className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
+                  style={{ backgroundColor: color }}
+                  initial={{ scaleX: 0 }}
+                  animate={playCount > 0 ? { scaleX: 1 } : {}}
+                  transition={springTransition}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+        <motion.div
+          key={`content-${playCount}`}
+          className="pt-2 space-y-1"
+          initial={{ opacity: 0, x: 20 }}
+          animate={playCount > 0 ? { opacity: 1, x: 0 } : {}}
+          transition={springTransition}
+        >
+          <div className="w-full h-1.5 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+          <div className="w-3/4 h-1 rounded-full bg-neutral-100 dark:bg-neutral-800" />
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
 const demoOptions = [
   { key: "button", label: "Button" },
   { key: "toggle", label: "Toggle" },
   { key: "toast", label: "Toast" },
   { key: "card", label: "Card" },
   { key: "badge", label: "Badge" },
+  { key: "dropdown", label: "Dropdown" },
+  { key: "modal", label: "Modal" },
+  { key: "tabs", label: "Tabs" },
 ];
 
 const demoComponents: Record<string, React.FC<{ isPlaying: boolean; color: string; springTransition: object }>> = {
@@ -229,6 +323,9 @@ const demoComponents: Record<string, React.FC<{ isPlaying: boolean; color: strin
   badge: NotificationBadgeDemo,
   card: CardSlideDemo,
   toast: ToastDemo,
+  dropdown: DropdownDemo,
+  modal: ModalDemo,
+  tabs: TabsDemo,
 };
 
 // =============================================================================
