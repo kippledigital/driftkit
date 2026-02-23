@@ -759,18 +759,24 @@ export default function PhysicsPlayground() {
 
             {/* Component selector */}
             <div className="px-5 py-2 border-b border-neutral-100 dark:border-neutral-800">
-              <div className="flex items-center gap-1 p-0.5 bg-neutral-100 dark:bg-neutral-800 rounded-lg w-fit">
+              <div className="relative flex gap-1 p-1 rounded-[8px] bg-neutral-100 dark:bg-neutral-800/60 w-fit">
                 {demoOptions.map(opt => (
                   <button
                     key={opt.key}
                     onClick={() => setDemoKey(opt.key)}
-                    className={`px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors ${
-                      demoKey === opt.key
-                        ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm"
-                        : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
-                    }`}
+                    className="relative z-10 px-2.5 py-1.5 text-[11px] font-medium rounded-[6px] transition-colors"
                   >
-                    {opt.label}
+                    {demoKey === opt.key && (
+                      <motion.div
+                        layoutId="component-tab-blob"
+                        className="absolute inset-0 rounded-[6px] bg-white dark:bg-neutral-700 shadow-sm"
+                        transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.8 }}
+                        style={{ zIndex: -1 }}
+                      />
+                    )}
+                    <span className={demoKey === opt.key ? "text-neutral-900 dark:text-white" : "text-neutral-500"}>
+                      {opt.label}
+                    </span>
                   </button>
                 ))}
               </div>
