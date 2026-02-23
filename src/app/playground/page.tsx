@@ -118,12 +118,20 @@ function MiniCurve({ config, color = "#6366f1", height = 48, width = 120 }: {
 // =============================================================================
 
 function ButtonPressDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+  const [playCount, setPlayCount] = useState(0);
+  
+  useEffect(() => {
+    if (isPlaying) setPlayCount(c => c + 1);
+  }, [isPlaying]);
+
   return (
     <div className="flex items-center justify-center h-full">
       <motion.div
+        key={playCount}
         className="px-6 py-2.5 rounded-lg text-white text-xs font-semibold shadow-lg"
         style={{ backgroundColor: color }}
-        animate={isPlaying ? { scale: [1, 0.88, 1.05, 1], y: [0, 2, -1, 0] } : { scale: 1, y: 0 }}
+        initial={{ scale: 1, y: 0 }}
+        animate={playCount > 0 ? { scale: [0.85, 1.08, 1], y: [3, -2, 0] } : {}}
         transition={springTransition}
       >
         Get Started
