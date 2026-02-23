@@ -114,7 +114,107 @@ function MiniCurve({ config, color = "#6366f1", height = 48, width = 120 }: {
 }
 
 // =============================================================================
-// COMPARISON CARD — shows a real mini-UI interaction
+// ANIMATION DEMOS — each preset shows a different micro-interaction
+// =============================================================================
+
+function ButtonTapDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-2 h-full">
+      <motion.div
+        className="px-5 py-2 rounded-lg text-white text-[11px] font-semibold shadow-lg cursor-pointer"
+        style={{ backgroundColor: color }}
+        animate={isPlaying ? { scale: [1, 0.85, 1] } : { scale: 1 }}
+        transition={springTransition}
+      >
+        Submit
+      </motion.div>
+      <span className="text-[9px] text-neutral-400">Button press</span>
+    </div>
+  );
+}
+
+function ToggleSwitchDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-2 h-full">
+      <div className="w-12 h-6 rounded-full p-0.5 relative" style={{ backgroundColor: isPlaying ? color : "#d1d5db" }}>
+        <motion.div
+          className="w-5 h-5 rounded-full bg-white shadow-md"
+          animate={isPlaying ? { x: 24 } : { x: 0 }}
+          transition={springTransition}
+        />
+      </div>
+      <span className="text-[9px] text-neutral-400">Toggle switch</span>
+    </div>
+  );
+}
+
+function BouncingBallDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+  return (
+    <div className="flex flex-col items-center justify-end gap-2 h-full pb-2">
+      <motion.div
+        className="w-6 h-6 rounded-full shadow-lg"
+        style={{ backgroundColor: color }}
+        animate={isPlaying ? { y: [-48, 0] } : { y: 0 }}
+        transition={springTransition}
+      />
+      <div className="w-16 h-[1px] bg-neutral-300 dark:bg-neutral-600" />
+      <span className="text-[9px] text-neutral-400">Ball drop</span>
+    </div>
+  );
+}
+
+function CardSlideDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-2 h-full">
+      <motion.div
+        className="w-16 h-20 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 flex items-center justify-center"
+        animate={isPlaying ? { y: [40, 0], opacity: [0, 1] } : { y: 0, opacity: 1 }}
+        transition={springTransition}
+      >
+        <div className="space-y-1">
+          <div className="w-10 h-1.5 rounded-full" style={{ backgroundColor: color, opacity: 0.6 }} />
+          <div className="w-8 h-1 rounded-full bg-neutral-200 dark:bg-neutral-600" />
+          <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-600" />
+        </div>
+      </motion.div>
+      <span className="text-[9px] text-neutral-400">Card reveal</span>
+    </div>
+  );
+}
+
+function ToastDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-3">
+      <motion.div
+        className="w-full rounded-lg shadow-xl overflow-hidden"
+        style={{ backgroundColor: color + "15", borderLeft: `3px solid ${color}` }}
+        animate={isPlaying ? { x: [80, 0], opacity: [0, 1], scale: [0.95, 1] } : { x: 0, opacity: 1, scale: 1 }}
+        transition={springTransition}
+      >
+        <div className="px-2.5 py-2">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <div className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] shrink-0" style={{ backgroundColor: color }}>
+              <span className="text-white font-bold">✓</span>
+            </div>
+            <span className="text-[11px] font-semibold text-neutral-900 dark:text-white truncate">Changes saved</span>
+          </div>
+          <p className="text-[9px] text-neutral-500 dark:text-neutral-400 pl-[22px] leading-tight">Updated successfully.</p>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+const demoComponents: Record<string, React.FC<{ isPlaying: boolean; color: string; springTransition: object }>> = {
+  snappy: ButtonTapDemo,
+  smooth: ToggleSwitchDemo,
+  bouncy: BouncingBallDemo,
+  gentle: CardSlideDemo,
+  custom: ToastDemo,
+};
+
+// =============================================================================
+// COMPARISON CARD
 // =============================================================================
 
 function ComparisonCard({ 
@@ -123,6 +223,7 @@ function ComparisonCard({
   isPlaying, 
   isActive, 
   onClick,
+  demoType = "custom",
   isCustom = false,
 }: {
   config: { stiffness: number; damping: number; mass: number; bounce: number };
@@ -130,6 +231,7 @@ function ComparisonCard({
   isPlaying: boolean;
   isActive: boolean;
   onClick: () => void;
+  demoType?: string;
   isCustom?: boolean;
 }) {
   const springTransition = {
@@ -138,6 +240,9 @@ function ComparisonCard({
     damping: config.damping,
     mass: config.mass,
   };
+
+  const Demo = demoComponents[demoType] || ToastDemo;
+  const color = isCustom ? "#6366f1" : meta.color;
 
   return (
     <motion.button
@@ -150,28 +255,9 @@ function ComparisonCard({
       whileHover={{ y: -2 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
-      {/* Animation stage — mock notification card */}
-      <div className="h-40 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden flex items-center justify-center p-4">
-        <motion.div
-          className="w-full rounded-lg shadow-xl overflow-hidden"
-          style={{ backgroundColor: isCustom ? "#6366f1" + "15" : meta.color + "15", borderLeft: `3px solid ${isCustom ? "#6366f1" : meta.color}` }}
-          animate={isPlaying ? {
-            x: [80, 0],
-            opacity: [0, 1],
-            scale: [0.95, 1],
-          } : { x: 0, opacity: 1, scale: 1 }}
-          transition={springTransition}
-        >
-          <div className="px-2.5 py-2">
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <div className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] shrink-0" style={{ backgroundColor: isCustom ? "#6366f1" : meta.color }}>
-                <span className="text-white font-bold">✓</span>
-              </div>
-              <span className="text-[11px] font-semibold text-neutral-900 dark:text-white truncate">Changes saved</span>
-            </div>
-            <p className="text-[9px] text-neutral-500 dark:text-neutral-400 pl-[22px] leading-tight">Your project has been updated successfully.</p>
-          </div>
-        </motion.div>
+      {/* Animation stage */}
+      <div className="h-40 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden">
+        <Demo isPlaying={isPlaying} color={color} springTransition={springTransition} />
       </div>
 
       {/* Info */}
@@ -187,7 +273,7 @@ function ComparisonCard({
           </h3>
         </div>
         <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-3">{meta.description}</p>
-        <MiniCurve config={config} color={isCustom ? "#6366f1" : meta.color} />
+        <MiniCurve config={config} color={color} />
       </div>
     </motion.button>
   );
@@ -448,6 +534,7 @@ export default function PhysicsPlayground() {
                 isPlaying={isPlaying}
                 isActive={config.preset === key}
                 onClick={() => handlePreset(key)}
+                demoType={key}
               />
             ))}
             <ComparisonCard
@@ -456,6 +543,7 @@ export default function PhysicsPlayground() {
               isPlaying={isPlaying}
               isActive={config.preset === "custom"}
               onClick={() => {}}
+              demoType="custom"
               isCustom
             />
           </div>
