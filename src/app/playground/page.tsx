@@ -542,9 +542,9 @@ function CodeOutput({ config }: { config: PhysicsConfig }) {
   }, [code]);
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-3 border-b border-neutral-100 dark:border-neutral-800">
-        <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Code</h3>
+    <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden flex-1 flex flex-col">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-neutral-100 dark:border-neutral-800">
+        <h3 className="text-xs font-semibold text-neutral-900 dark:text-white">Code</h3>
         <motion.button
           onClick={copy}
           whileTap={{ scale: 0.95 }}
@@ -553,7 +553,7 @@ function CodeOutput({ config }: { config: PhysicsConfig }) {
           {copied ? "✓ Copied" : "Copy"}
         </motion.button>
       </div>
-      <pre className="p-5 text-xs font-mono text-neutral-300 bg-neutral-950 leading-relaxed overflow-x-auto">
+      <pre className="p-4 text-[10px] font-mono text-neutral-300 bg-neutral-950 leading-relaxed overflow-auto flex-1">
         <code>{code}</code>
       </pre>
     </div>
@@ -702,7 +702,7 @@ export default function PhysicsPlayground() {
         {/* Sidebar + Preview Area */}
         <section className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
           {/* Left sidebar — Controls */}
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 space-y-4">
               <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Fine-tune</h3>
               {sliders.map(s => (
