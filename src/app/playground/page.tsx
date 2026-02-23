@@ -156,10 +156,10 @@ function ComparisonCard({
           className="w-full rounded-lg shadow-xl overflow-hidden"
           style={{ backgroundColor: isCustom ? "#6366f1" + "15" : meta.color + "15", borderLeft: `3px solid ${isCustom ? "#6366f1" : meta.color}` }}
           animate={isPlaying ? {
-            y: [60, 0],
+            x: [80, 0],
             opacity: [0, 1],
-            scale: [0.9, 1],
-          } : { y: 0, opacity: 1, scale: 1 }}
+            scale: [0.95, 1],
+          } : { x: 0, opacity: 1, scale: 1 }}
           transition={springTransition}
         >
           <div className="px-2.5 py-2">
