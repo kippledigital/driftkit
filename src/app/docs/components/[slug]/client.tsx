@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { getDemoComponent } from "./demos";
 
 export function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
   return (
@@ -23,10 +24,18 @@ export function CodeBlock({ code, language = "tsx" }: { code: string; language?:
 }
 
 export function ComponentPreview({ componentName }: { componentName: string }) {
+  const DemoComponent = getDemoComponent(componentName);
+
   return (
-    <div className="p-6 bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
-      <div className="flex items-center justify-center min-h-[200px] text-neutral-500 dark:text-neutral-400">
-        Interactive preview coming soon
+    <div className="rounded-xl border border-neutral-200/40 dark:border-neutral-800/40 bg-neutral-100/30 dark:bg-neutral-900/30 p-6">
+      <div className="flex items-center justify-center min-h-[200px]">
+        {DemoComponent ? (
+          <DemoComponent />
+        ) : (
+          <div className="text-neutral-500 dark:text-neutral-400">
+            Interactive preview coming soon
+          </div>
+        )}
       </div>
     </div>
   );
