@@ -42,8 +42,8 @@ export default async function ComponentPage({ params }: PageProps) {
   const info = componentInfo || fallbackComponent;
 
   return (
-    <div className="px-8 py-12">
-      <div className="max-w-4xl">
+    <div className="min-h-screen bg-white dark:bg-neutral-950">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400 mb-4">
