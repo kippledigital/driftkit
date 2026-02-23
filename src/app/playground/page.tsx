@@ -575,9 +575,9 @@ function ShareButton() {
     <motion.button
       onClick={copy}
       whileTap={{ scale: 0.95 }}
-      className="px-3 py-1.5 text-xs font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-white border border-neutral-200 dark:border-neutral-700 rounded-lg transition-colors"
+      className="w-full px-4 py-2.5 text-xs font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-white border border-neutral-200 dark:border-neutral-700 rounded-xl transition-colors"
     >
-      {copied ? "✓ Copied URL" : "Share"}
+      {copied ? "✓ Copied URL" : "🔗 Share Config"}
     </motion.button>
   );
 }
@@ -690,7 +690,6 @@ export default function PhysicsPlayground() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <ShareButton />
             <Link href="/docs" className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors">
               Docs
             </Link>
@@ -699,149 +698,149 @@ export default function PhysicsPlayground() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-10 space-y-10">
-        {/* Hero — Big Preview + Preset Strip */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-1">Compare</h2>
-              <p className="text-sm text-neutral-500">Same component, different physics. Click a preset to feel the difference.</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <label className="flex items-center gap-2 text-xs text-neutral-500 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={autoReplay}
-                  onChange={e => setAutoReplay(e.target.checked)}
-                  className="rounded border-neutral-300 dark:border-neutral-600"
-                />
-                Loop
-              </label>
-              <motion.button
-                onClick={play}
-                disabled={isPlaying}
-                whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 text-sm font-medium bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors disabled:opacity-50"
-              >
-                {isPlaying ? "Playing…" : "▶ Play"}
-              </motion.button>
-            </div>
-          </div>
-
-          {/* Component selector */}
-          <div className="flex items-center gap-1 mb-4 p-1 bg-neutral-100 dark:bg-neutral-900 rounded-lg w-fit">
-            {demoOptions.map(opt => (
-              <button
-                key={opt.key}
-                onClick={() => setDemoKey(opt.key)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                  demoKey === opt.key
-                    ? "bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm"
-                    : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Big preview canvas */}
-          <div className="rounded-2xl border-2 border-indigo-500/20 bg-neutral-50 dark:bg-neutral-950 overflow-hidden mb-4">
-            <div className="h-64 flex items-center justify-center relative">
-              {(() => {
-                const Demo = demoComponents[demoKey] || ToastDemo;
-                const springTransition = {
-                  type: "spring" as const,
-                  stiffness: config.stiffness,
-                  damping: config.damping,
-                  mass: config.mass,
-                };
-                return (
-                  <div className="w-full max-w-md h-full scale-150">
-                    <Demo isPlaying={isPlaying} color="#6366f1" springTransition={springTransition} />
+      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        {/* Sidebar + Preview Area */}
+        <section className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+          {/* Left sidebar — Controls */}
+          <div className="space-y-4">
+            <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 space-y-4">
+              <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Fine-tune</h3>
+              {sliders.map(s => (
+                <div key={s.key}>
+                  <div className="flex justify-between mb-1.5">
+                    <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
+                      {s.label}
+                      <span className="relative group">
+                        <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-neutral-300 dark:border-neutral-600 text-[9px] text-neutral-400 cursor-help leading-none">i</span>
+                        <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1.5 text-[11px] leading-snug text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg shadow-lg whitespace-normal w-48 opacity-0 translate-x-1 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 z-20">
+                          {s.hint}
+                        </span>
+                      </span>
+                    </span>
+                    <span className="text-xs text-neutral-400 font-mono">{config[s.key as keyof PhysicsConfig]}</span>
                   </div>
-                );
-              })()}
+                  <input
+                    type="range"
+                    min={s.min} max={s.max} step={s.step}
+                    value={config[s.key as keyof PhysicsConfig] as number}
+                    onChange={e => handleSlider(s.key, Number(e.target.value))}
+                    className="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full appearance-none cursor-pointer
+                      [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5
+                      [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-900 dark:[&::-webkit-slider-thumb]:bg-white
+                      [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm"
+                  />
+                </div>
+              ))}
             </div>
-            <div className="px-5 py-3 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-neutral-900 dark:text-white">
-                  {config.preset === "custom" ? "🎛️ Custom" : `${presetMeta[config.preset]?.emoji} ${presetMeta[config.preset]?.label}`}
-                </span>
-                <span className="text-xs text-neutral-400">
-                  s:{config.stiffness} d:{config.damping} m:{config.mass}{config.bounce > 0 ? ` b:${config.bounce}` : ""}
-                </span>
+            <ShareButton />
+          </div>
+
+          {/* Right — Preview area */}
+          <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden">
+            {/* Header bar */}
+            <div className="px-5 py-3 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold text-neutral-900 dark:text-white mb-0.5">Compare</h2>
+                <p className="text-[11px] text-neutral-400">Same component, different physics</p>
               </div>
-              <MiniCurve config={config} color="#6366f1" width={100} height={32} />
-            </div>
-          </div>
-
-          {/* Preset strip */}
-          <div className="grid grid-cols-4 gap-3">
-            {Object.entries(presets).map(([key, p]) => {
-              const meta = presetMeta[key];
-              const isActive = config.preset === key;
-              return (
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 text-xs text-neutral-500 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={autoReplay}
+                    onChange={e => setAutoReplay(e.target.checked)}
+                    className="rounded border-neutral-300 dark:border-neutral-600"
+                  />
+                  Loop
+                </label>
                 <motion.button
-                  key={key}
-                  onClick={() => handlePreset(key)}
-                  className={`relative text-left rounded-xl border-2 overflow-hidden transition-colors ${
-                    isActive
-                      ? "border-indigo-500 dark:border-indigo-400 shadow-lg shadow-indigo-500/10"
-                      : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
-                  } bg-white dark:bg-neutral-900`}
-                  whileHover={{ y: -2 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  onClick={play}
+                  disabled={isPlaying}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-3 py-1.5 text-xs font-medium bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors disabled:opacity-50"
                 >
-                  <div className="p-3 flex items-center gap-3">
-                    <div className="shrink-0">
-                      <MiniCurve config={p} color={meta.color} width={60} height={28} />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="font-semibold text-xs text-neutral-900 dark:text-white">{meta.emoji} {meta.label}</h3>
-                      <p className="text-[10px] text-neutral-400 truncate">{meta.description}</p>
-                    </div>
-                  </div>
+                  {isPlaying ? "Playing…" : "▶ Play"}
                 </motion.button>
-              );
-            })}
+              </div>
+            </div>
+
+            {/* Component selector */}
+            <div className="px-5 py-2 border-b border-neutral-100 dark:border-neutral-800">
+              <div className="flex items-center gap-1 p-0.5 bg-neutral-100 dark:bg-neutral-800 rounded-lg w-fit">
+                {demoOptions.map(opt => (
+                  <button
+                    key={opt.key}
+                    onClick={() => setDemoKey(opt.key)}
+                    className={`px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors ${
+                      demoKey === opt.key
+                        ? "bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm"
+                        : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom preview (big) */}
+            <div className="p-4">
+              <div className="rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 h-48 mb-4 relative overflow-hidden">
+                {(() => {
+                  const Demo = demoComponents[demoKey] || ToastDemo;
+                  const springTransition = { type: "spring" as const, stiffness: config.stiffness, damping: config.damping, mass: config.mass };
+                  return (
+                    <div className="w-full h-full flex items-center justify-center scale-125">
+                      <div className="w-full max-w-sm h-full">
+                        <Demo isPlaying={isPlaying} color="#6366f1" springTransition={springTransition} />
+                      </div>
+                    </div>
+                  );
+                })()}
+                <div className="absolute bottom-2 left-3 flex items-center gap-2">
+                  <span className="text-[10px] font-semibold text-neutral-500 bg-white/80 dark:bg-neutral-900/80 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                    🎛️ Custom
+                  </span>
+                </div>
+              </div>
+
+              {/* Preset grid 2×2 */}
+              <div className="grid grid-cols-2 gap-3">
+                {Object.entries(presets).map(([key, p]) => {
+                  const meta = presetMeta[key];
+                  const isActive = config.preset === key;
+                  const Demo = demoComponents[demoKey] || ToastDemo;
+                  const springTransition = { type: "spring" as const, stiffness: p.stiffness, damping: p.damping, mass: p.mass };
+                  return (
+                    <motion.button
+                      key={key}
+                      onClick={() => handlePreset(key)}
+                      className={`relative text-left rounded-xl border-2 overflow-hidden transition-colors ${
+                        isActive
+                          ? "border-indigo-500 dark:border-indigo-400 shadow-md shadow-indigo-500/10"
+                          : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
+                      } bg-neutral-50 dark:bg-neutral-950`}
+                      whileHover={{ y: -1 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    >
+                      <div className="h-28 relative overflow-hidden">
+                        <Demo isPlaying={isPlaying} color={meta.color} springTransition={springTransition} />
+                        <div className="absolute bottom-2 left-2">
+                          <span className="text-[10px] font-semibold bg-white/80 dark:bg-neutral-900/80 px-2 py-0.5 rounded-full backdrop-blur-sm text-neutral-700 dark:text-neutral-300">
+                            {meta.emoji} {meta.label}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Controls + Curve */}
-        <section className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-          {/* Sliders */}
-          <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 space-y-3">
-            <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Fine-tune</h3>
-            {sliders.map(s => (
-              <div key={s.key}>
-                <div className="flex justify-between mb-1.5">
-                  <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
-                    {s.label}
-                    <span className="relative group">
-                      <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-neutral-300 dark:border-neutral-600 text-[9px] text-neutral-400 cursor-help leading-none">i</span>
-                      <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1.5 text-[11px] leading-snug text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg shadow-lg whitespace-normal w-48 opacity-0 translate-x-1 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 z-20">
-                        {s.hint}
-                      </span>
-                    </span>
-                  </span>
-                  <span className="text-xs text-neutral-400 font-mono">{config[s.key as keyof PhysicsConfig]}</span>
-                </div>
-                <input
-                  type="range"
-                  min={s.min} max={s.max} step={s.step}
-                  value={config[s.key as keyof PhysicsConfig] as number}
-                  onChange={e => handleSlider(s.key, Number(e.target.value))}
-                  className="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full appearance-none cursor-pointer
-                    [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5
-                    [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-900 dark:[&::-webkit-slider-thumb]:bg-white
-                    [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm"
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Curve */}
+        {/* Graph */}
+        <section>
           <SpringCurveDetail config={config} />
         </section>
 
