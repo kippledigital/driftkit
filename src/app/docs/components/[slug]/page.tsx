@@ -42,8 +42,7 @@ export default async function ComponentPage({ params }: PageProps) {
   const info = componentInfo || fallbackComponent;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-neutral-950">
-      <div className="max-w-7xl mx-auto px-6 py-12">
+    <div className="py-12 px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400 mb-4">
@@ -174,6 +173,5 @@ export default async function ComponentPage({ params }: PageProps) {
           </Link>
         </section>
       </div>
-    </div>
   );
 }

@@ -108,8 +108,7 @@ export default function DocsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-white dark:bg-neutral-950">
-      <div className="max-w-7xl mx-auto px-6 py-12">
+    <div className="py-12 px-8">
         <div className="mb-12 max-w-2xl">
           <h1 className="text-4xl font-medium text-neutral-900 dark:text-white mb-4">
             Components
@@ -176,6 +175,5 @@ export default function DocsPage() {
           </div>
         </div>
       </div>
-    </div>
   );
 }

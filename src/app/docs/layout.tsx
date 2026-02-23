@@ -248,11 +248,13 @@ export default function DocsLayout({
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-950">
       <MobileSidebar />
-      <div className="flex">
-        <ComponentSidebar />
-        <main className="flex-1 min-w-0">
-          {children}
-        </main>
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex">
+          <ComponentSidebar />
+          <main className="flex-1 min-w-0">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );
