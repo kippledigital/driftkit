@@ -207,12 +207,20 @@ function ToastDemo({ isPlaying, color, springTransition }: { isPlaying: boolean;
   );
 }
 
+const demoOptions = [
+  { key: "button", label: "Button" },
+  { key: "toggle", label: "Toggle" },
+  { key: "toast", label: "Toast" },
+  { key: "card", label: "Card" },
+  { key: "badge", label: "Badge" },
+];
+
 const demoComponents: Record<string, React.FC<{ isPlaying: boolean; color: string; springTransition: object }>> = {
-  snappy: ButtonPressDemo,
-  smooth: ToggleSwitchDemo,
-  bouncy: NotificationBadgeDemo,
-  gentle: CardSlideDemo,
-  custom: ToastDemo,
+  button: ButtonPressDemo,
+  toggle: ToggleSwitchDemo,
+  badge: NotificationBadgeDemo,
+  card: CardSlideDemo,
+  toast: ToastDemo,
 };
 
 // =============================================================================
@@ -225,7 +233,7 @@ function ComparisonCard({
   isPlaying: globalPlaying, 
   isActive, 
   onClick,
-  demoType = "custom",
+  demoKey,
   isCustom = false,
 }: {
   config: { stiffness: number; damping: number; mass: number; bounce: number };
@@ -233,7 +241,7 @@ function ComparisonCard({
   isPlaying: boolean;
   isActive: boolean;
   onClick: () => void;
-  demoType?: string;
+  demoKey: string;
   isCustom?: boolean;
 }) {
   const [localPlaying, setLocalPlaying] = useState(false);
@@ -252,7 +260,7 @@ function ComparisonCard({
     mass: config.mass,
   };
 
-  const Demo = demoComponents[demoType] || ToastDemo;
+  const Demo = demoComponents[demoKey] || ToastDemo;
   const color = isCustom ? "#6366f1" : meta.color;
 
   return (
@@ -452,6 +460,7 @@ export default function PhysicsPlayground() {
   const [config, setConfig] = useState<PhysicsConfig>(defaultConfig);
   const [isPlaying, setIsPlaying] = useState(false);
   const [autoReplay, setAutoReplay] = useState(false);
+  const [demoKey, setDemoKey] = useState("button");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const handlePreset = useCallback((key: string) => {
@@ -510,10 +519,10 @@ export default function PhysicsPlayground() {
       <main className="max-w-6xl mx-auto px-6 py-10 space-y-10">
         {/* Hero — Comparison Grid */}
         <section>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-1">Compare</h2>
-              <p className="text-sm text-neutral-500">See how each preset feels. Click to apply.</p>
+              <p className="text-sm text-neutral-500">Same component, different physics. Click to apply.</p>
             </div>
             <div className="flex items-center gap-3">
               <label className="flex items-center gap-2 text-xs text-neutral-500 cursor-pointer select-none">
@@ -536,6 +545,23 @@ export default function PhysicsPlayground() {
             </div>
           </div>
 
+          {/* Component selector */}
+          <div className="flex items-center gap-1 mb-6 p-1 bg-neutral-100 dark:bg-neutral-900 rounded-lg w-fit">
+            {demoOptions.map(opt => (
+              <button
+                key={opt.key}
+                onClick={() => setDemoKey(opt.key)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                  demoKey === opt.key
+                    ? "bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm"
+                    : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {Object.entries(presets).map(([key, p]) => (
               <ComparisonCard
@@ -545,7 +571,7 @@ export default function PhysicsPlayground() {
                 isPlaying={isPlaying}
                 isActive={config.preset === key}
                 onClick={() => handlePreset(key)}
-                demoType={key}
+                demoKey={demoKey}
               />
             ))}
             <ComparisonCard
@@ -554,7 +580,7 @@ export default function PhysicsPlayground() {
               isPlaying={isPlaying}
               isActive={config.preset === "custom"}
               onClick={() => {}}
-              demoType="custom"
+              demoKey={demoKey}
               isCustom
             />
           </div>
