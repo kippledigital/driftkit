@@ -250,14 +250,14 @@ function ModalDemo({ isPlaying, color, springTransition }: { isPlaying: boolean;
     <div className="flex items-center justify-center h-full relative">
       <motion.div
         key={playCount}
-        className="w-24 rounded-lg bg-white dark:bg-neutral-800 shadow-2xl border border-neutral-200 dark:border-neutral-700 p-2.5"
-        initial={{ opacity: 0, scale: 0.75, y: 10 }}
-        animate={playCount > 0 ? { opacity: 1, scale: 1, y: 0 } : {}}
+        className="w-28 rounded-lg bg-white dark:bg-neutral-800 shadow-2xl border border-neutral-200 dark:border-neutral-700 p-3"
+        initial={{ scale: 0.85, y: 8 }}
+        animate={playCount > 0 ? { scale: [0.75, 1.02, 1], y: [10, -2, 0] } : { scale: 1, y: 0 }}
         transition={springTransition}
       >
         <div className="w-full h-1.5 rounded-full mb-2" style={{ backgroundColor: color, opacity: 0.6 }} />
-        <div className="w-14 h-1 rounded-full bg-neutral-200 dark:bg-neutral-600 mb-1" />
-        <div className="w-16 h-1 rounded-full bg-neutral-200 dark:bg-neutral-600 mb-2.5" />
+        <div className="w-16 h-1 rounded-full bg-neutral-200 dark:bg-neutral-600 mb-1" />
+        <div className="w-20 h-1 rounded-full bg-neutral-200 dark:bg-neutral-600 mb-3" />
         <div className="flex gap-1.5 justify-end">
           <div className="px-2 py-0.5 rounded text-[8px] bg-neutral-100 dark:bg-neutral-700 text-neutral-500">Cancel</div>
           <div className="px-2 py-0.5 rounded text-[8px] text-white font-medium" style={{ backgroundColor: color }}>Confirm</div>
@@ -269,37 +269,40 @@ function ModalDemo({ isPlaying, color, springTransition }: { isPlaying: boolean;
 
 function TabsDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
   const [playCount, setPlayCount] = useState(0);
-  useEffect(() => { if (isPlaying) setPlayCount(c => c + 1); }, [isPlaying]);
+  const [activeTab, setActiveTab] = useState(0);
+  useEffect(() => {
+    if (isPlaying) {
+      setPlayCount(c => c + 1);
+      setActiveTab(prev => (prev === 0 ? 1 : prev === 1 ? 2 : 0));
+    }
+  }, [isPlaying]);
+  const tabs = ["Overview", "Details", "Settings"];
   return (
-    <div className="flex flex-col items-center justify-center h-full px-3">
+    <div className="flex flex-col justify-center h-full px-3">
       <div className="w-full">
         <div className="flex border-b border-neutral-200 dark:border-neutral-700 relative">
-          {["Overview", "Details", "Settings"].map((tab, i) => (
-            <div key={tab} className={`px-3 py-1.5 text-[10px] relative ${i === 1 ? "font-semibold" : "text-neutral-400"}`}
-              style={i === 1 ? { color } : {}}>
+          {tabs.map((tab, i) => (
+            <div key={tab} className={`px-2.5 py-1.5 text-[10px] relative ${i === activeTab ? "font-semibold" : "text-neutral-400"}`}
+              style={i === activeTab ? { color } : {}}>
               {tab}
-              {i === 1 && (
-                <motion.div
-                  key={playCount}
-                  className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
-                  style={{ backgroundColor: color }}
-                  initial={{ scaleX: 0 }}
-                  animate={playCount > 0 ? { scaleX: 1 } : {}}
-                  transition={springTransition}
-                />
-              )}
             </div>
           ))}
+          <motion.div
+            className="absolute bottom-0 h-0.5 rounded-full"
+            style={{ backgroundColor: color }}
+            animate={{ left: `${activeTab * 33.33}%`, width: "33.33%" }}
+            transition={springTransition}
+          />
         </div>
         <motion.div
           key={`content-${playCount}`}
-          className="pt-2 space-y-1"
-          initial={{ opacity: 0, x: 20 }}
-          animate={playCount > 0 ? { opacity: 1, x: 0 } : {}}
+          className="pt-2.5 space-y-1.5"
+          animate={playCount > 0 ? { opacity: [0, 1], x: [15, 0] } : { opacity: 1, x: 0 }}
           transition={springTransition}
         >
           <div className="w-full h-1.5 rounded-full bg-neutral-200 dark:bg-neutral-700" />
           <div className="w-3/4 h-1 rounded-full bg-neutral-100 dark:bg-neutral-800" />
+          <div className="w-5/6 h-1 rounded-full bg-neutral-100 dark:bg-neutral-800" />
         </motion.div>
       </div>
     </div>
@@ -380,7 +383,7 @@ function ComparisonCard({
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
       {/* Animation stage */}
-      <div className="h-40 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden">
+      <div className="h-48 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden">
         <Demo isPlaying={isPlaying} color={color} springTransition={springTransition} />
       </div>
 
@@ -742,7 +745,7 @@ export default function PhysicsPlayground() {
             ))}
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {Object.entries(presets).map(([key, p]) => (
               <ComparisonCard
                 key={key}
@@ -754,15 +757,6 @@ export default function PhysicsPlayground() {
                 demoKey={demoKey}
               />
             ))}
-            <ComparisonCard
-              config={config}
-              meta={{ emoji: "🎛️", label: "Custom", description: "Your current config", color: "#6366f1" }}
-              isPlaying={isPlaying}
-              isActive={config.preset === "custom"}
-              onClick={() => {}}
-              demoKey={demoKey}
-              isCustom
-            />
           </div>
         </section>
 
