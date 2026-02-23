@@ -207,8 +207,8 @@ function SpringCurveDetail({ config }: { config: PhysicsConfig }) {
     })),
   []);
 
-  const padding = { top: 20, right: 16, bottom: 30, left: 40 };
-  const w = 700, h = 320;
+  const padding = { top: 12, right: 12, bottom: 24, left: 32 };
+  const w = 700, h = 220;
   const plotW = w - padding.left - padding.right;
   const plotH = h - padding.top - padding.bottom;
   const maxY = Math.max(...data.points, 1.2);
@@ -227,7 +227,7 @@ function SpringCurveDetail({ config }: { config: PhysicsConfig }) {
   const valueLabels = [0, 0.5, 1];
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 flex flex-col h-full">
+    <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 flex flex-col">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Spring Curve</h3>
         <div className="flex gap-4 text-xs text-neutral-500 dark:text-neutral-400">
@@ -464,7 +464,7 @@ export default function PhysicsPlayground() {
         {/* Controls + Curve */}
         <section className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
           {/* Sliders */}
-          <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 space-y-5">
+          <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 space-y-3">
             <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Fine-tune</h3>
             {sliders.map(s => (
               <div key={s.key}>
