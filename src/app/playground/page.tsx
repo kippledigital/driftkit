@@ -743,24 +743,17 @@ export default function PhysicsPlayground() {
                 <h2 className="text-sm font-semibold text-neutral-900 dark:text-white mb-0.5">Compare</h2>
                 <p className="text-[11px] text-neutral-400">Same component, different physics</p>
               </div>
-              <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 text-xs text-neutral-500 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={autoReplay}
-                    onChange={e => setAutoReplay(e.target.checked)}
-                    className="rounded border-neutral-300 dark:border-neutral-600"
-                  />
-                  Loop
-                </label>
-                <motion.button
-                  onClick={play}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-3 py-1.5 text-xs font-medium bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
-                >
-                  {isPlaying ? "Playing…" : "▶ Play"}
-                </motion.button>
-              </div>
+              <motion.button
+                onClick={() => setAutoReplay(prev => !prev)}
+                whileTap={{ scale: 0.95 }}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                  autoReplay
+                    ? "bg-indigo-500 text-white"
+                    : "bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+                }`}
+              >
+                {autoReplay ? "⏸ Stop" : "▶ Loop"}
+              </motion.button>
             </div>
 
             {/* Component selector */}
