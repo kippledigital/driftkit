@@ -108,11 +108,11 @@ export default function DocsPage() {
   );
 
   return (
-    <div className="px-8 py-12">
-      <div className="max-w-4xl">
-        <div className="mb-12">
+    <div className="min-h-screen bg-white dark:bg-neutral-950">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="mb-12 max-w-2xl">
           <h1 className="text-4xl font-medium text-neutral-900 dark:text-white mb-4">
-            DriftKit Components
+            Components
           </h1>
           <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-2">
             Motion-first UI components built with Framer Motion and TypeScript.
@@ -161,10 +161,10 @@ export default function DocsPage() {
             </p>
             <div className="flex justify-center space-x-4">
               <Link 
-                href="/"
+                href="/playground"
                 className="px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-md hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors"
               >
-                View Playground
+                Physics Playground
               </Link>
               <Link 
                 href="https://github.com/kippledigital/driftkit"
