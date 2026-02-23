@@ -517,7 +517,7 @@ function CodeOutput({ config }: CodeOutputProps) {
 
   // Framer Motion code (existing)
   const framerCode = useMemo(() => {
-    const springConfig = {
+    const c: Record<string, unknown> = {
       type: "spring",
       stiffness: config.stiffness,
       damping: config.damping,
@@ -691,12 +691,13 @@ function ContinuousAnimation() {
     }
   };
 
-  const copyToClipboard = useCallback(async () => {
+  const [copied, setCopied] = useState(false);
+
+  const copy = useCallback(async () => {
     const code = getCurrentCode();
     try {
       await navigator.clipboard.writeText(code);
-    } catch (err) {
-      // Fallback for older browsers
+    } catch {
       const textArea = document.createElement("textarea");
       textArea.value = code;
       document.body.appendChild(textArea);
@@ -705,6 +706,8 @@ function ContinuousAnimation() {
       document.execCommand("copy");
       document.body.removeChild(textArea);
     }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }, [getCurrentCode]);
 
   const tabs = [
@@ -902,7 +905,6 @@ export default function PhysicsPlayground() {
                       [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-900 dark:[&::-webkit-slider-thumb]:bg-white
                       [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm"
                   />
-                </div>
                 </div>
               ))}
             </div>
