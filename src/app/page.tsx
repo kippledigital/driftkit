@@ -58,6 +58,114 @@ const sizes: ButtonSize[] = ["sm", "md", "lg"];
 const COMPONENT_COUNT = 52;
 
 // =============================================================================
+// SPRING PHYSICS DEMO COMPONENT
+// =============================================================================
+
+function SpringPhysicsDemo() {
+  const [isDragging, setIsDragging] = useState(false);
+  
+  return (
+    <div className="relative h-48 w-full max-w-md mx-auto bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-900 dark:to-neutral-800 rounded-xl border border-neutral-300/50 dark:border-neutral-700/50 overflow-hidden">
+      {/* Background grid pattern */}
+      <div className="absolute inset-0 opacity-30 dark:opacity-20">
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
+      </div>
+      
+      {/* Floating elements with spring physics */}
+      <motion.div
+        className="absolute w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full shadow-lg cursor-grab active:cursor-grabbing flex items-center justify-center text-white font-bold text-sm"
+        drag
+        dragConstraints={{
+          left: 0,
+          right: 288, // max-w-md (384px) - ball width (48px)  
+          top: 0,
+          bottom: 144, // height (192px) - ball width (48px)
+        }}
+        dragElastic={0.05}
+        dragTransition={{
+          power: 0.3,
+          timeConstant: 200,
+        }}
+        whileDrag={{
+          scale: 1.1,
+          boxShadow: "0 10px 30px rgba(99, 102, 241, 0.4)",
+        }}
+        animate={!isDragging ? {
+          x: [20, 120, 220, 120, 20],
+          y: [20, 80, 20, 100, 20],
+        } : undefined}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+          type: "spring",
+          stiffness: 50,
+          damping: 20,
+        }}
+        onDragStart={() => setIsDragging(true)}
+        onDragEnd={() => {
+          setIsDragging(false);
+          // Resume animation after a delay
+          setTimeout(() => setIsDragging(false), 2000);
+        }}
+        initial={{ x: 20, y: 20 }}
+      >
+        ⚡
+      </motion.div>
+
+      {/* Floating decorative elements */}
+      <motion.div
+        className="absolute w-6 h-6 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full opacity-70"
+        animate={{
+          x: [280, 200, 280],
+          y: [30, 100, 30],
+          rotate: [0, 180, 360],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut",
+          type: "spring",
+          stiffness: 40,
+          damping: 15,
+        }}
+      />
+
+      <motion.div
+        className="absolute w-4 h-4 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full opacity-60"
+        animate={{
+          x: [50, 180, 50],
+          y: [120, 40, 120],
+          scale: [1, 1.5, 1],
+        }}
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: "easeInOut", 
+          type: "spring",
+          stiffness: 60,
+          damping: 18,
+        }}
+      />
+
+      {/* Instruction text */}
+      <div className="absolute bottom-4 left-4 right-4 text-center">
+        <p className="text-xs text-neutral-600 dark:text-neutral-400 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm rounded-full px-3 py-1 inline-block">
+          Drag the lightning bolt ⚡
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================================
 // SECTION DEFINITIONS (for TOC)
 // =============================================================================
 

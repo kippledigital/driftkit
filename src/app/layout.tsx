@@ -9,8 +9,46 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "driftkit",
-  description: "Motion-first UI components. Beautiful physics. Copy, paste, ship.",
+  title: "DriftKit - Framer Motion Spring Physics Components | React UI Library",
+  description: "52 beautifully animated React components powered by Framer Motion spring physics. Copy-paste ready components with natural motion for modern web apps. Built for motion designers and developers.",
+  keywords: [
+    "framer motion",
+    "spring physics",
+    "react components", 
+    "ui library",
+    "animation components",
+    "motion design",
+    "spring animations",
+    "framer motion components",
+    "react ui kit",
+    "animated components"
+  ],
+  authors: [{ name: "Nikki Kipple", url: "https://nikkikipple.com" }],
+  creator: "Nikki Kipple",
+  openGraph: {
+    title: "DriftKit - Framer Motion Spring Physics Components",
+    description: "52 beautifully animated React components powered by spring physics. Copy-paste ready for modern web apps.",
+    url: "https://driftkit.com",
+    siteName: "DriftKit",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DriftKit - Framer Motion Spring Physics Components",
+    description: "52 beautifully animated React components powered by spring physics. Copy-paste ready for modern web apps.",
+    creator: "@nikkikipple",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
