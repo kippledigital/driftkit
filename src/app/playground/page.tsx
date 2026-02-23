@@ -151,7 +151,7 @@ function ComparisonCard({
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
       {/* Animation stage — mock notification card */}
-      <div className="h-32 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden flex items-center justify-center p-3">
+      <div className="h-24 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden flex items-center justify-center p-3">
         <motion.div
           className="w-full rounded-lg shadow-xl overflow-hidden"
           style={{ backgroundColor: isCustom ? "#6366f1" + "15" : meta.color + "15", borderLeft: `3px solid ${isCustom ? "#6366f1" : meta.color}` }}
@@ -175,8 +175,8 @@ function ComparisonCard({
       </div>
 
       {/* Info */}
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-1">
+      <div className="px-4 py-3">
+        <div className="flex items-center justify-between mb-0.5">
           <h3 className="font-semibold text-sm text-neutral-900 dark:text-white">
             {meta.emoji} {meta.label}
             {isCustom && (
@@ -186,7 +186,7 @@ function ComparisonCard({
             )}
           </h3>
         </div>
-        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-3">{meta.description}</p>
+        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">{meta.description}</p>
         <MiniCurve config={config} color={isCustom ? "#6366f1" : meta.color} />
       </div>
     </motion.button>
