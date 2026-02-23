@@ -1597,12 +1597,42 @@ export default function Home() {
             >
               📚 Documentation
             </a>
-            <a
+            <motion.a
               href="/playground"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium text-sm hover:from-indigo-700 hover:to-purple-700 transition-colors shadow-lg shadow-indigo-500/25"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium text-sm shadow-lg shadow-indigo-500/25 relative overflow-hidden"
+              whileHover={{ 
+                scale: 1.05,
+                boxShadow: "0 20px 40px -12px rgba(99, 102, 241, 0.4)",
+              }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              ⚡ Physics Playground
-            </a>
+              <motion.span
+                animate={{ 
+                  rotate: [0, -10, 10, -10, 0],
+                  scale: [1, 1.2, 1],
+                }}
+                transition={{ 
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatDelay: 3,
+                }}
+              >
+                ⚡
+              </motion.span>
+              Physics Playground
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                initial={{ x: "-100%" }}
+                animate={{ x: "200%" }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  repeatDelay: 4,
+                  ease: "easeInOut",
+                }}
+              />
+            </motion.a>
             <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
               <span className="text-2xl font-bold text-neutral-900 dark:text-white tabular-nums">
                 <NumberTicker value={COMPONENT_COUNT} />
