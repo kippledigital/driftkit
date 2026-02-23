@@ -22,12 +22,48 @@ export const componentsData: Record<string, ComponentInfo> = {
   "accordion": {
     name: "accordion",
     displayName: "Accordion",
-    description: "Motion-first accordion component with spring physics and smooth transitions.",
+    description: "Motion-first accordion with height animations, staggered content reveals, and keyboard navigation. Supports single or multiple open panels.",
     importPath: 'import { Accordion } from "driftkit";',
     category: "Layout",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/accordion.tsx",
-    props: [],
-    examples: [`<Accordion />`],
+    props: [
+      {
+        name: "items",
+        type: "AccordionItem[]",
+        required: true,
+        description: "Array of accordion items. Each has value (key), trigger (header content), content (panel content), and optional disabled flag."
+      },
+      {
+        name: "type",
+        type: '"single" | "multiple"',
+        required: false,
+        defaultValue: '"single"',
+        description: "Single allows only one panel open at a time. Multiple allows any combination."
+      },
+      {
+        name: "value",
+        type: "string[]",
+        required: false,
+        description: "Controlled open values. Array of item values that are currently open."
+      },
+      {
+        name: "defaultValue",
+        type: "string[]",
+        required: false,
+        description: "Default open values for uncontrolled usage."
+      },
+      {
+        name: "onValueChange",
+        type: "(value: string[]) => void",
+        required: false,
+        description: "Callback when open state changes. Receives array of open item values."
+      }
+    ],
+    examples: [
+      `<Accordion items={[{ value: "item1", trigger: "Panel 1", content: "Content here" }]} />`,
+      `<Accordion type="multiple" items={items} defaultValue={["item1", "item2"]} />`,
+      `<Accordion items={faqItems} onValueChange={handleAccordionChange} />`
+    ],
   },
   "animated-counter": {
     name: "animated-counter",
@@ -52,12 +88,64 @@ export const componentsData: Record<string, ComponentInfo> = {
   "badge": {
     name: "badge",
     displayName: "Badge",
-    description: "Motion-first badge component with spring physics and smooth transitions.",
-    importPath: 'import { Badge } from "driftkit";',
+    description: "Motion-first badge with multiple variants, icons, pulse animation, and removable functionality. Includes NotificationBadge for counts and status indicators.",
+    importPath: 'import { Badge, NotificationBadge, AnimatedBadge } from "driftkit";',
     category: "Data Display",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/badge.tsx",
-    props: [],
-    examples: [`<Badge />`],
+    props: [
+      {
+        name: "variant",
+        type: '"default" | "secondary" | "success" | "warning" | "error" | "info" | "outline"',
+        required: false,
+        defaultValue: '"default"',
+        description: "Visual variant with different background colors and borders. Success is green, error is red, warning is amber, etc."
+      },
+      {
+        name: "size",
+        type: '"sm" | "md" | "lg"',
+        required: false,
+        defaultValue: '"md"',
+        description: "Badge size affecting padding and text size."
+      },
+      {
+        name: "icon",
+        type: "ReactNode",
+        required: false,
+        description: "Optional icon displayed before the text. Automatically sized based on badge size."
+      },
+      {
+        name: "pulse",
+        type: "boolean",
+        required: false,
+        defaultValue: "false",
+        description: "Shows animated pulse dot for live status indicators."
+      },
+      {
+        name: "removable",
+        type: "boolean",
+        required: false,
+        defaultValue: "false",
+        description: "Shows remove button (×) with hover effects. Use with onRemove callback."
+      },
+      {
+        name: "onRemove",
+        type: "() => void",
+        required: false,
+        description: "Callback when remove button is clicked. Only works when removable is true."
+      },
+      {
+        name: "children",
+        type: "ReactNode",
+        required: true,
+        description: "Badge content - typically short text or numbers."
+      }
+    ],
+    examples: [
+      `<Badge variant="success">New</Badge>`,
+      `<Badge variant="error" removable onRemove={handleRemove}>Error</Badge>`,
+      `<Badge pulse variant="warning" icon={<AlertIcon />}>Live</Badge>`,
+      `<NotificationBadge count={5}><Button>Messages</Button></NotificationBadge>`
+    ],
   },
   "breadcrumbs": {
     name: "breadcrumbs",
@@ -72,22 +160,114 @@ export const componentsData: Record<string, ComponentInfo> = {
   "button": {
     name: "button",
     displayName: "Button",
-    description: "Motion-first button component with spring physics and smooth transitions.",
+    description: "Motion-first button component with spring physics and smooth transitions. Features loading states, success states, and multiple variants.",
     importPath: 'import { Button } from "driftkit";',
     category: "Buttons",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/button.tsx",
-    props: [],
-    examples: [`<Button />`],
+    props: [
+      {
+        name: "variant",
+        type: '"default" | "secondary" | "ghost" | "destructive"',
+        required: false,
+        defaultValue: '"default"',
+        description: "Visual style variant. Default has dark background, secondary is lighter, ghost is transparent, destructive is red."
+      },
+      {
+        name: "size",
+        type: '"sm" | "md" | "lg"',
+        required: false,
+        defaultValue: '"md"',
+        description: "Button size affecting padding and text size."
+      },
+      {
+        name: "loading",
+        type: "boolean",
+        required: false,
+        defaultValue: "false",
+        description: "Shows loading spinner and 'Loading...' text. Button becomes disabled while loading."
+      },
+      {
+        name: "success",
+        type: "boolean",
+        required: false,
+        defaultValue: "false",
+        description: "Shows success checkmark and 'Done' text. Use after successful form submission."
+      },
+      {
+        name: "disabled",
+        type: "boolean",
+        required: false,
+        defaultValue: "false",
+        description: "Disables the button and reduces opacity. Prevents interactions."
+      },
+      {
+        name: "children",
+        type: "ReactNode",
+        required: true,
+        description: "Button content - text, icons, or other elements."
+      }
+    ],
+    examples: [
+      `<Button variant="default">Primary Action</Button>`,
+      `<Button variant="secondary" size="lg">Secondary</Button>`,
+      `<Button loading>Submitting...</Button>`,
+      `<Button success>Form Submitted!</Button>`
+    ],
   },
   "card": {
     name: "card",
     displayName: "Card",
-    description: "Motion-first card component with spring physics and smooth transitions.",
-    importPath: 'import { Card } from "driftkit";',
+    description: "Motion-first card component with spring physics, hover lift, and smooth transitions. Includes sub-components for images, content, and actions.",
+    importPath: 'import { Card, CardContent, CardImage, CardActions } from "driftkit";',
     category: "Layout",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/card.tsx",
-    props: [],
-    examples: [`<Card />`],
+    props: [
+      {
+        name: "variant",
+        type: '"default" | "outlined" | "elevated"',
+        required: false,
+        defaultValue: '"default"',
+        description: "Visual variant. Default has subtle border, outlined has thick border, elevated has enhanced shadow."
+      },
+      {
+        name: "size",
+        type: '"sm" | "md" | "lg"',
+        required: false,
+        defaultValue: '"md"',
+        description: "Affects text size and overall scale of the card."
+      },
+      {
+        name: "static",
+        type: "boolean",
+        required: false,
+        defaultValue: "false",
+        description: "Disables hover and press interactions for non-interactive cards."
+      },
+      {
+        name: "animated",
+        type: "boolean",
+        required: false,
+        defaultValue: "false",
+        description: "Enables enter animation when card mounts. Use with CardGrid for staggered effects."
+      },
+      {
+        name: "delay",
+        type: "number",
+        required: false,
+        description: "Animation delay in seconds for staggered entrance effects."
+      },
+      {
+        name: "children",
+        type: "ReactNode",
+        required: true,
+        description: "Card content - typically CardImage, CardContent, and CardActions components."
+      }
+    ],
+    examples: [
+      `<Card><CardContent title="Hello" description="Card content" /></Card>`,
+      `<Card variant="elevated" animated><CardImage src="/image.jpg" alt="Hero" /><CardContent title="Featured" /></Card>`,
+      `<Card variant="outlined" static><CardContent>Static card content</CardContent></Card>`
+    ],
   },
   "code-block": {
     name: "code-block",
@@ -172,12 +352,47 @@ export const componentsData: Record<string, ComponentInfo> = {
   "dialog": {
     name: "dialog",
     displayName: "Dialog",
-    description: "Motion-first dialog component with spring physics and smooth transitions.",
-    importPath: 'import { Dialog } from "driftkit";',
+    description: "Motion-first modal dialog with backdrop blur, focus trap, keyboard support, and spring physics. Includes DialogTitle, DialogDescription, and DialogFooter sub-components.",
+    importPath: 'import { Dialog, DialogTitle, DialogDescription, DialogFooter } from "driftkit";',
     category: "Overlay",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/dialog.tsx",
-    props: [],
-    examples: [`<Dialog />`],
+    props: [
+      {
+        name: "open",
+        type: "boolean",
+        required: true,
+        description: "Controls dialog visibility. Use state to manage open/close."
+      },
+      {
+        name: "onClose",
+        type: "() => void",
+        required: true,
+        description: "Callback when dialog should close (backdrop click, Escape key)."
+      },
+      {
+        name: "size",
+        type: '"sm" | "md" | "lg"',
+        required: false,
+        defaultValue: '"md"',
+        description: "Dialog width. Small (24rem), medium (32rem), large (42rem)."
+      },
+      {
+        name: "title",
+        type: "string",
+        required: false,
+        description: "Accessible title for screen readers via aria-label."
+      },
+      {
+        name: "children",
+        type: "ReactNode",
+        required: true,
+        description: "Dialog content - typically DialogTitle, DialogDescription, and DialogFooter."
+      }
+    ],
+    examples: [
+      `<Dialog open={isOpen} onClose={() => setIsOpen(false)}><DialogTitle>Confirm</DialogTitle><DialogDescription>Are you sure?</DialogDescription><DialogFooter><Button onClick={() => setIsOpen(false)}>Cancel</Button></DialogFooter></Dialog>`,
+      `<Dialog open={showDialog} onClose={handleClose} size="lg"><DialogTitle>Settings</DialogTitle><div>Dialog content...</div></Dialog>`
+    ],
   },
   "drawer": {
     name: "drawer",
@@ -192,12 +407,36 @@ export const componentsData: Record<string, ComponentInfo> = {
   "dropdown": {
     name: "dropdown",
     displayName: "Dropdown",
-    description: "Motion-first dropdown component with spring physics and smooth transitions.",
+    description: "Motion-first dropdown menu with staggered item animations, keyboard navigation, click-outside dismissal, and portal rendering. Features spring physics and WAI-ARIA compliance.",
     importPath: 'import { Dropdown } from "driftkit";',
     category: "Navigation",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/dropdown.tsx",
-    props: [],
-    examples: [`<Dropdown />`],
+    props: [
+      {
+        name: "trigger",
+        type: "ReactNode",
+        required: true,
+        description: "The trigger element that opens the dropdown when clicked. Can be a button, text, or any clickable element."
+      },
+      {
+        name: "items",
+        type: "DropdownItem[]",
+        required: true,
+        description: "Array of dropdown items. Each has label, onClick callback, optional icon, disabled flag, and separator flag."
+      },
+      {
+        name: "align",
+        type: '"left" | "right"',
+        required: false,
+        defaultValue: '"left"',
+        description: "Menu alignment relative to trigger. Left aligns left edges, right aligns right edges."
+      }
+    ],
+    examples: [
+      `<Dropdown trigger={<Button>Menu</Button>} items={[{ label: "Edit", onClick: handleEdit }, { label: "Delete", onClick: handleDelete, separator: true }]} />`,
+      `<Dropdown trigger="Options ▾" items={menuItems} align="right" />`,
+      `<Dropdown trigger={<IconButton />} items={[{ label: "Profile", icon: <UserIcon />, onClick: goToProfile }, { label: "Settings", icon: <CogIcon />, onClick: openSettings }]} />`
+    ],
   },
   "expandable-card": {
     name: "expandable-card",
@@ -232,12 +471,44 @@ export const componentsData: Record<string, ComponentInfo> = {
   "input": {
     name: "input",
     displayName: "Input",
-    description: "Motion-first input component with spring physics and smooth transitions.",
+    description: "Motion-first input with floating labels, state-aware styling, error shake animation, and focus rings. Supports success states with checkmark animation.",
     importPath: 'import { Input } from "driftkit";',
     category: "Input",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/input.tsx",
-    props: [],
-    examples: [`<Input />`],
+    props: [
+      {
+        name: "label",
+        type: "string",
+        required: false,
+        description: "Floating label that animates up when focused or filled. Provides accessible labeling."
+      },
+      {
+        name: "size",
+        type: '"sm" | "md" | "lg"',
+        required: false,
+        defaultValue: '"md"',
+        description: "Input size affecting padding, text size, and label positioning."
+      },
+      {
+        name: "state",
+        type: '"default" | "error" | "success"',
+        required: false,
+        defaultValue: '"default"',
+        description: "Visual state. Error shows red border and shake animation. Success shows green border and checkmark."
+      },
+      {
+        name: "errorMessage",
+        type: "string",
+        required: false,
+        description: "Error message displayed below input when state is 'error'. Animates in/out smoothly."
+      }
+    ],
+    examples: [
+      `<Input label="Email address" type="email" />`,
+      `<Input label="Password" type="password" state="error" errorMessage="Password must be at least 8 characters" />`,
+      `<Input label="Username" state="success" value="john_doe" />`,
+      `<Input size="lg" placeholder="Enter your name..." />`
+    ],
   },
   "liquid-button": {
     name: "liquid-button",
@@ -472,12 +743,41 @@ export const componentsData: Record<string, ComponentInfo> = {
   "tabs": {
     name: "tabs",
     displayName: "Tabs",
-    description: "Motion-first tabs component with spring physics and smooth transitions.",
+    description: "Motion-first tabs with sliding indicator, direction-aware content transitions, and full keyboard navigation. Features layout animations and spring physics.",
     importPath: 'import { Tabs } from "driftkit";',
     category: "Navigation",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/tabs.tsx",
-    props: [],
-    examples: [`<Tabs />`],
+    props: [
+      {
+        name: "items",
+        type: "TabItem[]",
+        required: true,
+        description: "Array of tab items. Each has value (key), label (tab header), content (panel content), and optional disabled flag."
+      },
+      {
+        name: "value",
+        type: "string",
+        required: false,
+        description: "Controlled active tab value. Use with onValueChange for controlled tabs."
+      },
+      {
+        name: "defaultValue",
+        type: "string",
+        required: false,
+        description: "Default active tab for uncontrolled usage. Falls back to first tab."
+      },
+      {
+        name: "onValueChange",
+        type: "(value: string) => void",
+        required: false,
+        description: "Callback when active tab changes. Receives the new tab's value."
+      }
+    ],
+    examples: [
+      `<Tabs items={[{ value: "tab1", label: "Overview", content: <div>Overview content</div> }]} />`,
+      `<Tabs value={activeTab} onValueChange={setActiveTab} items={tabItems} />`,
+      `<Tabs defaultValue="settings" items={[{ value: "profile", label: "Profile", content: <ProfileForm /> }, { value: "settings", label: "Settings", content: <SettingsPanel /> }]} />`
+    ],
   },
   "text-shimmer": {
     name: "text-shimmer",
@@ -492,22 +792,92 @@ export const componentsData: Record<string, ComponentInfo> = {
   "toast": {
     name: "toast",
     displayName: "Toast",
-    description: "Motion-first toast component with spring physics and smooth transitions.",
-    importPath: 'import { Toast } from "driftkit";',
+    description: "Motion-first toast notification system with drag-to-dismiss, auto-dismiss countdown, and spring physics. Use ToastProvider and useToast hook.",
+    importPath: 'import { ToastProvider, useToast } from "driftkit";',
     category: "Feedback",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/toast.tsx",
-    props: [],
-    examples: [`<Toast />`],
+    props: [
+      {
+        name: "title",
+        type: "string",
+        required: true,
+        description: "Main toast message text displayed prominently."
+      },
+      {
+        name: "description",
+        type: "string",
+        required: false,
+        description: "Optional secondary text displayed below the title in smaller font."
+      },
+      {
+        name: "variant",
+        type: '"default" | "success" | "error" | "warning"',
+        required: false,
+        defaultValue: '"default"',
+        description: "Visual variant affecting border color and icon. Success shows ✓, error shows ✕, warning shows !."
+      },
+      {
+        name: "duration",
+        type: "number",
+        required: false,
+        defaultValue: "4000",
+        description: "Auto-dismiss duration in milliseconds. Progress bar shows countdown."
+      }
+    ],
+    examples: [
+      `const { toast } = useToast(); toast({ title: "Success!", variant: "success" });`,
+      `toast({ title: "Error occurred", description: "Please try again", variant: "error" });`,
+      `toast({ title: "Warning", description: "Check your input", variant: "warning", duration: 6000 });`
+    ],
   },
   "toggle": {
     name: "toggle",
     displayName: "Toggle",
-    description: "Motion-first toggle component with spring physics and smooth transitions.",
+    description: "Motion-first toggle switch with sliding thumb animation, press squish effect, and iOS-style physics. Supports controlled and uncontrolled usage.",
     importPath: 'import { Toggle } from "driftkit";',
     category: "Input",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/toggle.tsx",
-    props: [],
-    examples: [`<Toggle />`],
+    props: [
+      {
+        name: "checked",
+        type: "boolean",
+        required: false,
+        description: "Controlled checked state. Use with onChange for controlled toggles."
+      },
+      {
+        name: "defaultChecked",
+        type: "boolean",
+        required: false,
+        defaultValue: "false",
+        description: "Default checked state for uncontrolled usage."
+      },
+      {
+        name: "onChange",
+        type: "(checked: boolean) => void",
+        required: false,
+        description: "Callback when toggle state changes. Receives the new checked state."
+      },
+      {
+        name: "size",
+        type: '"sm" | "md" | "lg"',
+        required: false,
+        defaultValue: '"md"',
+        description: "Toggle size. Small (36x20px), medium (44x24px), large (56x30px)."
+      },
+      {
+        name: "disabled",
+        type: "boolean",
+        required: false,
+        defaultValue: "false",
+        description: "Disables the toggle and reduces opacity. Prevents interactions."
+      }
+    ],
+    examples: [
+      `<Toggle defaultChecked />`,
+      `<Toggle checked={isEnabled} onChange={setIsEnabled} />`,
+      `<Toggle size="lg" aria-label="Enable notifications" />`,
+      `<Toggle disabled aria-labelledby="setting-label" />`
+    ],
   },
   "tooltip": {
     name: "tooltip",
