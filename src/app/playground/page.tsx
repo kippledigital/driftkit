@@ -755,9 +755,8 @@ export default function PhysicsPlayground() {
                 </label>
                 <motion.button
                   onClick={play}
-                  disabled={isPlaying}
                   whileTap={{ scale: 0.95 }}
-                  className="px-3 py-1.5 text-xs font-medium bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors disabled:opacity-50"
+                  className="px-3 py-1.5 text-xs font-medium bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors"
                 >
                   {isPlaying ? "Playing…" : "▶ Play"}
                 </motion.button>
