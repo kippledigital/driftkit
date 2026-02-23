@@ -151,7 +151,7 @@ function ComparisonCard({
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
       {/* Animation stage — mock notification card */}
-      <div className="h-32 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden flex items-end justify-center p-3">
+      <div className="h-32 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden flex items-center justify-center p-3">
         <motion.div
           className="w-full rounded-lg shadow-xl overflow-hidden"
           style={{ backgroundColor: isCustom ? "#6366f1" + "15" : meta.color + "15", borderLeft: `3px solid ${isCustom ? "#6366f1" : meta.color}` }}
