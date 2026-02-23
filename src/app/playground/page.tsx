@@ -1,12 +1,10 @@
 "use client";
 
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/button";
 import { Card, CardContent } from "@/components/card";
-import { MagneticButton } from "@/components/magnetic-button";
-import { RippleButton } from "@/components/ripple-button";
 import { ModeSwitcher } from "@/components/mode-switcher";
 
 // =============================================================================
@@ -55,6 +53,78 @@ const presets: Record<Exclude<PhysicsConfig["preset"], "custom">, Omit<PhysicsCo
     bounce: 0,
   },
 };
+
+// =============================================================================
+// SPRING PHYSICS CALCULATIONS
+// =============================================================================
+
+interface SpringMetrics {
+  settleTime: number;
+  overshoot: number;
+  oscillationCount: number;
+}
+
+function calculateSpringCurve(config: PhysicsConfig, duration: number = 1.5, steps: number = 150) {
+  const { stiffness, damping, mass } = config;
+  
+  const naturalFreq = Math.sqrt(stiffness / mass);
+  const dampingRatio = damping / (2 * Math.sqrt(stiffness * mass));
+  
+  const points: { x: number; y: number }[] = [];
+  let maxValue = 0;
+  let settleTime = duration;
+  let oscillationCount = 0;
+  let lastValue = 0;
+  let hasOscillated = false;
+  
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * duration;
+    let position = 0;
+    
+    if (dampingRatio < 1) {
+      // Underdamped
+      const dampedFreq = naturalFreq * Math.sqrt(1 - dampingRatio * dampingRatio);
+      position = 1 - Math.exp(-dampingRatio * naturalFreq * t) * 
+        (Math.cos(dampedFreq * t) + (dampingRatio * naturalFreq / dampedFreq) * Math.sin(dampedFreq * t));
+    } else if (dampingRatio === 1) {
+      // Critically damped
+      position = 1 - Math.exp(-naturalFreq * t) * (1 + naturalFreq * t);
+    } else {
+      // Overdamped
+      const r1 = -naturalFreq * (dampingRatio + Math.sqrt(dampingRatio * dampingRatio - 1));
+      const r2 = -naturalFreq * (dampingRatio - Math.sqrt(dampingRatio * dampingRatio - 1));
+      const A = -r2 / (r1 - r2);
+      const B = r1 / (r1 - r2);
+      position = 1 - A * Math.exp(r1 * t) - B * Math.exp(r2 * t);
+    }
+    
+    points.push({ x: t, y: position });
+    maxValue = Math.max(maxValue, position);
+    
+    // Detect settle time (within 2% of target)
+    if (Math.abs(position - 1) < 0.02 && settleTime === duration) {
+      settleTime = t;
+    }
+    
+    // Count oscillations by detecting zero crossings of velocity
+    if (i > 0) {
+      const currentValue = position - 1; // Relative to target
+      if (Math.sign(currentValue) !== Math.sign(lastValue) && Math.abs(currentValue) > 0.01) {
+        oscillationCount++;
+        hasOscillated = true;
+      }
+      lastValue = currentValue;
+    }
+  }
+  
+  const metrics: SpringMetrics = {
+    settleTime: Math.round(settleTime * 1000) / 1000,
+    overshoot: Math.round((maxValue - 1) * 100 * 10) / 10,
+    oscillationCount: Math.floor(oscillationCount / 2), // Full oscillations
+  };
+  
+  return { points, metrics };
+}
 
 // =============================================================================
 // CONTROL SLIDER COMPONENT
@@ -145,175 +215,399 @@ function PresetSelector({ value, onChange }: PresetSelectorProps) {
 }
 
 // =============================================================================
-// COMPONENT PREVIEW
+// SPRING CURVE VISUALIZATION
 // =============================================================================
 
-interface ComponentPreviewProps {
+interface SpringCurveProps {
   config: PhysicsConfig;
 }
 
-function ComponentPreview({ config }: ComponentPreviewProps) {
-  const springConfig = {
-    type: "spring" as const,
-    stiffness: config.stiffness,
-    damping: config.damping,
-    mass: config.mass,
-    bounce: config.bounce,
-  };
-
+function SpringCurve({ config }: SpringCurveProps) {
+  const { points, metrics } = useMemo(() => calculateSpringCurve(config), [config]);
+  
+  // Calculate preset curves for background
+  const presetCurves = useMemo(() => {
+    return Object.entries(presets).map(([key, preset]) => {
+      const presetConfig = { ...preset, preset: key as keyof typeof presets };
+      const { points } = calculateSpringCurve(presetConfig);
+      return { key, points, color: getPresetColor(key) };
+    });
+  }, []);
+  
+  const width = 400;
+  const height = 300;
+  const margin = { top: 20, right: 20, bottom: 40, left: 60 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+  
+  // Scale functions
+  const xScale = (x: number) => (x / 1.5) * innerWidth;
+  const yScale = (y: number) => innerHeight - (y * innerHeight);
+  
+  // Generate path data
+  const pathData = points.map((point, i) => 
+    `${i === 0 ? 'M' : 'L'} ${xScale(point.x)} ${yScale(point.y)}`
+  ).join(' ');
+  
+  const presetPaths = presetCurves.map(curve => 
+    curve.points.map((point, i) => 
+      `${i === 0 ? 'M' : 'L'} ${xScale(point.x)} ${yScale(point.y)}`
+    ).join(' ')
+  );
+  
   return (
-    <div className="space-y-8">
-      {/* Buttons Section */}
-      <div>
-        <h3 className="text-sm font-mono text-neutral-500 dark:text-neutral-400 mb-3 uppercase tracking-wider">
-          Buttons
-        </h3>
-        <div className="flex flex-wrap gap-3">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={springConfig}
-          >
-            <Button>Hover & Click</Button>
-          </motion.div>
-
-          <RippleButton className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg">
-            Ripple Effect
-          </RippleButton>
-
-          <MagneticButton intensity={0.5}>
-            <Button variant="secondary">Magnetic</Button>
-          </MagneticButton>
+    <div className="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
+          Spring Curve
+        </h2>
+        <div className="flex items-center gap-4 text-xs text-neutral-600 dark:text-neutral-400">
+          <span>Settle: {metrics.settleTime}s</span>
+          <span>Overshoot: {metrics.overshoot}%</span>
+          <span>Oscillations: {metrics.oscillationCount}</span>
         </div>
       </div>
-
-      {/* Cards Section */}
-      <div>
-        <h3 className="text-sm font-mono text-neutral-500 dark:text-neutral-400 mb-3 uppercase tracking-wider">
-          Cards
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <motion.div
-            whileHover={{
-              scale: 1.02,
-              y: -4,
-            }}
-            whileTap={{ scale: 0.98 }}
-            transition={springConfig}
-            className="cursor-pointer"
-          >
-            <Card>
-              <CardContent
-                title="Physics Card"
-                description="Hover to see lift animation with your custom spring settings."
+      
+      <div className="relative">
+        <svg width={width} height={height} className="bg-white dark:bg-neutral-800 rounded border">
+          <defs>
+            <linearGradient id="springGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#6366f1" />
+              <stop offset="100%" stopColor="#8b5cf6" />
+            </linearGradient>
+          </defs>
+          
+          {/* Background grid */}
+          <g className="opacity-20">
+            {[0, 0.25, 0.5, 0.75, 1, 1.25, 1.5].map(t => (
+              <line
+                key={t}
+                x1={margin.left + xScale(t)}
+                y1={margin.top}
+                x2={margin.left + xScale(t)}
+                y2={height - margin.bottom}
+                stroke="currentColor"
+                strokeWidth="1"
+                className="text-neutral-400"
               />
-            </Card>
-          </motion.div>
-
-          <motion.div
-            whileHover={{
-              scale: 1.03,
-              rotateY: 5,
-            }}
-            transition={springConfig}
-            className="cursor-pointer"
-          >
-            <div className="p-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg text-white">
-              <h4 className="font-semibold mb-2">3D Tilt</h4>
-              <p className="text-sm text-purple-100">
-                Subtle perspective rotation
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Interactive Elements */}
-      <div>
-        <h3 className="text-sm font-mono text-neutral-500 dark:text-neutral-400 mb-3 uppercase tracking-wider">
-          Interactive Elements
-        </h3>
-        <div className="flex flex-wrap items-center gap-4">
-          <motion.div
-            whileHover={{ rotate: 180 }}
-            whileTap={{ scale: 0.9 }}
-            transition={springConfig}
-            className="cursor-pointer"
-          >
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white text-lg">
-              ⚡
-            </div>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            transition={springConfig}
-            className="cursor-pointer"
-          >
-            <ModeSwitcher size={40} />
-          </motion.div>
-
-          <motion.div
-            whileHover={{
-              scale: 1.05,
-              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.25)",
-            }}
-            transition={springConfig}
-            className="px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg cursor-pointer"
-          >
-            <span className="text-sm font-medium">Shadow Lift</span>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Animated Shapes */}
-      <div>
-        <h3 className="text-sm font-mono text-neutral-500 dark:text-neutral-400 mb-3 uppercase tracking-wider">
-          Shapes
-        </h3>
-        <div className="flex flex-wrap gap-4">
-          <motion.div
-            animate={{
-              scale: [1, 1.1, 1],
-              rotate: [0, 180, 360],
-            }}
-            transition={{
-              ...springConfig,
-              repeat: Infinity,
-              repeatDelay: 2,
-            }}
-            className="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg"
+            ))}
+            {[0, 0.5, 1, 1.5].map(y => (
+              <line
+                key={y}
+                x1={margin.left}
+                y1={margin.top + yScale(y)}
+                x2={width - margin.right}
+                y2={margin.top + yScale(y)}
+                stroke="currentColor"
+                strokeWidth="1"
+                className="text-neutral-400"
+              />
+            ))}
+          </g>
+          
+          {/* Target line */}
+          <line
+            x1={margin.left}
+            y1={margin.top + yScale(1)}
+            x2={width - margin.right}
+            y2={margin.top + yScale(1)}
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeDasharray="4 4"
+            className="text-neutral-500"
           />
           
-          <motion.div
-            animate={{
-              borderRadius: ["10px", "50%", "10px"],
-            }}
-            transition={{
-              ...springConfig,
-              repeat: Infinity,
-              repeatDelay: 1.5,
-            }}
-            className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500"
+          {/* Preset curves (background) */}
+          {presetPaths.map((path, i) => (
+            <g key={presetCurves[i].key}>
+              <path
+                d={`M ${margin.left} ${margin.top} L ${margin.left} ${margin.top} ${path}`}
+                fill="none"
+                stroke={presetCurves[i].color}
+                strokeWidth="2"
+                opacity="0.3"
+                transform={`translate(${margin.left}, ${margin.top})`}
+              />
+            </g>
+          ))}
+          
+          {/* Current config curve */}
+          <path
+            d={`M ${margin.left} ${margin.top} L ${margin.left} ${margin.top} ${pathData}`}
+            fill="none"
+            stroke="url(#springGradient)"
+            strokeWidth="3"
+            transform={`translate(${margin.left}, ${margin.top})`}
           />
           
-          <motion.div
-            animate={{
-              scaleX: [1, 1.5, 1],
-              scaleY: [1, 0.5, 1],
-            }}
-            transition={{
-              ...springConfig,
-              repeat: Infinity,
-              repeatDelay: 3,
-            }}
-            className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full"
-          />
-        </div>
+          {/* Axes */}
+          <g className="text-neutral-600 dark:text-neutral-400">
+            {/* X-axis */}
+            <line
+              x1={margin.left}
+              y1={height - margin.bottom}
+              x2={width - margin.right}
+              y2={height - margin.bottom}
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            {[0, 0.5, 1, 1.5].map(t => (
+              <g key={t}>
+                <line
+                  x1={margin.left + xScale(t)}
+                  y1={height - margin.bottom}
+                  x2={margin.left + xScale(t)}
+                  y2={height - margin.bottom + 6}
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
+                <text
+                  x={margin.left + xScale(t)}
+                  y={height - margin.bottom + 20}
+                  textAnchor="middle"
+                  fontSize="12"
+                  fill="currentColor"
+                >
+                  {t}s
+                </text>
+              </g>
+            ))}
+            
+            {/* Y-axis */}
+            <line
+              x1={margin.left}
+              y1={margin.top}
+              x2={margin.left}
+              y2={height - margin.bottom}
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            {[0, 0.5, 1, 1.5].map(y => (
+              <g key={y}>
+                <line
+                  x1={margin.left - 6}
+                  y1={margin.top + yScale(y)}
+                  x2={margin.left}
+                  y2={margin.top + yScale(y)}
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
+                <text
+                  x={margin.left - 10}
+                  y={margin.top + yScale(y) + 4}
+                  textAnchor="end"
+                  fontSize="12"
+                  fill="currentColor"
+                >
+                  {y.toFixed(1)}
+                </text>
+              </g>
+            ))}
+          </g>
+          
+          {/* Axis labels */}
+          <text
+            x={width / 2}
+            y={height - 5}
+            textAnchor="middle"
+            fontSize="12"
+            fill="currentColor"
+            className="text-neutral-600 dark:text-neutral-400"
+          >
+            Time (seconds)
+          </text>
+          <text
+            x={15}
+            y={height / 2}
+            textAnchor="middle"
+            fontSize="12"
+            fill="currentColor"
+            className="text-neutral-600 dark:text-neutral-400"
+            transform={`rotate(-90, 15, ${height / 2})`}
+          >
+            Position
+          </text>
+        </svg>
       </div>
     </div>
   );
+}
+
+function getPresetColor(preset: string) {
+  const colors = {
+    snappy: "#ef4444", // red
+    smooth: "#10b981", // emerald
+    bouncy: "#f59e0b", // amber
+    gentle: "#8b5cf6", // violet
+  };
+  return colors[preset as keyof typeof colors] || "#6b7280";
+}
+
+// =============================================================================
+// PRESET COMPARISON GRID
+// =============================================================================
+
+interface PresetComparisonProps {
+  config: PhysicsConfig;
+  onPresetSelect: (preset: PhysicsConfig["preset"]) => void;
+}
+
+function PresetComparison({ config, onPresetSelect }: PresetComparisonProps) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [autoReplay, setAutoReplay] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const allConfigs = useMemo(() => {
+    const configs = Object.entries(presets).map(([key, preset]) => ({
+      ...preset,
+      preset: key as keyof typeof presets,
+      label: getPresetLabel(key),
+      isActive: config.preset === key,
+    }));
+    
+    const customConfig = {
+      stiffness: config.stiffness,
+      damping: config.damping,
+      mass: config.mass,
+      bounce: config.bounce,
+      preset: config.preset,
+      label: "Your Config",
+      isActive: config.preset === "custom",
+    };
+    
+    return [...configs, customConfig];
+  }, [config]);
+  
+  const triggerAnimation = useCallback(() => {
+    setIsPlaying(true);
+    setTimeout(() => setIsPlaying(false), 1500);
+  }, []);
+  
+  useEffect(() => {
+    if (autoReplay) {
+      intervalRef.current = setInterval(() => {
+        triggerAnimation();
+      }, 3000);
+      triggerAnimation();
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    }
+    
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [autoReplay, triggerAnimation]);
+  
+  return (
+    <div className="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">
+          Preset Comparison
+        </h2>
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+            <input
+              type="checkbox"
+              checked={autoReplay}
+              onChange={(e) => setAutoReplay(e.target.checked)}
+              className="rounded"
+            />
+            Auto-replay
+          </label>
+          <Button
+            onClick={triggerAnimation}
+            disabled={isPlaying}
+            className="bg-indigo-600 hover:bg-indigo-500"
+          >
+            {isPlaying ? "Playing..." : "Play All"}
+          </Button>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {allConfigs.map((configItem, index) => {
+          const springConfig = {
+            type: "spring" as const,
+            stiffness: configItem.stiffness,
+            damping: configItem.damping,
+            mass: configItem.mass,
+            bounce: configItem.bounce,
+          };
+          
+          const isCustom = configItem.label === "Your Config";
+          
+          return (
+            <div
+              key={index}
+              className={`relative p-4 rounded-lg border-2 transition-all cursor-pointer ${
+                configItem.isActive
+                  ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30"
+                  : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600"
+              }`}
+              onClick={() => {
+                if (!isCustom && configItem.preset !== "custom") {
+                  onPresetSelect(configItem.preset);
+                }
+              }}
+            >
+              <div className="text-center mb-4">
+                <h3 className={`text-sm font-semibold mb-1 ${
+                  isCustom 
+                    ? "text-indigo-600 dark:text-indigo-400" 
+                    : "text-neutral-900 dark:text-white"
+                }`}>
+                  {configItem.label}
+                  {isCustom && (
+                    <span className="ml-1 text-xs px-1.5 py-0.5 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded">
+                      LIVE
+                    </span>
+                  )}
+                </h3>
+                <div className="text-xs text-neutral-500 dark:text-neutral-400 space-y-0.5">
+                  <div>S:{configItem.stiffness} D:{configItem.damping}</div>
+                  <div>M:{configItem.mass} B:{configItem.bounce}</div>
+                </div>
+              </div>
+              
+              <div className="h-32 bg-neutral-100 dark:bg-neutral-800 rounded-lg overflow-hidden relative">
+                <motion.div
+                  animate={isPlaying ? {
+                    y: [-100, 0],
+                    opacity: [0, 1],
+                  } : {}}
+                  transition={springConfig}
+                  className={`absolute bottom-4 left-4 right-4 h-16 rounded-lg shadow-lg ${
+                    isCustom
+                      ? "bg-gradient-to-r from-indigo-500 to-purple-500"
+                      : "bg-gradient-to-r from-neutral-400 to-neutral-500"
+                  }`}
+                  initial={{ y: 0, opacity: 1 }}
+                >
+                  <div className="p-3 text-white text-xs font-medium">
+                    {configItem.label.split(" ")[0]}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function getPresetLabel(preset: string) {
+  const labels = {
+    snappy: "⚡ Snappy",
+    smooth: "✨ Smooth", 
+    bouncy: "🎾 Bouncy",
+    gentle: "🌸 Gentle",
+  };
+  return labels[preset as keyof typeof labels] || preset;
 }
 
 // =============================================================================
@@ -355,19 +649,15 @@ function CodeOutput({ config }: CodeOutputProps) {
   <Card>Your content</Card>
 </motion.div>
 
-// Continuous animation
+// Slide in animation (like comparison grid)
 <motion.div
   animate={{
-    scale: [1, 1.1, 1],
-    rotate: [0, 180, 360],
+    y: [100, 0],
+    opacity: [0, 1],
   }}
-  transition={{
-    ...springConfig,
-    repeat: Infinity,
-    repeatDelay: 2,
-  }}
+  transition={springConfig}
 >
-  <div>Animated element</div>
+  <div>Sliding element</div>
 </motion.div>`;
   }, [config]);
 
@@ -450,7 +740,7 @@ export default function PhysicsPlayground() {
                   Physics Playground
                 </h1>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                  Tune spring physics • See live preview • Copy code
+                  Compare presets • Visualize curves • Fine-tune parameters • Copy code
                 </p>
               </div>
             </div>
@@ -469,81 +759,79 @@ export default function PhysicsPlayground() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Top Row: Controls + Curve */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Controls Panel */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-6">
-                Spring Physics
-              </h2>
-              
-              <div className="space-y-6">
-                <PresetSelector 
-                  value={config.preset} 
-                  onChange={handlePresetChange} 
-                />
+          <div className="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800">
+            <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-6">
+              Spring Physics Controls
+            </h2>
+            
+            <div className="space-y-6">
+              <PresetSelector 
+                value={config.preset} 
+                onChange={handlePresetChange} 
+              />
 
-                <ControlSlider
-                  label="Stiffness"
-                  value={config.stiffness}
-                  min={50}
-                  max={1000}
-                  step={10}
-                  onChange={(value) => handleConfigChange("stiffness", value)}
-                />
+              <ControlSlider
+                label="Stiffness"
+                value={config.stiffness}
+                min={50}
+                max={1000}
+                step={10}
+                onChange={(value) => handleConfigChange("stiffness", value)}
+              />
 
-                <ControlSlider
-                  label="Damping"
-                  value={config.damping}
-                  min={5}
-                  max={100}
-                  step={1}
-                  onChange={(value) => handleConfigChange("damping", value)}
-                />
+              <ControlSlider
+                label="Damping"
+                value={config.damping}
+                min={5}
+                max={100}
+                step={1}
+                onChange={(value) => handleConfigChange("damping", value)}
+              />
 
-                <ControlSlider
-                  label="Mass"
-                  value={config.mass}
-                  min={0.1}
-                  max={5}
-                  step={0.1}
-                  onChange={(value) => handleConfigChange("mass", value)}
-                />
+              <ControlSlider
+                label="Mass"
+                value={config.mass}
+                min={0.1}
+                max={5}
+                step={0.1}
+                onChange={(value) => handleConfigChange("mass", value)}
+              />
 
-                <ControlSlider
-                  label="Bounce"
-                  value={config.bounce}
-                  min={0}
-                  max={1}
-                  step={0.05}
-                  onChange={(value) => handleConfigChange("bounce", value)}
-                />
-              </div>
+              <ControlSlider
+                label="Bounce"
+                value={config.bounce}
+                min={0}
+                max={1}
+                step={0.05}
+                onChange={(value) => handleConfigChange("bounce", value)}
+              />
+            </div>
 
-              <div className="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-700">
-                <div className="text-xs text-neutral-500 dark:text-neutral-400 space-y-2">
-                  <div><strong>Stiffness:</strong> How quickly it moves to target</div>
-                  <div><strong>Damping:</strong> How much it resists motion</div>
-                  <div><strong>Mass:</strong> How heavy the element feels</div>
-                  <div><strong>Bounce:</strong> Overshoot amount (0-1)</div>
-                </div>
+            <div className="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-700">
+              <div className="text-xs text-neutral-500 dark:text-neutral-400 space-y-2">
+                <div><strong>Stiffness:</strong> How quickly it moves to target</div>
+                <div><strong>Damping:</strong> How much it resists motion</div>
+                <div><strong>Mass:</strong> How heavy the element feels</div>
+                <div><strong>Bounce:</strong> Overshoot amount (0-1)</div>
               </div>
             </div>
           </div>
 
-          {/* Live Preview */}
-          <div className="lg:col-span-2 space-y-8">
-            <div className="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-6">
-                Live Preview
-              </h2>
-              <ComponentPreview config={config} />
-            </div>
+          {/* Spring Curve Visualization */}
+          <SpringCurve config={config} />
+        </div>
 
-            <div className="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800">
-              <CodeOutput config={config} />
-            </div>
-          </div>
+        {/* Preset Comparison Grid */}
+        <div className="mb-8">
+          <PresetComparison config={config} onPresetSelect={handlePresetChange} />
+        </div>
+
+        {/* Code Output */}
+        <div className="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800">
+          <CodeOutput config={config} />
         </div>
       </main>
 
@@ -552,7 +840,7 @@ export default function PhysicsPlayground() {
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-sm text-neutral-600 dark:text-neutral-400">
-              Experiment with spring physics • Find your perfect feel • Copy the code
+              Compare spring presets • Visualize timing curves • Perfect your animations • Copy the code
             </div>
             <div className="flex items-center gap-4 text-sm">
               <Link
