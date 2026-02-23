@@ -464,12 +464,86 @@ function CodeOutput({ config }: { config: PhysicsConfig }) {
 // MAIN PLAYGROUND
 // =============================================================================
 
+function ShareButton() {
+  const [copied, setCopied] = useState(false);
+  const copy = useCallback(async () => {
+    await navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, []);
+  return (
+    <motion.button
+      onClick={copy}
+      whileTap={{ scale: 0.95 }}
+      className="px-3 py-1.5 text-xs font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-white border border-neutral-200 dark:border-neutral-700 rounded-lg transition-colors"
+    >
+      {copied ? "✓ Copied URL" : "Share"}
+    </motion.button>
+  );
+}
+
+function parseUrlConfig(): { config?: Partial<PhysicsConfig>; demo?: string } {
+  if (typeof window === "undefined") return {};
+  const p = new URLSearchParams(window.location.search);
+  const result: { config?: Partial<PhysicsConfig>; demo?: string } = {};
+  
+  // Check for preset first
+  const preset = p.get("preset");
+  if (preset && preset in presets) {
+    result.config = { ...presets[preset as keyof typeof presets], preset: preset as PhysicsConfig["preset"] };
+  } else {
+    const s = p.get("s"), d = p.get("d"), m = p.get("m"), b = p.get("b");
+    if (s || d || m || b) {
+      result.config = {
+        stiffness: s ? Number(s) : defaultConfig.stiffness,
+        damping: d ? Number(d) : defaultConfig.damping,
+        mass: m ? Number(m) : defaultConfig.mass,
+        bounce: b ? Number(b) : defaultConfig.bounce,
+        preset: "custom",
+      };
+    }
+  }
+  
+  const demo = p.get("demo");
+  if (demo && demoOptions.some(o => o.key === demo)) result.demo = demo;
+  
+  return result;
+}
+
+function updateUrl(config: PhysicsConfig, demoKey: string) {
+  if (typeof window === "undefined") return;
+  const p = new URLSearchParams();
+  if (config.preset !== "custom" && config.preset in presets) {
+    p.set("preset", config.preset);
+  } else {
+    p.set("s", String(config.stiffness));
+    p.set("d", String(config.damping));
+    p.set("m", String(config.mass));
+    if (config.bounce > 0) p.set("b", String(config.bounce));
+  }
+  if (demoKey !== "button") p.set("demo", demoKey);
+  const qs = p.toString();
+  const url = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+  window.history.replaceState(null, "", url);
+}
+
 export default function PhysicsPlayground() {
-  const [config, setConfig] = useState<PhysicsConfig>(defaultConfig);
+  const [config, setConfig] = useState<PhysicsConfig>(() => {
+    const parsed = parseUrlConfig();
+    return parsed.config ? { ...defaultConfig, ...parsed.config } : defaultConfig;
+  });
   const [isPlaying, setIsPlaying] = useState(false);
   const [autoReplay, setAutoReplay] = useState(false);
-  const [demoKey, setDemoKey] = useState("button");
+  const [demoKey, setDemoKey] = useState(() => {
+    const parsed = parseUrlConfig();
+    return parsed.demo || "button";
+  });
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Sync URL on changes
+  useEffect(() => {
+    updateUrl(config, demoKey);
+  }, [config, demoKey]);
 
   const handlePreset = useCallback((key: string) => {
     setConfig({ ...presets[key as keyof typeof presets], preset: key as PhysicsConfig["preset"] });
@@ -516,6 +590,7 @@ export default function PhysicsPlayground() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <ShareButton />
             <Link href="/docs" className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors">
               Docs
             </Link>
