@@ -4,22 +4,38 @@ import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
 /**
- * Playground page transition — smooth single-motion entrance.
- * Uses Next.js template.tsx which re-mounts on every navigation.
+ * Playground page transition — single color curtain that
+ * slides up to reveal the page, then content fades in.
  */
 export default function PlaygroundTemplate({ children }: { children: ReactNode }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
-      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      transition={{
-        type: "spring",
-        stiffness: 200,
-        damping: 25,
-        mass: 0.5,
-      }}
-    >
-      {children}
-    </motion.div>
+    <>
+      {/* Color curtain — slides up to reveal */}
+      <motion.div
+        className="fixed inset-0 z-50 bg-gradient-to-br from-indigo-600 to-purple-600 pointer-events-none"
+        initial={{ y: 0 }}
+        animate={{ y: "-100%" }}
+        transition={{
+          type: "spring",
+          stiffness: 150,
+          damping: 28,
+          mass: 0.8,
+          delay: 0.05,
+        }}
+      />
+
+      {/* Content fades in after curtain starts moving */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{
+          duration: 0.4,
+          delay: 0.2,
+          ease: "easeOut",
+        }}
+      >
+        {children}
+      </motion.div>
+    </>
   );
 }
