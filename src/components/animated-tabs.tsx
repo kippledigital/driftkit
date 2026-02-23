@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useCallback, useId } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export interface AnimatedTabItem {
@@ -20,34 +20,65 @@ const TAB_SPRING = { type: "spring" as const, stiffness: 400, damping: 30, mass:
 export function AnimatedTabs({ items, defaultId, className = "" }: AnimatedTabsProps) {
   const [activeId, setActiveId] = useState(defaultId || items[0]?.id);
   const active = items.find((i) => i.id === activeId) || items[0];
+  const instanceId = useId();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const [blobStyle, setBlobStyle] = useState<{ left: number; width: number } | null>(null);
+  const isResizing = useRef(false);
+  const resizeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const measureBlob = useCallback(() => {
+    const container = containerRef.current;
+    const activeTab = tabRefs.current.get(activeId);
+    if (!container || !activeTab) return;
+    const containerRect = container.getBoundingClientRect();
+    const tabRect = activeTab.getBoundingClientRect();
+    setBlobStyle({
+      left: tabRect.left - containerRect.left,
+      width: tabRect.width,
+    });
+  }, [activeId]);
+
+  // Measure on active tab change
+  useEffect(() => {
+    measureBlob();
+  }, [measureBlob]);
+
+  // On resize: snap instantly (no spring), then re-enable spring after
+  useEffect(() => {
+    const onResize = () => {
+      isResizing.current = true;
+      measureBlob();
+      clearTimeout(resizeTimer.current);
+      resizeTimer.current = setTimeout(() => {
+        isResizing.current = false;
+      }, 150);
+    };
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      clearTimeout(resizeTimer.current);
+    };
+  }, [measureBlob]);
 
   return (
     <div className={className}>
-      <div className="relative flex gap-1 p-1 rounded-[8px] bg-neutral-100 dark:bg-neutral-800/60">
+      <div ref={containerRef} className="relative flex gap-1 p-1 rounded-[8px] bg-neutral-100 dark:bg-neutral-800/60">
+        {blobStyle && (
+          <motion.div
+            className="absolute top-1 bottom-1 rounded-[6px] bg-white dark:bg-neutral-700 shadow-sm"
+            animate={{ left: blobStyle.left, width: blobStyle.width }}
+            transition={isResizing.current ? { duration: 0 } : TAB_SPRING}
+            style={{ zIndex: 0 }}
+          />
+        )}
         {items.map((item) => (
           <button
             key={item.id}
+            ref={(el) => { if (el) tabRefs.current.set(item.id, el); }}
             onClick={() => setActiveId(item.id)}
             className="relative z-10 flex-1 px-3 py-1.5 text-sm font-medium rounded-[6px] transition-colors"
-            style={{ color: activeId === item.id ? "var(--tab-active, inherit)" : undefined }}
           >
-            {activeId === item.id && (
-              <motion.div
-                layoutId="animated-tab-blob"
-                className="absolute inset-0 rounded-[6px] bg-white dark:bg-neutral-700 shadow-sm"
-                transition={{
-                  ...TAB_SPRING,
-                  filter: { duration: 0.2, ease: "easeInOut" }
-                }}
-                animate={{ 
-                  filter: "blur(0px)"
-                }}
-                style={{ 
-                  zIndex: -1,
-                  filter: "blur(1.5px)"
-                }}
-              />
-            )}
             {item.label}
           </button>
         ))}
