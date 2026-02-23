@@ -151,10 +151,10 @@ function ComparisonCard({
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
       {/* Animation stage — mock notification card */}
-      <div className="h-40 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden flex items-end justify-center p-4">
+      <div className="aspect-square bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden flex items-end justify-center p-3">
         <motion.div
           className="w-full rounded-lg shadow-xl overflow-hidden"
-          style={{ backgroundColor: isCustom ? "#6366f1" : meta.color + "15", borderLeft: `3px solid ${isCustom ? "#6366f1" : meta.color}` }}
+          style={{ backgroundColor: isCustom ? "#6366f1" + "15" : meta.color + "15", borderLeft: `3px solid ${isCustom ? "#6366f1" : meta.color}` }}
           animate={isPlaying ? {
             y: [60, 0],
             opacity: [0, 1],
@@ -162,14 +162,14 @@ function ComparisonCard({
           } : { y: 0, opacity: 1, scale: 1 }}
           transition={springTransition}
         >
-          <div className="px-3 py-2.5">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px]" style={{ backgroundColor: isCustom ? "#6366f1" : meta.color }}>
+          <div className="px-2.5 py-2">
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <div className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] shrink-0" style={{ backgroundColor: isCustom ? "#6366f1" : meta.color }}>
                 <span className="text-white font-bold">✓</span>
               </div>
-              <span className="text-xs font-semibold text-neutral-900 dark:text-white">Changes saved</span>
+              <span className="text-[11px] font-semibold text-neutral-900 dark:text-white truncate">Changes saved</span>
             </div>
-            <p className="text-[10px] text-neutral-500 dark:text-neutral-400 pl-7">Your project has been updated successfully.</p>
+            <p className="text-[9px] text-neutral-500 dark:text-neutral-400 pl-[22px] leading-tight">Your project has been updated successfully.</p>
           </div>
         </motion.div>
       </div>
@@ -207,20 +207,28 @@ function SpringCurveDetail({ config }: { config: PhysicsConfig }) {
     })),
   []);
 
-  const w = 600, h = 200;
+  const padding = { top: 20, right: 16, bottom: 30, left: 40 };
+  const w = 700, h = 320;
+  const plotW = w - padding.left - padding.right;
+  const plotH = h - padding.top - padding.bottom;
   const maxY = Math.max(...data.points, 1.2);
 
   const toPath = (pts: number[]) => pts.map((y, i) => {
-    const x = (i / (pts.length - 1)) * w;
-    const py = h - (y / maxY) * h * 0.85 - h * 0.05;
+    const x = padding.left + (i / (pts.length - 1)) * plotW;
+    const py = padding.top + plotH - (y / maxY) * plotH;
     return `${i === 0 ? "M" : "L"}${x},${py}`;
   }).join(" ");
 
-  const targetY = h - (1 / maxY) * h * 0.85 - h * 0.05;
+  const targetY = padding.top + plotH - (1 / maxY) * plotH;
+
+  // Time axis labels
+  const timeLabels = [0, 0.375, 0.75, 1.125, 1.5];
+  // Value axis labels
+  const valueLabels = [0, 0.5, 1];
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5">
-      <div className="flex items-center justify-between mb-4">
+    <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 flex flex-col h-full">
+      <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Spring Curve</h3>
         <div className="flex gap-4 text-xs text-neutral-500 dark:text-neutral-400">
           <span>Settle <strong className="text-neutral-900 dark:text-white">{data.settleTime}s</strong></span>
@@ -228,28 +236,45 @@ function SpringCurveDetail({ config }: { config: PhysicsConfig }) {
           <span>Oscillations <strong className="text-neutral-900 dark:text-white">{data.oscillations}</strong></span>
         </div>
       </div>
-      <svg viewBox={`0 0 ${w} ${h}`} className="w-full" style={{ maxHeight: 200 }}>
-        {/* Grid */}
-        {[0, 0.25, 0.5, 0.75, 1].map(t => (
-          <line key={t} x1={t * w} y1={0} x2={t * w} y2={h} stroke="currentColor" strokeWidth={0.5} opacity={0.08} className="text-neutral-400" />
-        ))}
-        {/* Target line */}
-        <line x1={0} y1={targetY} x2={w} y2={targetY} stroke="currentColor" strokeWidth={1} strokeDasharray="4 4" opacity={0.15} className="text-neutral-500" />
-        {/* Preset curves */}
-        {presetData.map(p => (
-          <path key={p.key} d={toPath(p.points)} fill="none" stroke={p.color} strokeWidth={1.5} opacity={0.2} />
-        ))}
-        {/* Active curve */}
-        <path d={toPath(data.points)} fill="none" stroke="url(#curveGrad)" strokeWidth={2.5} strokeLinecap="round" />
-        <defs>
-          <linearGradient id="curveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#6366f1" />
-            <stop offset="100%" stopColor="#a855f7" />
-          </linearGradient>
-        </defs>
-      </svg>
+      <div className="flex-1 min-h-0">
+        <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-full">
+          {/* Grid lines */}
+          {timeLabels.map(t => {
+            const x = padding.left + (t / 1.5) * plotW;
+            return (
+              <g key={`t-${t}`}>
+                <line x1={x} y1={padding.top} x2={x} y2={padding.top + plotH} stroke="currentColor" strokeWidth={0.5} opacity={0.08} className="text-neutral-400" />
+                <text x={x} y={h - 4} textAnchor="middle" className="fill-neutral-400" style={{ fontSize: 10 }}>{t}s</text>
+              </g>
+            );
+          })}
+          {valueLabels.map(v => {
+            const y = padding.top + plotH - (v / maxY) * plotH;
+            return (
+              <g key={`v-${v}`}>
+                <line x1={padding.left} y1={y} x2={padding.left + plotW} y2={y} stroke="currentColor" strokeWidth={0.5} opacity={0.08} className="text-neutral-400" />
+                <text x={padding.left - 8} y={y + 3} textAnchor="end" className="fill-neutral-400" style={{ fontSize: 10 }}>{v}</text>
+              </g>
+            );
+          })}
+          {/* Target line at 1.0 */}
+          <line x1={padding.left} y1={targetY} x2={padding.left + plotW} y2={targetY} stroke="currentColor" strokeWidth={1} strokeDasharray="4 4" opacity={0.2} className="text-neutral-500" />
+          {/* Preset curves */}
+          {presetData.map(p => (
+            <path key={p.key} d={toPath(p.points)} fill="none" stroke={p.color} strokeWidth={1.5} opacity={0.25} />
+          ))}
+          {/* Active curve */}
+          <path d={toPath(data.points)} fill="none" stroke="url(#curveGrad)" strokeWidth={2.5} strokeLinecap="round" />
+          <defs>
+            <linearGradient id="curveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#6366f1" />
+              <stop offset="100%" stopColor="#a855f7" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-3 flex-wrap">
+      <div className="flex items-center gap-4 mt-2 flex-wrap">
         {Object.entries(presetMeta).map(([key, m]) => (
           <div key={key} className="flex items-center gap-1.5 text-[10px] text-neutral-400">
             <div className="w-3 h-0.5 rounded-full" style={{ backgroundColor: m.color, opacity: 0.5 }} />
@@ -356,10 +381,10 @@ export default function PhysicsPlayground() {
   }, [autoReplay, play]);
 
   const sliders = [
-    { key: "stiffness", label: "Stiffness", min: 50, max: 1000, step: 10, hint: "Speed to target" },
-    { key: "damping", label: "Damping", min: 5, max: 100, step: 1, hint: "Resistance" },
-    { key: "mass", label: "Mass", min: 0.1, max: 5, step: 0.1, hint: "Weight" },
-    { key: "bounce", label: "Bounce", min: 0, max: 1, step: 0.05, hint: "Overshoot" },
+    { key: "stiffness", label: "Stiffness", min: 50, max: 1000, step: 10, hint: "How fast the element snaps to its target. Higher = quicker, more aggressive movement." },
+    { key: "damping", label: "Damping", min: 5, max: 100, step: 1, hint: "How quickly motion settles. Low = more oscillation. High = stops fast, feels heavy." },
+    { key: "mass", label: "Mass", min: 0.1, max: 5, step: 0.1, hint: "Simulated weight of the element. Heavier objects move slower and carry more momentum." },
+    { key: "bounce", label: "Bounce", min: 0, max: 1, step: 0.05, hint: "Extra elasticity at boundaries. 0 = no bounce. 1 = full energy return like a rubber ball." },
   ];
 
   return (
@@ -437,10 +462,13 @@ export default function PhysicsPlayground() {
         </section>
 
         {/* Controls + Curve */}
-        <section className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+        <section className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6">
           {/* Sliders */}
           <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 space-y-5">
-            <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Fine-tune</h3>
+            <div>
+              <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Fine-tune</h3>
+              <p className="text-[11px] text-neutral-400 mt-1">Adjust spring physics parameters. Changes update the curve and all previews in real time.</p>
+            </div>
             {sliders.map(s => (
               <div key={s.key}>
                 <div className="flex justify-between mb-1.5">
@@ -457,7 +485,7 @@ export default function PhysicsPlayground() {
                     [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-900 dark:[&::-webkit-slider-thumb]:bg-white
                     [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm"
                 />
-                <p className="text-[10px] text-neutral-400 mt-0.5">{s.hint}</p>
+                <p className="text-[10px] text-neutral-400 mt-1 leading-snug">{s.hint}</p>
               </div>
             ))}
           </div>
