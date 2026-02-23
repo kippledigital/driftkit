@@ -19,143 +19,541 @@ export interface ComponentInfo {
 }
 
 export const componentsData: Record<string, ComponentInfo> = {
+  "accordion": {
+    name: "accordion",
+    displayName: "Accordion",
+    description: "Motion-first accordion component with spring physics and smooth transitions.",
+    importPath: 'import { Accordion } from "driftkit";',
+    category: "Layout",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/accordion.tsx",
+    props: [],
+    examples: [`<Accordion />`],
+  },
+  "animated-counter": {
+    name: "animated-counter",
+    displayName: "Animated Counter",
+    description: "Motion-first animated counter component with spring physics and smooth transitions.",
+    importPath: 'import { AnimatedCounter } from "driftkit";',
+    category: "Data Display",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/animated-counter.tsx",
+    props: [],
+    examples: [`<AnimatedCounter />`],
+  },
+  "animated-tabs": {
+    name: "animated-tabs",
+    displayName: "Animated Tabs",
+    description: "Motion-first animated tabs component with spring physics and smooth transitions.",
+    importPath: 'import { AnimatedTabs } from "driftkit";',
+    category: "Navigation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/animated-tabs.tsx",
+    props: [],
+    examples: [`<AnimatedTabs />`],
+  },
+  "badge": {
+    name: "badge",
+    displayName: "Badge",
+    description: "Motion-first badge component with spring physics and smooth transitions.",
+    importPath: 'import { Badge } from "driftkit";',
+    category: "Data Display",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/badge.tsx",
+    props: [],
+    examples: [`<Badge />`],
+  },
+  "breadcrumbs": {
+    name: "breadcrumbs",
+    displayName: "Breadcrumbs",
+    description: "Motion-first breadcrumbs component with spring physics and smooth transitions.",
+    importPath: 'import { Breadcrumbs } from "driftkit";',
+    category: "Navigation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/breadcrumbs.tsx",
+    props: [],
+    examples: [`<Breadcrumbs />`],
+  },
   "button": {
     name: "button",
     displayName: "Button",
-    description: "Motion-first button component with multiple variants and spring physics interactions.",
-    importPath: `import { DriftButton } from "driftkit";`,
-    category: "Input",
+    description: "Motion-first button component with spring physics and smooth transitions.",
+    importPath: 'import { Button } from "driftkit";',
+    category: "Buttons",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/button.tsx",
-    props: [
-      { name: "variant", type: '"default" | "secondary" | "ghost" | "destructive"', required: false, description: "Button style variant" },
-      { name: "size", type: '"sm" | "md" | "lg"', required: false, description: "Button size" },
-      { name: "disabled", type: "boolean", required: false, description: "Whether button is disabled" },
-      { name: "loading", type: "boolean", required: false, description: "Show loading state" },
-      { name: "children", type: "React.ReactNode", required: true, description: "Button content" }
-    ],
-    examples: [
-      `<DriftButton variant="default">
-  Click me
-</DriftButton>`,
-      `<DriftButton variant="secondary" size="sm">
-  Small button
-</DriftButton>`,
-      `<DriftButton variant="destructive" disabled>
-  Disabled button
-</DriftButton>`
-    ]
+    props: [],
+    examples: [`<Button />`],
   },
   "card": {
     name: "card",
     displayName: "Card",
-    description: "Flexible container component with hover effects and customizable styling.",
-    importPath: `import { DriftCard } from "driftkit";`,
+    description: "Motion-first card component with spring physics and smooth transitions.",
+    importPath: 'import { Card } from "driftkit";',
     category: "Layout",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/card.tsx",
-    props: [
-      { name: "hover", type: '"none" | "lift" | "glow"', required: false, description: "Hover effect type" },
-      { name: "className", type: "string", required: false, description: "Additional CSS classes" },
-      { name: "children", type: "React.ReactNode", required: true, description: "Card content" }
-    ],
-    examples: [
-      `<DriftCard>
-  <p>Basic card content</p>
-</DriftCard>`,
-      `<DriftCard hover="lift" className="p-6">
-  <h3>Interactive card</h3>
-  <p>Hovers and lifts on interaction</p>
-</DriftCard>`
-    ]
+    props: [],
+    examples: [`<Card />`],
+  },
+  "code-block": {
+    name: "code-block",
+    displayName: "Code Block",
+    description: "Motion-first code block component with spring physics and smooth transitions.",
+    importPath: 'import { CodeBlock } from "driftkit";',
+    category: "Data Display",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/code-block.tsx",
+    props: [],
+    examples: [`<CodeBlock />`],
+  },
+  "code-display": {
+    name: "code-display",
+    displayName: "Code Display",
+    description: "Motion-first code display component with spring physics and smooth transitions.",
+    importPath: 'import { CodeDisplay } from "driftkit";',
+    category: "Data Display",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/code-display.tsx",
+    props: [],
+    examples: [`<CodeDisplay />`],
+  },
+  "command-palette": {
+    name: "command-palette",
+    displayName: "Command Palette",
+    description: "Motion-first command palette component with spring physics and smooth transitions.",
+    importPath: 'import { CommandPalette } from "driftkit";',
+    category: "Navigation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/command-palette.tsx",
+    props: [],
+    examples: [`<CommandPalette />`],
+  },
+  "component-switcher": {
+    name: "component-switcher",
+    displayName: "Component Switcher",
+    description: "Motion-first component switcher component with spring physics and smooth transitions.",
+    importPath: 'import { ComponentSwitcher } from "driftkit";',
+    category: "Navigation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/component-switcher.tsx",
+    props: [],
+    examples: [`<ComponentSwitcher />`],
+  },
+  "context-menu": {
+    name: "context-menu",
+    displayName: "Context Menu",
+    description: "Motion-first context menu component with spring physics and smooth transitions.",
+    importPath: 'import { ContextMenu } from "driftkit";',
+    category: "Overlay",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/context-menu.tsx",
+    props: [],
+    examples: [`<ContextMenu />`],
+  },
+  "control-panel": {
+    name: "control-panel",
+    displayName: "Control Panel",
+    description: "Motion-first control panel component with spring physics and smooth transitions.",
+    importPath: 'import { ControlPanel } from "driftkit";',
+    category: "Input",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/control-panel.tsx",
+    props: [],
+    examples: [`<ControlPanel />`],
+  },
+  "cursor-trail": {
+    name: "cursor-trail",
+    displayName: "Cursor Trail",
+    description: "Motion-first cursor trail component with spring physics and smooth transitions.",
+    importPath: 'import { CursorTrail } from "driftkit";',
+    category: "Animation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/cursor-trail.tsx",
+    props: [],
+    examples: [`<CursorTrail />`],
+  },
+  "date-range-picker": {
+    name: "date-range-picker",
+    displayName: "Date Range Picker",
+    description: "Motion-first date range picker component with spring physics and smooth transitions.",
+    importPath: 'import { DateRangePicker } from "driftkit";',
+    category: "Input",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/date-range-picker.tsx",
+    props: [],
+    examples: [`<DateRangePicker />`],
+  },
+  "dialog": {
+    name: "dialog",
+    displayName: "Dialog",
+    description: "Motion-first dialog component with spring physics and smooth transitions.",
+    importPath: 'import { Dialog } from "driftkit";',
+    category: "Overlay",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/dialog.tsx",
+    props: [],
+    examples: [`<Dialog />`],
+  },
+  "drawer": {
+    name: "drawer",
+    displayName: "Drawer",
+    description: "Motion-first drawer component with spring physics and smooth transitions.",
+    importPath: 'import { Drawer } from "driftkit";',
+    category: "Overlay",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/drawer.tsx",
+    props: [],
+    examples: [`<Drawer />`],
+  },
+  "dropdown": {
+    name: "dropdown",
+    displayName: "Dropdown",
+    description: "Motion-first dropdown component with spring physics and smooth transitions.",
+    importPath: 'import { Dropdown } from "driftkit";',
+    category: "Navigation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/dropdown.tsx",
+    props: [],
+    examples: [`<Dropdown />`],
+  },
+  "expandable-card": {
+    name: "expandable-card",
+    displayName: "Expandable Card",
+    description: "Motion-first expandable card component with spring physics and smooth transitions.",
+    importPath: 'import { ExpandableCard } from "driftkit";',
+    category: "Layout",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/expandable-card.tsx",
+    props: [],
+    examples: [`<ExpandableCard />`],
+  },
+  "glow-card": {
+    name: "glow-card",
+    displayName: "Glow Card",
+    description: "Motion-first glow card component with spring physics and smooth transitions.",
+    importPath: 'import { GlowCard } from "driftkit";',
+    category: "Layout",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/glow-card.tsx",
+    props: [],
+    examples: [`<GlowCard />`],
+  },
+  "gradient-border": {
+    name: "gradient-border",
+    displayName: "Gradient Border",
+    description: "Motion-first gradient border component with spring physics and smooth transitions.",
+    importPath: 'import { GradientBorder } from "driftkit";',
+    category: "Animation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/gradient-border.tsx",
+    props: [],
+    examples: [`<GradientBorder />`],
   },
   "input": {
     name: "input",
     displayName: "Input",
-    description: "Enhanced text input component with smooth focus animations.",
-    importPath: `import { DriftInput } from "driftkit";`,
+    description: "Motion-first input component with spring physics and smooth transitions.",
+    importPath: 'import { Input } from "driftkit";',
     category: "Input",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/input.tsx",
-    props: [
-      { name: "label", type: "string", required: false, description: "Input label" },
-      { name: "placeholder", type: "string", required: false, description: "Placeholder text" },
-      { name: "type", type: "string", required: false, description: "Input type", defaultValue: "text" },
-      { name: "required", type: "boolean", required: false, description: "Whether input is required" },
-      { name: "disabled", type: "boolean", required: false, description: "Whether input is disabled" }
-    ],
-    examples: [
-      `<DriftInput placeholder="Enter text..." />`,
-      `<DriftInput 
-  label="Email"
-  type="email" 
-  required 
-/>`
-    ]
+    props: [],
+    examples: [`<Input />`],
+  },
+  "liquid-button": {
+    name: "liquid-button",
+    displayName: "Liquid Button",
+    description: "Motion-first liquid button component with spring physics and smooth transitions.",
+    importPath: 'import { LiquidButton } from "driftkit";',
+    category: "Buttons",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/liquid-button.tsx",
+    props: [],
+    examples: [`<LiquidButton />`],
   },
   "magnetic-button": {
     name: "magnetic-button",
     displayName: "Magnetic Button",
-    description: "Button with magnetic hover effect that follows cursor movement.",
-    importPath: `import { MagneticButton } from "driftkit";`,
+    description: "Motion-first magnetic button component with spring physics and smooth transitions.",
+    importPath: 'import { MagneticButton } from "driftkit";',
     category: "Buttons",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/magnetic-button.tsx",
-    props: [
-      { name: "strength", type: "number", required: false, description: "Magnetic effect strength", defaultValue: "0.3" },
-      { name: "children", type: "React.ReactNode", required: true, description: "Button content" }
-    ],
-    examples: [
-      `<MagneticButton>
-  Hover me
-</MagneticButton>`,
-      `<MagneticButton strength={0.5}>
-  Strong magnetic effect
-</MagneticButton>`
-    ]
+    props: [],
+    examples: [`<MagneticButton />`],
+  },
+  "magnetic-dock": {
+    name: "magnetic-dock",
+    displayName: "Magnetic Dock",
+    description: "Motion-first magnetic dock component with spring physics and smooth transitions.",
+    importPath: 'import { MagneticDock } from "driftkit";',
+    category: "Navigation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/magnetic-dock.tsx",
+    props: [],
+    examples: [`<MagneticDock />`],
+  },
+  "marquee": {
+    name: "marquee",
+    displayName: "Marquee",
+    description: "Motion-first marquee component with spring physics and smooth transitions.",
+    importPath: 'import { Marquee } from "driftkit";',
+    category: "Animation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/marquee.tsx",
+    props: [],
+    examples: [`<Marquee />`],
+  },
+  "mode-switcher": {
+    name: "mode-switcher",
+    displayName: "Mode Switcher",
+    description: "Motion-first mode switcher component with spring physics and smooth transitions.",
+    importPath: 'import { ModeSwitcher } from "driftkit";',
+    category: "Utility",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/mode-switcher.tsx",
+    props: [],
+    examples: [`<ModeSwitcher />`],
+  },
+  "morphing-hamburger": {
+    name: "morphing-hamburger",
+    displayName: "Morphing Hamburger",
+    description: "Motion-first morphing hamburger component with spring physics and smooth transitions.",
+    importPath: 'import { MorphingHamburger } from "driftkit";',
+    category: "Navigation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/morphing-hamburger.tsx",
+    props: [],
+    examples: [`<MorphingHamburger />`],
+  },
+  "morphing-shape": {
+    name: "morphing-shape",
+    displayName: "Morphing Shape",
+    description: "Motion-first morphing shape component with spring physics and smooth transitions.",
+    importPath: 'import { MorphingShape } from "driftkit";',
+    category: "Animation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/morphing-shape.tsx",
+    props: [],
+    examples: [`<MorphingShape />`],
+  },
+  "multi-select": {
+    name: "multi-select",
+    displayName: "Multi Select",
+    description: "Motion-first multi select component with spring physics and smooth transitions.",
+    importPath: 'import { MultiSelect } from "driftkit";',
+    category: "Input",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/multi-select.tsx",
+    props: [],
+    examples: [`<MultiSelect />`],
+  },
+  "nav-menu": {
+    name: "nav-menu",
+    displayName: "Nav Menu",
+    description: "Motion-first nav menu component with spring physics and smooth transitions.",
+    importPath: 'import { NavMenu } from "driftkit";',
+    category: "Navigation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/nav-menu.tsx",
+    props: [],
+    examples: [`<NavMenu />`],
+  },
+  "number-ticker": {
+    name: "number-ticker",
+    displayName: "Number Ticker",
+    description: "Motion-first number ticker component with spring physics and smooth transitions.",
+    importPath: 'import { NumberTicker } from "driftkit";',
+    category: "Data Display",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/number-ticker.tsx",
+    props: [],
+    examples: [`<NumberTicker />`],
+  },
+  "parallax-scroll": {
+    name: "parallax-scroll",
+    displayName: "Parallax Scroll",
+    description: "Motion-first parallax scroll component with spring physics and smooth transitions.",
+    importPath: 'import { ParallaxScroll } from "driftkit";',
+    category: "Animation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/parallax-scroll.tsx",
+    props: [],
+    examples: [`<ParallaxScroll />`],
+  },
+  "parallax-tilt-card": {
+    name: "parallax-tilt-card",
+    displayName: "Parallax Tilt Card",
+    description: "Motion-first parallax tilt card component with spring physics and smooth transitions.",
+    importPath: 'import { ParallaxTiltCard } from "driftkit";',
+    category: "Layout",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/parallax-tilt-card.tsx",
+    props: [],
+    examples: [`<ParallaxTiltCard />`],
+  },
+  "popover": {
+    name: "popover",
+    displayName: "Popover",
+    description: "Motion-first popover component with spring physics and smooth transitions.",
+    importPath: 'import { Popover } from "driftkit";',
+    category: "Overlay",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/popover.tsx",
+    props: [],
+    examples: [`<Popover />`],
+  },
+  "progress-ring": {
+    name: "progress-ring",
+    displayName: "Progress Ring",
+    description: "Motion-first progress ring component with spring physics and smooth transitions.",
+    importPath: 'import { ProgressRing } from "driftkit";',
+    category: "Feedback",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/progress-ring.tsx",
+    props: [],
+    examples: [`<ProgressRing />`],
+  },
+  "ripple-button": {
+    name: "ripple-button",
+    displayName: "Ripple Button",
+    description: "Motion-first ripple button component with spring physics and smooth transitions.",
+    importPath: 'import { RippleButton } from "driftkit";',
+    category: "Buttons",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/ripple-button.tsx",
+    props: [],
+    examples: [`<RippleButton />`],
+  },
+  "schedule-picker": {
+    name: "schedule-picker",
+    displayName: "Schedule Picker",
+    description: "Motion-first schedule picker component with spring physics and smooth transitions.",
+    importPath: 'import { SchedulePicker } from "driftkit";',
+    category: "Input",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/schedule-picker.tsx",
+    props: [],
+    examples: [`<SchedulePicker />`],
+  },
+  "scroll-reveal": {
+    name: "scroll-reveal",
+    displayName: "Scroll Reveal",
+    description: "Motion-first scroll reveal component with spring physics and smooth transitions.",
+    importPath: 'import { ScrollReveal } from "driftkit";',
+    category: "Animation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/scroll-reveal.tsx",
+    props: [],
+    examples: [`<ScrollReveal />`],
+  },
+  "skeleton": {
+    name: "skeleton",
+    displayName: "Skeleton",
+    description: "Motion-first skeleton component with spring physics and smooth transitions.",
+    importPath: 'import { Skeleton } from "driftkit";',
+    category: "Layout",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/skeleton.tsx",
+    props: [],
+    examples: [`<Skeleton />`],
+  },
+  "spotlight": {
+    name: "spotlight",
+    displayName: "Spotlight",
+    description: "Motion-first spotlight component with spring physics and smooth transitions.",
+    importPath: 'import { Spotlight } from "driftkit";',
+    category: "Animation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/spotlight.tsx",
+    props: [],
+    examples: [`<Spotlight />`],
+  },
+  "spring-carousel": {
+    name: "spring-carousel",
+    displayName: "Spring Carousel",
+    description: "Motion-first spring carousel component with spring physics and smooth transitions.",
+    importPath: 'import { SpringCarousel } from "driftkit";',
+    category: "Layout",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/spring-carousel.tsx",
+    props: [],
+    examples: [`<SpringCarousel />`],
+  },
+  "staggered-list": {
+    name: "staggered-list",
+    displayName: "Staggered List",
+    description: "Motion-first staggered list component with spring physics and smooth transitions.",
+    importPath: 'import { StaggeredList } from "driftkit";',
+    category: "Animation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/staggered-list.tsx",
+    props: [],
+    examples: [`<StaggeredList />`],
+  },
+  "stepper": {
+    name: "stepper",
+    displayName: "Stepper",
+    description: "Motion-first stepper component with spring physics and smooth transitions.",
+    importPath: 'import { Stepper } from "driftkit";',
+    category: "Navigation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/stepper.tsx",
+    props: [],
+    examples: [`<Stepper />`],
+  },
+  "swipe-cards": {
+    name: "swipe-cards",
+    displayName: "Swipe Cards",
+    description: "Motion-first swipe cards component with spring physics and smooth transitions.",
+    importPath: 'import { SwipeCards } from "driftkit";',
+    category: "Layout",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/swipe-cards.tsx",
+    props: [],
+    examples: [`<SwipeCards />`],
+  },
+  "tabs": {
+    name: "tabs",
+    displayName: "Tabs",
+    description: "Motion-first tabs component with spring physics and smooth transitions.",
+    importPath: 'import { Tabs } from "driftkit";',
+    category: "Navigation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/tabs.tsx",
+    props: [],
+    examples: [`<Tabs />`],
+  },
+  "text-shimmer": {
+    name: "text-shimmer",
+    displayName: "Text Shimmer",
+    description: "Motion-first text shimmer component with spring physics and smooth transitions.",
+    importPath: 'import { TextShimmer } from "driftkit";',
+    category: "Animation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/text-shimmer.tsx",
+    props: [],
+    examples: [`<TextShimmer />`],
+  },
+  "toast": {
+    name: "toast",
+    displayName: "Toast",
+    description: "Motion-first toast component with spring physics and smooth transitions.",
+    importPath: 'import { Toast } from "driftkit";',
+    category: "Feedback",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/toast.tsx",
+    props: [],
+    examples: [`<Toast />`],
+  },
+  "toggle": {
+    name: "toggle",
+    displayName: "Toggle",
+    description: "Motion-first toggle component with spring physics and smooth transitions.",
+    importPath: 'import { Toggle } from "driftkit";',
+    category: "Input",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/toggle.tsx",
+    props: [],
+    examples: [`<Toggle />`],
+  },
+  "tooltip": {
+    name: "tooltip",
+    displayName: "Tooltip",
+    description: "Motion-first tooltip component with spring physics and smooth transitions.",
+    importPath: 'import { Tooltip } from "driftkit";',
+    category: "Overlay",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/tooltip.tsx",
+    props: [],
+    examples: [`<Tooltip />`],
   },
   "typewriter": {
     name: "typewriter",
     displayName: "Typewriter",
-    description: "Animated typewriter text effect with customizable speed and cursor.",
-    importPath: `import { Typewriter } from "driftkit";`,
+    description: "Motion-first typewriter component with spring physics and smooth transitions.",
+    importPath: 'import { Typewriter } from "driftkit";',
     category: "Animation",
     githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/typewriter.tsx",
-    props: [
-      { name: "text", type: "string", required: true, description: "Text to animate" },
-      { name: "speed", type: "number", required: false, description: "Typing speed in ms", defaultValue: "100" },
-      { name: "showCursor", type: "boolean", required: false, description: "Show blinking cursor", defaultValue: "true" }
-    ],
-    examples: [
-      `<Typewriter text="Hello, world!" />`,
-      `<Typewriter 
-  text="Fast typing animation" 
-  speed={50} 
-  showCursor={false} 
-/>`
-    ]
-  }
+    props: [],
+    examples: [`<Typewriter />`],
+  },
+  "wobble-card": {
+    name: "wobble-card",
+    displayName: "Wobble Card",
+    description: "Motion-first wobble card component with spring physics and smooth transitions.",
+    importPath: 'import { WobbleCard } from "driftkit";',
+    category: "Layout",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/wobble-card.tsx",
+    props: [],
+    examples: [`<WobbleCard />`],
+  },
 };
 
 export function getComponentInfo(slug: string): ComponentInfo | null {
   return componentsData[slug] || null;
 }
 
-export function getAllComponentSlugs(): string[] {
+export function getAllComponentNames(): string[] {
   return Object.keys(componentsData);
 }
 
-// For components without detailed info, provide basic fallback
-const fallbackComponents = [
-  "accordion", "animated-counter", "animated-tabs", "badge", "breadcrumbs",
-  "code-block", "code-display", "command-palette", "component-switcher",
-  "context-menu", "control-panel", "cursor-trail", "date-range-picker",
-  "dialog", "drawer", "dropdown", "expandable-card", "glow-card",
-  "gradient-border", "liquid-button", "magnetic-dock", "marquee",
-  "mode-switcher", "morphing-hamburger", "morphing-shape", "multi-select",
-  "nav-menu", "number-ticker", "parallax-scroll", "parallax-tilt-card",
-  "popover", "progress-ring", "ripple-button", "schedule-picker",
-  "scroll-reveal", "skeleton", "spotlight", "spring-carousel",
-  "staggered-list", "stepper", "swipe-cards", "tabs", "text-shimmer",
-  "toast", "toggle", "tooltip", "wobble-card"
-];
-
-export function getAllComponentNames(): string[] {
-  return [...Object.keys(componentsData), ...fallbackComponents];
+export function getComponentsByCategory(): Record<string, ComponentInfo[]> {
+  const categories: Record<string, ComponentInfo[]> = {};
+  for (const info of Object.values(componentsData)) {
+    if (!categories[info.category]) categories[info.category] = [];
+    categories[info.category].push(info);
+  }
+  return categories;
 }
