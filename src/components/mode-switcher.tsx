@@ -111,6 +111,7 @@ export function ModeSwitcher({
       document.documentElement.classList.toggle("dark", next === "dark");
     }
 
+    localStorage.setItem("theme", next);
     setInternalMode(next);
     onChange?.(next);
   }, [isDark, irisWipe, prefersReducedMotion, onChange]);
