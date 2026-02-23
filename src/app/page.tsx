@@ -1598,10 +1598,10 @@ export default function Home() {
               📚 Documentation
             </a>
             <a
-              href="/playground/button"
+              href="/playground"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium text-sm hover:from-indigo-700 hover:to-purple-700 transition-colors shadow-lg shadow-indigo-500/25"
             >
-              ⚡ V2 Playground
+              ⚡ Physics Playground
             </a>
             <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
               <span className="text-2xl font-bold text-neutral-900 dark:text-white tabular-nums">
