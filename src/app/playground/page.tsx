@@ -473,7 +473,7 @@ export default function PhysicsPlayground() {
                     {s.label}
                     <span className="relative group">
                       <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-neutral-300 dark:border-neutral-600 text-[9px] text-neutral-400 cursor-help leading-none">i</span>
-                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2.5 py-1.5 text-[11px] leading-snug text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg shadow-lg whitespace-normal w-48 text-center opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-20">
+                      <span className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1.5 text-[11px] leading-snug text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg shadow-lg whitespace-normal w-48 opacity-0 translate-x-1 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 z-20">
                         {s.hint}
                       </span>
                     </span>
