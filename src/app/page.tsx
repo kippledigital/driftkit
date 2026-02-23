@@ -51,6 +51,7 @@ import { ContextMenu, contextMenuItems } from "@/components/context-menu";
 import { Popover } from "@/components/popover";
 import { Breadcrumbs, breadcrumbPatterns } from "@/components/breadcrumbs";
 import { Badge, NotificationBadge } from "@/components/badge";
+import { RadialNav } from "@/components/radial-nav";
 
 const variants: ButtonVariant[] = ["default", "secondary", "ghost", "destructive"];
 const sizes: ButtonSize[] = ["sm", "md", "lg"];
@@ -1660,6 +1661,7 @@ function Section({ id, title, description, children, code }: {
 export default function Home() {
   return (
     <>
+      <RadialNav />
       <main className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 max-w-7xl mx-auto px-6 sm:px-8">
         {/* ============================================================= */}
         {/* HERO                                                           */}
