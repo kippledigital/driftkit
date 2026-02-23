@@ -700,12 +700,12 @@ export default function PhysicsPlayground() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-10 space-y-10">
-        {/* Hero — Comparison Grid */}
+        {/* Hero — Big Preview + Preset Strip */}
         <section>
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-1">Compare</h2>
-              <p className="text-sm text-neutral-500">Same component, different physics. Click to apply.</p>
+              <p className="text-sm text-neutral-500">Same component, different physics. Click a preset to feel the difference.</p>
             </div>
             <div className="flex items-center gap-3">
               <label className="flex items-center gap-2 text-xs text-neutral-500 cursor-pointer select-none">
@@ -723,13 +723,13 @@ export default function PhysicsPlayground() {
                 whileTap={{ scale: 0.95 }}
                 className="px-4 py-2 text-sm font-medium bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors disabled:opacity-50"
               >
-                {isPlaying ? "Playing…" : "▶ Play All"}
+                {isPlaying ? "Playing…" : "▶ Play"}
               </motion.button>
             </div>
           </div>
 
           {/* Component selector */}
-          <div className="flex items-center gap-1 mb-6 p-1 bg-neutral-100 dark:bg-neutral-900 rounded-lg w-fit">
+          <div className="flex items-center gap-1 mb-4 p-1 bg-neutral-100 dark:bg-neutral-900 rounded-lg w-fit">
             {demoOptions.map(opt => (
               <button
                 key={opt.key}
@@ -745,27 +745,66 @@ export default function PhysicsPlayground() {
             ))}
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {Object.entries(presets).map(([key, p]) => (
-              <ComparisonCard
-                key={key}
-                config={p}
-                meta={presetMeta[key]}
-                isPlaying={isPlaying}
-                isActive={config.preset === key}
-                onClick={() => handlePreset(key)}
-                demoKey={demoKey}
-              />
-            ))}
-            <ComparisonCard
-              config={config}
-              meta={{ emoji: "🎛️", label: "Custom", description: "Your current config", color: "#6366f1" }}
-              isPlaying={isPlaying}
-              isActive={config.preset === "custom"}
-              onClick={() => {}}
-              demoKey={demoKey}
-              isCustom
-            />
+          {/* Big preview canvas */}
+          <div className="rounded-2xl border-2 border-indigo-500/20 bg-neutral-50 dark:bg-neutral-950 overflow-hidden mb-4">
+            <div className="h-64 flex items-center justify-center relative">
+              {(() => {
+                const Demo = demoComponents[demoKey] || ToastDemo;
+                const springTransition = {
+                  type: "spring" as const,
+                  stiffness: config.stiffness,
+                  damping: config.damping,
+                  mass: config.mass,
+                };
+                return (
+                  <div className="w-full max-w-md h-full scale-150">
+                    <Demo isPlaying={isPlaying} color="#6366f1" springTransition={springTransition} />
+                  </div>
+                );
+              })()}
+            </div>
+            <div className="px-5 py-3 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-neutral-900 dark:text-white">
+                  {config.preset === "custom" ? "🎛️ Custom" : `${presetMeta[config.preset]?.emoji} ${presetMeta[config.preset]?.label}`}
+                </span>
+                <span className="text-xs text-neutral-400">
+                  s:{config.stiffness} d:{config.damping} m:{config.mass}{config.bounce > 0 ? ` b:${config.bounce}` : ""}
+                </span>
+              </div>
+              <MiniCurve config={config} color="#6366f1" width={100} height={32} />
+            </div>
+          </div>
+
+          {/* Preset strip */}
+          <div className="grid grid-cols-4 gap-3">
+            {Object.entries(presets).map(([key, p]) => {
+              const meta = presetMeta[key];
+              const isActive = config.preset === key;
+              return (
+                <motion.button
+                  key={key}
+                  onClick={() => handlePreset(key)}
+                  className={`relative text-left rounded-xl border-2 overflow-hidden transition-colors ${
+                    isActive
+                      ? "border-indigo-500 dark:border-indigo-400 shadow-lg shadow-indigo-500/10"
+                      : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
+                  } bg-white dark:bg-neutral-900`}
+                  whileHover={{ y: -2 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                >
+                  <div className="p-3 flex items-center gap-3">
+                    <div className="shrink-0">
+                      <MiniCurve config={p} color={meta.color} width={60} height={28} />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-xs text-neutral-900 dark:text-white">{meta.emoji} {meta.label}</h3>
+                      <p className="text-[10px] text-neutral-400 truncate">{meta.description}</p>
+                    </div>
+                  </div>
+                </motion.button>
+              );
+            })}
           </div>
         </section>
 
