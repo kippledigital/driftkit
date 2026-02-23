@@ -382,138 +382,154 @@ export default function TryIt({ componentName }: TryItProps) {
 
     return `const springConfig = ${JSON.stringify(springConfig, null, 2)};
 
+// Basic hover animation
 <motion.div
   whileHover={{ scale: 1.05 }}
   whileTap={{ scale: 0.95 }}
   transition={springConfig}
 >
-  <YourComponent />
+  <${componentName.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} />
+</motion.div>
+
+// Advanced with custom animations
+<motion.div
+  animate={{ 
+    scale: [1, 1.02, 1],
+    y: [0, -4, 0]
+  }}
+  transition={{
+    ...springConfig,
+    repeat: Infinity,
+    repeatDelay: 2
+  }}
+>
+  <${componentName.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} />
 </motion.div>`;
-  }, [config]);
+  }, [config, componentName]);
 
   const copyToClipboard = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(springCode);
+      // Could add a toast notification here
     } catch (err) {
       console.error("Failed to copy code:", err);
     }
   }, [springCode]);
 
+  const sliders = [
+    { 
+      key: "stiffness" as keyof PhysicsConfig, 
+      label: "Stiffness", 
+      min: 50, 
+      max: 1000, 
+      step: 10,
+      hint: "How quickly the animation reaches its target. Higher values create snappier animations."
+    },
+    { 
+      key: "damping" as keyof PhysicsConfig, 
+      label: "Damping", 
+      min: 5, 
+      max: 100, 
+      step: 1,
+      hint: "How much the animation resists motion. Lower values create more bounce and overshoot."
+    },
+    { 
+      key: "mass" as keyof PhysicsConfig, 
+      label: "Mass", 
+      min: 0.1, 
+      max: 5, 
+      step: 0.1,
+      hint: "How heavy the element feels during animation. Higher values make animations slower with more momentum."
+    },
+  ];
+
   return (
     <div className="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
-      {/* Collapsible Header */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-6 py-4 bg-neutral-50 dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center justify-between"
-      >
+      {/* Header */}
+      <div className="px-6 py-4 bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800">
         <div className="flex items-center gap-3">
-          <div className="text-lg">🎮</div>
-          <div className="text-left">
-            <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">Try It</h3>
+          <div className="text-xl">🎮</div>
+          <div>
+            <h3 className="text-base font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+              Playground
+            </h3>
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
-              Experiment with spring physics controls
+              Tune spring physics for this component
             </p>
           </div>
         </div>
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-          className="text-neutral-500 dark:text-neutral-400"
-        >
-          ▼
-        </motion.div>
-      </button>
+      </div>
 
-      {/* Collapsible Content */}
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden"
-          >
-            <div className="p-6 space-y-6">
-              {/* Live Preview */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                    Live Preview
-                  </h4>
-                  <button
-                    onClick={handlePlay}
-                    disabled={isPlaying}
-                    className="px-3 py-1.5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-sm font-medium rounded-md hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors disabled:opacity-50"
-                  >
-                    {isPlaying ? "Playing..." : "▶ Play"}
-                  </button>
-                </div>
-                <ComponentPreview
-                  componentName={componentName}
-                  config={config}
-                  isPlaying={isPlaying}
-                />
-              </div>
+      <div className="p-6 space-y-6">
+        {/* Live Preview */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              Live Preview
+            </h4>
+            <button
+              onClick={handlePlay}
+              disabled={isPlaying}
+              className="px-4 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-sm font-medium rounded-lg hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isPlaying ? "Playing..." : "▶ Play"}
+            </button>
+          </div>
+          <ComponentPreview
+            componentName={componentName}
+            config={config}
+            isPlaying={isPlaying}
+          />
+        </div>
 
-              {/* Controls */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <ControlSlider
-                  label="Stiffness"
-                  value={config.stiffness}
-                  min={50}
-                  max={1000}
-                  step={10}
-                  onChange={(value) => handleConfigChange("stiffness", value)}
-                />
-                <ControlSlider
-                  label="Damping"
-                  value={config.damping}
-                  min={5}
-                  max={100}
-                  step={1}
-                  onChange={(value) => handleConfigChange("damping", value)}
-                />
-                <ControlSlider
-                  label="Mass"
-                  value={config.mass}
-                  min={0.1}
-                  max={5}
-                  step={0.1}
-                  onChange={(value) => handleConfigChange("mass", value)}
-                />
-              </div>
+        {/* Physics Controls */}
+        <div>
+          <h4 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-4">
+            Spring Physics
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {sliders.map(slider => (
+              <ControlSlider
+                key={slider.key}
+                label={slider.label}
+                value={config[slider.key]}
+                min={slider.min}
+                max={slider.max}
+                step={slider.step}
+                hint={slider.hint}
+                onChange={(value) => handleConfigChange(slider.key, value)}
+              />
+            ))}
+          </div>
+        </div>
 
-              {/* Generated Code */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                    Generated Code
-                  </h4>
-                  <button
-                    onClick={copyToClipboard}
-                    className="px-3 py-1.5 text-xs font-mono bg-neutral-800 dark:bg-neutral-700 text-neutral-300 dark:text-neutral-200 hover:bg-neutral-700 dark:hover:bg-neutral-600 rounded transition-colors"
-                  >
-                    Copy
-                  </button>
-                </div>
-                <div className="bg-neutral-950 border border-neutral-800 rounded-lg overflow-auto">
-                  <pre className="p-4 text-xs font-mono text-neutral-200 leading-relaxed overflow-x-auto">
-                    <code>{springCode}</code>
-                  </pre>
-                </div>
-              </div>
+        {/* Generated Code */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              Generated Code
+            </h4>
+            <button
+              onClick={copyToClipboard}
+              className="px-3 py-1.5 text-xs font-mono bg-neutral-800 dark:bg-neutral-700 text-neutral-300 dark:text-neutral-200 hover:bg-neutral-700 dark:hover:bg-neutral-600 rounded-md transition-colors"
+            >
+              Copy
+            </button>
+          </div>
+          <div className="bg-neutral-950 border border-neutral-800 rounded-lg overflow-auto">
+            <pre className="p-4 text-xs font-mono text-neutral-200 leading-relaxed overflow-x-auto">
+              <code>{springCode}</code>
+            </pre>
+          </div>
+        </div>
 
-              {/* Help Text */}
-              <div className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 p-3 rounded space-y-1">
-                <div><strong>Stiffness:</strong> How quickly the animation reaches its target (higher = faster)</div>
-                <div><strong>Damping:</strong> How much the animation resists motion (higher = less overshoot)</div>
-                <div><strong>Mass:</strong> How heavy the element feels during animation (higher = slower)</div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {/* Help Text */}
+        <div className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg space-y-2">
+          <div><strong>Stiffness:</strong> Controls animation speed. Higher values create snappier animations.</div>
+          <div><strong>Damping:</strong> Controls resistance to motion. Lower values create more bounce and overshoot.</div>
+          <div><strong>Mass:</strong> Controls the perceived weight. Higher values make animations slower with more momentum.</div>
+        </div>
+      </div>
     </div>
   );
 }
