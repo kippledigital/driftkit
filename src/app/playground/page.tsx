@@ -462,17 +462,22 @@ export default function PhysicsPlayground() {
         </section>
 
         {/* Controls + Curve */}
-        <section className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6">
+        <section className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
           {/* Sliders */}
           <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 space-y-5">
-            <div>
-              <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Fine-tune</h3>
-              <p className="text-[11px] text-neutral-400 mt-1">Adjust spring physics parameters. Changes update the curve and all previews in real time.</p>
-            </div>
+            <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Fine-tune</h3>
             {sliders.map(s => (
               <div key={s.key}>
                 <div className="flex justify-between mb-1.5">
-                  <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">{s.label}</span>
+                  <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
+                    {s.label}
+                    <span className="relative group">
+                      <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-neutral-300 dark:border-neutral-600 text-[9px] text-neutral-400 cursor-help leading-none">i</span>
+                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2.5 py-1.5 text-[11px] leading-snug text-white bg-neutral-800 dark:bg-neutral-700 rounded-lg shadow-lg whitespace-normal w-48 text-center opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-20">
+                        {s.hint}
+                      </span>
+                    </span>
+                  </span>
                   <span className="text-xs text-neutral-400 font-mono">{config[s.key as keyof PhysicsConfig]}</span>
                 </div>
                 <input
@@ -485,7 +490,6 @@ export default function PhysicsPlayground() {
                     [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-neutral-900 dark:[&::-webkit-slider-thumb]:bg-white
                     [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm"
                 />
-                <p className="text-[10px] text-neutral-400 mt-1 leading-snug">{s.hint}</p>
               </div>
             ))}
           </div>
