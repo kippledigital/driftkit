@@ -1660,9 +1660,7 @@ function Section({ id, title, description, children, code }: {
 export default function Home() {
   return (
     <>
-      <TableOfContents />
-
-      <main className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 max-w-3xl mx-auto px-6 sm:px-8">
+      <main className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 max-w-7xl mx-auto px-6 sm:px-8">
         {/* ============================================================= */}
         {/* HERO                                                           */}
         {/* ============================================================= */}
