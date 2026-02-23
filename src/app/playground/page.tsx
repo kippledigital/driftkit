@@ -2,8 +2,7 @@
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
-import Link from "next/link";
-import { ModeSwitcher } from "@/components/mode-switcher";
+// Global nav handles navigation + mode switcher
 
 // =============================================================================
 // TYPES & PRESETS
@@ -677,27 +676,6 @@ export default function PhysicsPlayground() {
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
-      {/* Header */}
-      <header className="border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors">
-              ← driftkit
-            </Link>
-            <div>
-              <h1 className="text-lg font-bold text-neutral-900 dark:text-white">Physics Playground</h1>
-              <p className="text-xs text-neutral-500">Tune your spring animations</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/docs" className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors">
-              Docs
-            </Link>
-            <ModeSwitcher size={28} />
-          </div>
-        </div>
-      </header>
-
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         {/* Sidebar + Preview Area */}
         <section className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
