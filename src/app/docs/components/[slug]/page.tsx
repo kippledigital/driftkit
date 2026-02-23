@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getComponentInfo, getAllComponentNames } from "../../data/components";
 import { CodeBlock, ComponentPreview } from "./client";
+import TryIt from "./try-it";
 
 interface PageProps {
   params: Promise<{
@@ -148,6 +149,11 @@ export default async function ComponentPage({ params }: PageProps) {
             </div>
           </section>
         )}
+
+        {/* Try It */}
+        <section className="mb-12">
+          <TryIt componentName={info.name} />
+        </section>
 
         {/* Source Code */}
         <section className="mb-12">

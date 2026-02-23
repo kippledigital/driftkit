@@ -679,7 +679,7 @@ export default function PhysicsPlayground() {
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
       {/* Header */}
       <header className="border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors">
               ← driftkit
@@ -699,7 +699,7 @@ export default function PhysicsPlayground() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-10 space-y-10">
+      <main className="max-w-7xl mx-auto px-6 py-10 space-y-10">
         {/* Hero — Comparison Grid */}
         <section>
           <div className="flex items-center justify-between mb-4">
@@ -745,7 +745,7 @@ export default function PhysicsPlayground() {
             ))}
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {Object.entries(presets).map(([key, p]) => (
               <ComparisonCard
                 key={key}
@@ -757,6 +757,15 @@ export default function PhysicsPlayground() {
                 demoKey={demoKey}
               />
             ))}
+            <ComparisonCard
+              config={config}
+              meta={{ emoji: "🎛️", label: "Custom", description: "Your current config", color: "#6366f1" }}
+              isPlaying={isPlaying}
+              isActive={config.preset === "custom"}
+              onClick={() => {}}
+              demoKey={demoKey}
+              isCustom
+            />
           </div>
         </section>
 
