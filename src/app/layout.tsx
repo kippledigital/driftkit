@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { GlobalNav } from "@/components/global-nav";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -80,7 +81,10 @@ export default function RootLayout({
         className={`${geistMono.variable} antialiased bg-white dark:bg-neutral-950 text-neutral-950 dark:text-white`}
         style={{ fontFamily: "'Satoshi', sans-serif", letterSpacing: '0.02em' }}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <GlobalNav />
+          {children}
+        </Providers>
       </body>
     </html>
   );
