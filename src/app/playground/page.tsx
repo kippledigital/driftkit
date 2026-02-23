@@ -903,6 +903,7 @@ export default function PhysicsPlayground() {
                       [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm"
                   />
                 </div>
+                </div>
               ))}
             </div>
             <ShareButton />
