@@ -117,21 +117,35 @@ function MiniCurve({ config, color = "#6366f1", height = 48, width = 120 }: {
 // ANIMATION DEMOS — each preset shows a different micro-interaction
 // =============================================================================
 
-function LikeButtonDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+function CheckboxDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 h-full">
+    <div className="flex items-center justify-center gap-3 h-full">
       <div className="relative">
         <motion.div
-          className="text-2xl select-none"
-          animate={isPlaying ? { scale: [1, 1.5, 1] } : { scale: 1 }}
+          className="w-6 h-6 rounded-md border-2 flex items-center justify-center"
+          style={{ borderColor: color, backgroundColor: isPlaying ? color : "transparent" }}
+          animate={isPlaying ? { scale: [0.8, 1.15, 1] } : { scale: 1 }}
           transition={springTransition}
         >
-          <motion.span
-            animate={isPlaying ? { color: [color, color] } : {}}
+          <motion.svg
+            width="14" height="14" viewBox="0 0 14 14" fill="none"
+            animate={isPlaying ? { pathLength: [0, 1], opacity: [0, 1] } : { opacity: isPlaying ? 1 : 0 }}
           >
-            ♥
-          </motion.span>
+            <motion.path
+              d="M2.5 7L5.5 10L11.5 4"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              animate={isPlaying ? { pathLength: [0, 1] } : {}}
+              transition={springTransition}
+            />
+          </motion.svg>
         </motion.div>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <div className="w-16 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+        <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700" />
       </div>
     </div>
   );
@@ -213,7 +227,7 @@ function ToastDemo({ isPlaying, color, springTransition }: { isPlaying: boolean;
 }
 
 const demoComponents: Record<string, React.FC<{ isPlaying: boolean; color: string; springTransition: object }>> = {
-  snappy: LikeButtonDemo,
+  snappy: CheckboxDemo,
   smooth: ToggleSwitchDemo,
   bouncy: NotificationBadgeDemo,
   gentle: CardSlideDemo,
