@@ -2,14 +2,12 @@ import React from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getComponentInfo, getAllComponentNames } from "../../data/components";
-
-// Import all components for live previews
-import * as Components from "../../../../components";
+import { CodeBlock, ComponentPreview } from "./client";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // Generate static params for all components
@@ -20,70 +18,26 @@ export async function generateStaticParams() {
   }));
 }
 
-function ComponentPreview({ componentName, example }: { componentName: string; example: string }) {
-  try {
-    // This is a simplified preview - in a real implementation you'd want to
-    // safely evaluate the JSX example string
-    const ComponentToRender = (Components as any)[componentName] || (() => <div>Preview not available</div>);
-    
-    return (
-      <div className="p-6 bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
-        <div className="flex items-center justify-center min-h-[200px]">
-          <ComponentToRender>Sample content</ComponentToRender>
-        </div>
-      </div>
-    );
-  } catch (error) {
-    return (
-      <div className="p-6 bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800">
-        <div className="flex items-center justify-center min-h-[200px] text-neutral-500 dark:text-neutral-400">
-          Preview not available
-        </div>
-      </div>
-    );
-  }
-}
-
-function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
-  return (
-    <div className="relative">
-      <pre className="bg-neutral-900 dark:bg-neutral-950 text-neutral-100 p-4 rounded-lg overflow-x-auto text-sm">
-        <code>{code}</code>
-      </pre>
-      <button
-        onClick={() => navigator.clipboard.writeText(code)}
-        className="absolute top-2 right-2 p-2 text-neutral-400 hover:text-neutral-200 transition-colors"
-        title="Copy code"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-        </svg>
-      </button>
-    </div>
-  );
-}
-
-export default function ComponentPage({ params }: PageProps) {
-  if (!getAllComponentNames().includes(params.slug)) {
+export default async function ComponentPage({ params }: PageProps) {
+  const { slug } = await params;
+  
+  if (!getAllComponentNames().includes(slug)) {
     notFound();
   }
 
-  const componentInfo = getComponentInfo(params.slug);
+  const componentInfo = getComponentInfo(slug);
   
-  // Create fallback for components without detailed info
   const fallbackComponent = {
-    name: params.slug,
-    displayName: params.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+    name: slug,
+    displayName: slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
     description: "A motion-first UI component built with Framer Motion.",
-    importPath: `import { ${params.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} } from "driftkit";`,
-    props: [],
-    examples: [`<${params.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} />`],
+    importPath: `import { ${slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} } from "driftkit";`,
+    props: [] as { name: string; type: string; required: boolean; description?: string }[],
+    examples: [`<${slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')} />`],
     category: "Utility",
-    githubUrl: `https://github.com/kippledigital/driftkit/blob/main/src/components/${params.slug}.tsx`
+    githubUrl: `https://github.com/kippledigital/driftkit/blob/main/src/components/${slug}.tsx`
   };
   
-  // Use component info or fallback
   const info = componentInfo || fallbackComponent;
 
   return (
@@ -117,7 +71,7 @@ export default function ComponentPage({ params }: PageProps) {
         {/* Preview */}
         <section className="mb-12">
           <h2 className="text-2xl font-medium text-neutral-900 dark:text-white mb-6">Preview</h2>
-          <ComponentPreview componentName={info.name} example={info.examples[0]} />
+          <ComponentPreview componentName={info.name} />
         </section>
 
         {/* Installation */}
@@ -144,7 +98,7 @@ export default function ComponentPage({ params }: PageProps) {
                   Example {index + 1}
                 </h3>
                 <div className="space-y-4">
-                  <ComponentPreview componentName={info.name} example={example} />
+                  <ComponentPreview componentName={info.name} />
                   <CodeBlock code={example} />
                 </div>
               </div>
