@@ -60,8 +60,8 @@ function ComponentSidebar() {
   };
 
   return (
-    <aside className="w-64 shrink-0 bg-white/50 dark:bg-neutral-900/50 border-r border-neutral-200 dark:border-neutral-800 overflow-y-auto hidden lg:block">
-      <div className="p-6">
+    <aside className="w-64 shrink-0 border-r border-neutral-200 dark:border-neutral-800 overflow-y-auto hidden lg:block">
+      <div className="pr-6 py-6">
         <Link 
           href="/docs" 
           className="block mb-4 text-xl font-medium text-neutral-900 dark:text-white hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
@@ -248,11 +248,13 @@ export default function DocsLayout({
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-950">
       <MobileSidebar />
-      <div className="flex">
-        <ComponentSidebar />
-        <main className="flex-1 min-w-0">
-          {children}
-        </main>
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex">
+          <ComponentSidebar />
+          <main className="flex-1 min-w-0">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );

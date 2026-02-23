@@ -42,8 +42,7 @@ export default async function ComponentPage({ params }: PageProps) {
   const info = componentInfo || fallbackComponent;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-neutral-950">
-      <div className="max-w-7xl mx-auto px-6 py-12">
+    <div className="py-12 px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400 mb-4">
@@ -56,7 +55,7 @@ export default async function ComponentPage({ params }: PageProps) {
           
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h1 className="text-4xl font-medium text-neutral-900 dark:text-white mb-2">
+              <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white mb-2">
                 {info.displayName}
               </h1>
               <p className="text-lg text-neutral-600 dark:text-neutral-400">
@@ -71,16 +70,16 @@ export default async function ComponentPage({ params }: PageProps) {
 
         {/* Preview */}
         <section className="mb-12">
-          <h2 className="text-2xl font-medium text-neutral-900 dark:text-white mb-6">Preview</h2>
+          <h2 className="text-base font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-4">Preview</h2>
           <ComponentPreview componentName={info.name} />
         </section>
 
         {/* Installation */}
         <section className="mb-12">
-          <h2 className="text-2xl font-medium text-neutral-900 dark:text-white mb-6">Installation</h2>
+          <h2 className="text-base font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-4">Installation</h2>
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-medium text-neutral-900 dark:text-white mb-2">Copy and paste</h3>
+              <h3 className="text-sm font-semibold text-neutral-900 dark:text-white mb-2">Copy and paste</h3>
               <p className="text-neutral-600 dark:text-neutral-400 mb-4">
                 Copy the component source code and paste it into your project.
               </p>
@@ -91,11 +90,11 @@ export default async function ComponentPage({ params }: PageProps) {
 
         {/* Usage Examples */}
         <section className="mb-12">
-          <h2 className="text-2xl font-medium text-neutral-900 dark:text-white mb-6">Usage</h2>
+          <h2 className="text-base font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-4">Usage</h2>
           <div className="space-y-8">
             {info.examples.map((example, index) => (
               <div key={index}>
-                <h3 className="text-lg font-medium text-neutral-900 dark:text-white mb-4">
+                <h3 className="text-sm font-semibold text-neutral-900 dark:text-white mb-4">
                   Example {index + 1}
                 </h3>
                 <div className="space-y-4">
@@ -110,7 +109,7 @@ export default async function ComponentPage({ params }: PageProps) {
         {/* Props */}
         {info.props.length > 0 && (
           <section className="mb-12">
-            <h2 className="text-2xl font-medium text-neutral-900 dark:text-white mb-6">Props</h2>
+            <h2 className="text-base font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-4">Props</h2>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
@@ -157,7 +156,7 @@ export default async function ComponentPage({ params }: PageProps) {
 
         {/* Source Code */}
         <section className="mb-12">
-          <h2 className="text-2xl font-medium text-neutral-900 dark:text-white mb-6">Source Code</h2>
+          <h2 className="text-base font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-4">Source Code</h2>
           <p className="text-neutral-600 dark:text-neutral-400 mb-4">
             View the source code on GitHub to see the full implementation.
           </p>
@@ -174,6 +173,5 @@ export default async function ComponentPage({ params }: PageProps) {
           </Link>
         </section>
       </div>
-    </div>
   );
 }
