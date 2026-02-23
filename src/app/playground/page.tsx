@@ -782,23 +782,39 @@ export default function PhysicsPlayground() {
               </div>
             </div>
 
-            {/* Custom preview (big) */}
+            {/* Custom preview (big) — drag-and-snap interactive */}
             <div className="p-4">
-              <div className="rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 h-48 mb-4 relative overflow-hidden">
-                {(() => {
-                  const Demo = demoComponents[demoKey] || ToastDemo;
-                  const springTransition = { type: "spring" as const, stiffness: config.stiffness, damping: config.damping, mass: config.mass };
-                  return (
-                    <div className="w-full h-full flex items-center justify-center scale-125">
-                      <div className="w-full max-w-sm h-full">
-                        <Demo isPlaying={isPlaying} color="#6366f1" springTransition={springTransition} />
-                      </div>
-                    </div>
-                  );
-                })()}
-                <div className="absolute bottom-2 left-3 flex items-center gap-2">
+              <div className="rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 h-56 mb-4 relative overflow-hidden cursor-grab active:cursor-grabbing">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  {/* Crosshair guide */}
+                  <div className="absolute w-px h-full bg-neutral-200 dark:bg-neutral-800 opacity-30" />
+                  <div className="absolute w-full h-px bg-neutral-200 dark:bg-neutral-800 opacity-30" />
+                  <motion.div
+                    drag
+                    dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                    dragElastic={0.8}
+                    dragTransition={{
+                      bounceStiffness: config.stiffness,
+                      bounceDamping: config.damping,
+                      power: 0.2,
+                    }}
+                    whileDrag={{ scale: 1.05 }}
+                    className="select-none touch-none"
+                  >
+                    {(() => {
+                      const Demo = demoComponents[demoKey] || ToastDemo;
+                      const springTransition = { type: "spring" as const, stiffness: config.stiffness, damping: config.damping, mass: config.mass };
+                      return (
+                        <div className="w-64 h-32 pointer-events-none">
+                          <Demo isPlaying={isPlaying} color="#6366f1" springTransition={springTransition} />
+                        </div>
+                      );
+                    })()}
+                  </motion.div>
+                </div>
+                <div className="absolute bottom-2 left-3">
                   <span className="text-[10px] font-semibold text-neutral-500 bg-white/80 dark:bg-neutral-900/80 px-2 py-0.5 rounded-full backdrop-blur-sm">
-                    🎛️ Custom
+                    🎛️ Drag me — feel the spring
                   </span>
                 </div>
               </div>
