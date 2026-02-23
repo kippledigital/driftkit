@@ -506,11 +506,18 @@ function SpringCurveDetail({ config }: { config: PhysicsConfig }) {
 // CODE OUTPUT
 // =============================================================================
 
-function CodeOutput({ config }: { config: PhysicsConfig }) {
-  const [copied, setCopied] = useState(false);
-  
-  const code = useMemo(() => {
-    const c: Record<string, unknown> = {
+type CodeFormat = "framer" | "spring" | "css";
+
+interface CodeOutputProps {
+  config: PhysicsConfig;
+}
+
+function CodeOutput({ config }: CodeOutputProps) {
+  const [activeFormat, setActiveFormat] = useState<CodeFormat>("framer");
+
+  // Framer Motion code (existing)
+  const framerCode = useMemo(() => {
+    const springConfig = {
       type: "spring",
       stiffness: config.stiffness,
       damping: config.damping,
@@ -534,16 +541,184 @@ function CodeOutput({ config }: { config: PhysicsConfig }) {
 />`;
   }, [config]);
 
-  const copy = useCallback(async () => {
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [code]);
+  // React Spring code
+  const springCode = useMemo(() => {
+    // Convert Framer Motion values to React Spring
+    const tension = config.stiffness; // Direct mapping
+    const friction = config.damping;  // Direct mapping
+    const mass = config.mass;
+
+    return `import { useSpring, animated } from '@react-spring/web';
+
+const springConfig = {
+  tension: ${tension},
+  friction: ${friction},
+  mass: ${mass}${config.bounce > 0 ? `,
+  bounce: ${config.bounce}` : ''}
+};
+
+// Basic hover animation
+function HoverButton() {
+  const [springs, api] = useSpring(() => ({
+    scale: 1,
+    config: springConfig
+  }));
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden flex-1 flex flex-col">
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-neutral-100 dark:border-neutral-800">
-        <h3 className="text-xs font-semibold text-neutral-900 dark:text-white">Code</h3>
+    <animated.div
+      style={springs}
+      onMouseEnter={() => api.start({ scale: 1.05 })}
+      onMouseLeave={() => api.start({ scale: 1 })}
+    >
+      <Button>Hover me</Button>
+    </animated.div>
+  );
+}
+
+// Card with lift effect
+function LiftCard() {
+  const [springs, api] = useSpring(() => ({
+    scale: 1,
+    y: 0,
+    config: springConfig
+  }));
+
+  return (
+    <animated.div
+      style={springs}
+      onMouseEnter={() => api.start({ scale: 1.02, y: -4 })}
+      onMouseLeave={() => api.start({ scale: 1, y: 0 })}
+    >
+      <Card>Your content</Card>
+    </animated.div>
+  );
+}
+
+// Continuous animation
+function ContinuousAnimation() {
+  const springs = useSpring({
+    from: { scale: 1, rotate: 0 },
+    to: async (next) => {
+      while (true) {
+        await next({ scale: 1.1, rotate: 180 });
+        await next({ scale: 1, rotate: 360 });
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    },
+    config: springConfig
+  });
+
+  return (
+    <animated.div style={springs}>
+      <div>Animated element</div>
+    </animated.div>
+  );
+}`;
+  }, [config]);
+
+  // CSS code with cubic-bezier approximation
+  const cssCode = useMemo(() => {
+    // Approximate spring to cubic-bezier
+    // Higher stiffness = faster curve, lower damping = more bounce
+    const speed = Math.max(0.1, Math.min(1, config.stiffness / 500));
+    const bounce = Math.max(0, Math.min(0.9, (100 - config.damping) / 100));
+    
+    // Estimate duration based on mass and stiffness
+    const baseDuration = 150 + (config.mass * 100) + (1000 - config.stiffness) / 10;
+    const duration = Math.round(baseDuration);
+
+    // Create cubic-bezier values
+    const p1 = 0.25 + (speed * 0.5); // x1
+    const p2 = bounce * 0.5; // y1
+    const p3 = 0.75 - (speed * 0.25); // x2
+    const p4 = 1 - (bounce * 0.3); // y2
+
+    const easing = `cubic-bezier(${p1.toFixed(2)}, ${p2.toFixed(2)}, ${p3.toFixed(2)}, ${p4.toFixed(2)})`;
+
+    return `/* Spring approximation with CSS transitions */
+.spring-transition {
+  transition-duration: ${duration}ms;
+  transition-timing-function: ${easing};
+}
+
+/* Basic hover animation */
+.hover-button {
+  transform: scale(1);
+  transition: transform ${duration}ms ${easing};
+}
+
+.hover-button:hover {
+  transform: scale(1.05);
+}
+
+/* Card with lift effect */
+.lift-card {
+  transform: scale(1) translateY(0);
+  transition: transform ${duration}ms ${easing};
+}
+
+.lift-card:hover {
+  transform: scale(1.02) translateY(-4px);
+}
+
+/* Continuous animation */
+@keyframes spring-rotate {
+  0% { transform: scale(1) rotate(0deg); }
+  33% { transform: scale(1.1) rotate(180deg); }
+  66% { transform: scale(1) rotate(360deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+.continuous-animation {
+  animation: spring-rotate ${duration * 3}ms ${easing} infinite;
+  animation-delay: 2s;
+}
+
+/* Spring physics approximation:
+ * Stiffness: ${config.stiffness} → Speed: ${(speed * 100).toFixed(0)}%
+ * Damping: ${config.damping} → Bounce: ${(bounce * 100).toFixed(0)}%
+ * Mass: ${config.mass} → Duration: ${duration}ms
+ * Cubic-bezier: ${easing}
+ */`;
+  }, [config]);
+
+  const getCurrentCode = () => {
+    switch (activeFormat) {
+      case "framer": return framerCode;
+      case "spring": return springCode;
+      case "css": return cssCode;
+      default: return framerCode;
+    }
+  };
+
+  const copyToClipboard = useCallback(async () => {
+    const code = getCurrentCode();
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = code;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+    }
+  }, [getCurrentCode]);
+
+  const tabs = [
+    { id: "framer" as const, label: "Framer Motion", icon: "🎨" },
+    { id: "spring" as const, label: "React Spring", icon: "🌸" },
+    { id: "css" as const, label: "CSS", icon: "🎯" },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+          Export Code
+        </h3>
         <motion.button
           onClick={copy}
           whileTap={{ scale: 0.95 }}
@@ -552,9 +727,29 @@ function CodeOutput({ config }: { config: PhysicsConfig }) {
           {copied ? "✓ Copied" : "Copy"}
         </motion.button>
       </div>
-      <pre className="p-4 text-[10px] font-mono text-neutral-300 bg-neutral-950 leading-relaxed overflow-auto flex-1">
-        <code>{code}</code>
-      </pre>
+      {/* Format Tabs */}
+      <div className="flex gap-1 p-1 bg-neutral-200 dark:bg-neutral-800 rounded-lg">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveFormat(tab.id)}
+            className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-all ${
+              activeFormat === tab.id
+                ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm"
+                : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200"
+            }`}
+          >
+            <span className="mr-1.5">{tab.icon}</span>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      
+      <div className="bg-neutral-950 border border-neutral-800 rounded-lg overflow-auto">
+        <pre className="p-4 text-xs font-mono text-neutral-200 leading-relaxed overflow-x-auto">
+          <code>{getCurrentCode()}</code>
+        </pre>
+      </div>
     </div>
   );
 }
