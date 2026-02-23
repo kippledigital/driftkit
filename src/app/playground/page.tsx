@@ -117,18 +117,23 @@ function MiniCurve({ config, color = "#6366f1", height = 48, width = 120 }: {
 // ANIMATION DEMOS — each preset shows a different micro-interaction
 // =============================================================================
 
-function ButtonTapDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+function LikeButtonDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 h-full">
-      <motion.div
-        className="px-5 py-2 rounded-lg text-white text-[11px] font-semibold shadow-lg cursor-pointer"
-        style={{ backgroundColor: color }}
-        animate={isPlaying ? { scale: [1, 0.85, 1] } : { scale: 1 }}
-        transition={springTransition}
-      >
-        Submit
-      </motion.div>
-      <span className="text-[9px] text-neutral-400">Button press</span>
+      <div className="relative">
+        <motion.div
+          className="text-2xl select-none"
+          animate={isPlaying ? { scale: [1, 1.5, 1] } : { scale: 1 }}
+          transition={springTransition}
+        >
+          <motion.span
+            animate={isPlaying ? { color: [color, color] } : {}}
+          >
+            ♥
+          </motion.span>
+        </motion.div>
+      </div>
+      <span className="text-[9px] text-neutral-400">Like tap</span>
     </div>
   );
 }
@@ -148,17 +153,23 @@ function ToggleSwitchDemo({ isPlaying, color, springTransition }: { isPlaying: b
   );
 }
 
-function BouncingBallDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+function NotificationBadgeDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
   return (
-    <div className="flex flex-col items-center justify-end gap-2 h-full pb-2">
-      <motion.div
-        className="w-6 h-6 rounded-full shadow-lg"
-        style={{ backgroundColor: color }}
-        animate={isPlaying ? { y: [-48, 0] } : { y: 0 }}
-        transition={springTransition}
-      />
-      <div className="w-16 h-[1px] bg-neutral-300 dark:bg-neutral-600" />
-      <span className="text-[9px] text-neutral-400">Ball drop</span>
+    <div className="flex flex-col items-center justify-center gap-2 h-full">
+      <div className="relative">
+        <div className="w-10 h-10 rounded-xl bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-lg">
+          🔔
+        </div>
+        <motion.div
+          className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center"
+          style={{ backgroundColor: color }}
+          animate={isPlaying ? { scale: [0, 1.3, 1], opacity: [0, 1, 1] } : { scale: 1, opacity: 1 }}
+          transition={springTransition}
+        >
+          3
+        </motion.div>
+      </div>
+      <span className="text-[9px] text-neutral-400">Badge pop</span>
     </div>
   );
 }
@@ -206,9 +217,9 @@ function ToastDemo({ isPlaying, color, springTransition }: { isPlaying: boolean;
 }
 
 const demoComponents: Record<string, React.FC<{ isPlaying: boolean; color: string; springTransition: object }>> = {
-  snappy: ButtonTapDemo,
+  snappy: LikeButtonDemo,
   smooth: ToggleSwitchDemo,
-  bouncy: BouncingBallDemo,
+  bouncy: NotificationBadgeDemo,
   gentle: CardSlideDemo,
   custom: ToastDemo,
 };
