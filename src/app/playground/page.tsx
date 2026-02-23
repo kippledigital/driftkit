@@ -733,6 +733,7 @@ export default function PhysicsPlayground() {
               ))}
             </div>
             <ShareButton />
+            <CodeOutput config={config} />
           </div>
 
           {/* Right — Preview area */}
@@ -834,11 +835,6 @@ export default function PhysicsPlayground() {
               </div>
             </div>
           </div>
-        </section>
-
-        {/* Code */}
-        <section>
-          <CodeOutput config={config} />
         </section>
       </main>
     </div>
