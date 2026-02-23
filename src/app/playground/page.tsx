@@ -133,7 +133,6 @@ function LikeButtonDemo({ isPlaying, color, springTransition }: { isPlaying: boo
           </motion.span>
         </motion.div>
       </div>
-      <span className="text-[9px] text-neutral-400">Like tap</span>
     </div>
   );
 }
@@ -148,7 +147,6 @@ function ToggleSwitchDemo({ isPlaying, color, springTransition }: { isPlaying: b
           transition={springTransition}
         />
       </div>
-      <span className="text-[9px] text-neutral-400">Toggle switch</span>
     </div>
   );
 }
@@ -169,7 +167,6 @@ function NotificationBadgeDemo({ isPlaying, color, springTransition }: { isPlayi
           3
         </motion.div>
       </div>
-      <span className="text-[9px] text-neutral-400">Badge pop</span>
     </div>
   );
 }
@@ -188,7 +185,6 @@ function CardSlideDemo({ isPlaying, color, springTransition }: { isPlaying: bool
           <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-600" />
         </div>
       </motion.div>
-      <span className="text-[9px] text-neutral-400">Card reveal</span>
     </div>
   );
 }
