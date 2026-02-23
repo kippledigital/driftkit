@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { ModeSwitcher } from "./mode-switcher";
 
 const navItems = [
-  { href: "/docs", label: "Components" },
+  { href: "/docs", label: "Docs" },
   { href: "/playground", label: "Playground" },
 ];
 

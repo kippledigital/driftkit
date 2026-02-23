@@ -69,13 +69,6 @@ function ComponentSidebar() {
           Components
         </Link>
         
-        <Link 
-          href="/playground" 
-          className="block mb-8 px-3 py-2 text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-colors"
-        >
-          ⚡ Physics Playground
-        </Link>
-        
         <nav className="space-y-6">
           {Object.entries(componentCategories).map(([category, components]) => (
             <div key={category}>
@@ -167,18 +160,9 @@ function MobileSidebar() {
               className="fixed top-0 left-0 bottom-0 w-72 z-50 bg-white dark:bg-neutral-950 border-r border-neutral-200 dark:border-neutral-800 overflow-y-auto lg:hidden"
             >
               <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800">
-                <div className="space-y-2">
-                  <Link href="/docs" className="block text-lg font-medium" onClick={() => setOpen(false)}>
-                    Components
-                  </Link>
-                  <Link 
-                    href="/playground" 
-                    className="block px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-md"
-                    onClick={() => setOpen(false)}
-                  >
-                    ⚡ Physics Playground
-                  </Link>
-                </div>
+                <Link href="/docs" className="block text-lg font-medium" onClick={() => setOpen(false)}>
+                  Docs
+                </Link>
                 <button onClick={() => setOpen(false)} className="p-1" aria-label="Close navigation">
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
