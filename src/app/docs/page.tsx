@@ -110,13 +110,13 @@ export default function DocsPage() {
   return (
     <div className="py-12 px-8">
         <div className="mb-12 max-w-2xl">
-          <h1 className="text-4xl font-medium text-neutral-900 dark:text-white mb-4">
+          <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white mb-3">
             Components
           </h1>
-          <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-2">
+          <p className="text-base text-neutral-600 dark:text-neutral-400 mb-1">
             Motion-first UI components built with Framer Motion and TypeScript.
           </p>
-          <p className="text-sm text-neutral-500 dark:text-neutral-500">
+          <p className="text-sm text-neutral-500">
             {totalComponents} components across {Object.keys(componentCategories).length} categories
           </p>
         </div>
@@ -125,10 +125,10 @@ export default function DocsPage() {
           {Object.entries(componentCategories).map(([categoryName, { description, components }]) => (
             <section key={categoryName}>
               <div className="mb-6">
-                <h2 className="text-2xl font-medium text-neutral-900 dark:text-white mb-2">
+                <h2 className="text-base font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1">
                   {categoryName}
                 </h2>
-                <p className="text-neutral-600 dark:text-neutral-400">
+                <p className="text-sm text-neutral-500 dark:text-neutral-500">
                   {description}
                 </p>
               </div>
@@ -138,12 +138,12 @@ export default function DocsPage() {
                   <Link
                     key={name}
                     href={`/docs/components/${name}`}
-                    className="group block p-6 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors"
+                    className="group block p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/40 dark:border-neutral-800/40 rounded-xl hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors"
                   >
-                    <h3 className="font-medium text-neutral-900 dark:text-white mb-2 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
+                    <h3 className="text-sm font-semibold text-neutral-900 dark:text-white mb-1 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
                       {name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                     </h3>
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
                       {description}
                     </p>
                   </Link>
