@@ -440,7 +440,7 @@ function SpringCurveDetail({ config }: { config: PhysicsConfig }) {
   const valueLabels = [0, 0.5, 1];
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 flex flex-col">
+    <div className="rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 p-4 flex flex-col">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Spring Curve</h3>
         <div className="flex gap-4 text-xs text-neutral-500 dark:text-neutral-400">
@@ -827,13 +827,13 @@ export default function PhysicsPlayground() {
                   );
                 })}
               </div>
+
+              {/* Spring Curve */}
+              <div className="mt-4">
+                <SpringCurveDetail config={config} />
+              </div>
             </div>
           </div>
-        </section>
-
-        {/* Graph */}
-        <section>
-          <SpringCurveDetail config={config} />
         </section>
 
         {/* Code */}
