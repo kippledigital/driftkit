@@ -381,10 +381,10 @@ export default function PhysicsPlayground() {
   }, [autoReplay, play]);
 
   const sliders = [
-    { key: "stiffness", label: "Stiffness", min: 50, max: 1000, step: 10, hint: "How fast the element snaps to its target. Higher = quicker, more aggressive movement." },
-    { key: "damping", label: "Damping", min: 5, max: 100, step: 1, hint: "How quickly motion settles. Low = more oscillation. High = stops fast, feels heavy." },
-    { key: "mass", label: "Mass", min: 0.1, max: 5, step: 0.1, hint: "Simulated weight of the element. Heavier objects move slower and carry more momentum." },
-    { key: "bounce", label: "Bounce", min: 0, max: 1, step: 0.05, hint: "Extra elasticity at boundaries. 0 = no bounce. 1 = full energy return like a rubber ball." },
+    { key: "stiffness", label: "Stiffness", min: 50, max: 1000, step: 10, hint: "Snap speed. Higher = faster." },
+    { key: "damping", label: "Damping", min: 5, max: 100, step: 1, hint: "Resistance. Low = wobbly. High = heavy." },
+    { key: "mass", label: "Mass", min: 0.1, max: 5, step: 0.1, hint: "Weight. Heavier = slower, more momentum." },
+    { key: "bounce", label: "Bounce", min: 0, max: 1, step: 0.05, hint: "Elasticity. 0 = none. 1 = rubber ball." },
   ];
 
   return (
