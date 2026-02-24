@@ -773,7 +773,7 @@ function ContinuousAnimation() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           )}
         </Button>
-        <pre className="p-3 pr-10 text-[10px] font-mono text-neutral-200 leading-relaxed overflow-x-auto max-h-[400px] overflow-y-auto">
+        <pre className="p-3 pr-10 text-[10px] font-mono text-neutral-200 leading-relaxed overflow-x-auto">
           <code>{getCurrentCode()}</code>
         </pre>
       </div>
