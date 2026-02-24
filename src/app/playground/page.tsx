@@ -768,7 +768,7 @@ function ContinuousAnimation() {
       </div>
       
       <div className="bg-neutral-950 border border-neutral-800 rounded-lg overflow-auto">
-        <pre className="p-4 text-xs font-mono text-neutral-200 leading-relaxed overflow-x-auto">
+        <pre className="p-3 text-[10px] font-mono text-neutral-200 leading-relaxed overflow-x-auto">
           <code>{getCurrentCode()}</code>
         </pre>
       </div>
@@ -896,7 +896,7 @@ export default function PhysicsPlayground() {
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         {/* Sidebar + Preview Area */}
-        <section className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+        <section className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6">
           {/* Left sidebar — Controls */}
           <div className="flex flex-col gap-4">
             <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 space-y-4">
