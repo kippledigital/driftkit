@@ -8,6 +8,7 @@ import { ModeSwitcher } from "./mode-switcher";
 
 const navItems = [
   { href: "/docs", label: "Docs" },
+  { href: "/demos", label: "Demos" },
   { href: "/playground", label: "Playground" },
 ];
 
