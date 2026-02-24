@@ -2,6 +2,9 @@
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
+import { Button } from "@/components/button";
+import { Toggle } from "@/components/toggle";
+import { Tabs, type TabItem } from "@/components/tabs";
 // Global nav handles navigation + mode switcher
 
 // =============================================================================
@@ -743,43 +746,33 @@ function ContinuousAnimation() {
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-xs font-semibold text-neutral-900 dark:text-white">Export Code</h3>
         </div>
-        <div className="relative flex gap-1 p-0.5 bg-neutral-100 dark:bg-neutral-800 rounded-md">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveFormat(tab.id)}
-              className="relative z-10 flex-1 flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-medium rounded transition-colors whitespace-nowrap"
-            >
-              {activeFormat === tab.id && (
-                <motion.div
-                  layoutId="export-tab-blob"
-                  className="absolute inset-0 rounded bg-white dark:bg-neutral-900 shadow-sm"
-                  transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.8 }}
-                  style={{ zIndex: -1 }}
-                />
-              )}
-              <span className={activeFormat === tab.id ? "text-neutral-900 dark:text-white" : "text-neutral-500 dark:text-neutral-400"}>
-                <span className="flex items-center gap-1.5">{tab.icon}{tab.label}</span>
-              </span>
-            </button>
-          ))}
-        </div>
+        <Tabs
+          value={activeFormat}
+          onValueChange={(value) => setActiveFormat(value as CodeFormat)}
+          items={tabs.map(tab => ({
+            value: tab.id,
+            label: <span className="flex items-center gap-1.5">{tab.icon}{tab.label}</span>,
+            content: <div></div>, // Empty content since we render code separately
+          }))}
+          className="w-full"
+        />
       </div>
 
       {/* Code block with inline copy button */}
       <div className="relative bg-neutral-950">
-        <motion.button
+        <Button
           onClick={copyToClipboard}
-          whileTap={{ scale: 0.9 }}
-          className="absolute top-2 right-2 p-1.5 rounded-md bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-neutral-200 transition-colors z-10"
-          title="Copy code"
+          variant="ghost"
+          size="sm"
+          className="absolute top-2 right-2 p-1.5 h-auto w-auto min-w-0 bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-neutral-200 z-10"
+          aria-label="Copy code"
         >
           {copied ? (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           ) : (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           )}
-        </motion.button>
+        </Button>
         <pre className="p-3 pr-10 text-[10px] font-mono text-neutral-200 leading-relaxed overflow-x-auto max-h-[400px] overflow-y-auto">
           <code>{getCurrentCode()}</code>
         </pre>
@@ -801,13 +794,15 @@ function ShareButton() {
     setTimeout(() => setCopied(false), 2000);
   }, []);
   return (
-    <motion.button
+    <Button
       onClick={copy}
-      whileTap={{ scale: 0.95 }}
-      className="w-full px-4 py-2.5 text-xs font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-white border border-neutral-200 dark:border-neutral-700 rounded-xl transition-colors"
+      variant="ghost"
+      size="md"
+      className="w-full border border-neutral-200 dark:border-neutral-700"
+      success={copied}
     >
       {copied ? "✓ Copied URL" : "🔗 Share Config"}
-    </motion.button>
+    </Button>
   );
 }
 
@@ -952,49 +947,39 @@ export default function PhysicsPlayground() {
                 <h2 className="text-sm font-semibold text-neutral-900 dark:text-white mb-0.5">Compare</h2>
                 <p className="text-[11px] text-neutral-400">Same component, different physics</p>
               </div>
-              <motion.button
-                onClick={() => setAutoReplay(prev => !prev)}
-                whileTap={{ scale: 0.95 }}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                  autoReplay
-                    ? "bg-indigo-500 text-white"
-                    : "bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
-                }`}
-              >
-                {autoReplay ? "⏸ Stop" : "▶ Loop"}
-              </motion.button>
+              <div className="flex items-center gap-2">
+                <Toggle
+                  checked={autoReplay}
+                  onChange={setAutoReplay}
+                  size="sm"
+                  aria-label="Auto-replay animations"
+                />
+                <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                  {autoReplay ? "Auto-replay on" : "Auto-replay off"}
+                </span>
+              </div>
             </div>
 
             {/* Component selector */}
             <div className="px-5 py-2 border-b border-neutral-100 dark:border-neutral-800">
-              <div className="relative flex gap-1 p-1 rounded-[8px] bg-neutral-100 dark:bg-neutral-800/60 w-fit">
-                {demoOptions.map(opt => (
-                  <button
-                    key={opt.key}
-                    onClick={() => setDemoKey(opt.key)}
-                    className="relative z-10 px-2.5 py-1.5 text-[11px] font-medium rounded-[6px] transition-colors"
-                  >
-                    {demoKey === opt.key && (
-                      <motion.div
-                        layoutId="component-tab-blob"
-                        className="absolute inset-0 rounded-[6px] bg-white dark:bg-neutral-700 shadow-sm"
-                        transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.8 }}
-                        style={{ zIndex: -1 }}
-                      />
-                    )}
-                    <span className={demoKey === opt.key ? "text-neutral-900 dark:text-white" : "text-neutral-500"}>
-                      {opt.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
+              <Tabs
+                value={demoKey}
+                onValueChange={setDemoKey}
+                items={demoOptions.map(opt => ({
+                  value: opt.key,
+                  label: opt.label,
+                  content: <div></div>, // Empty content since we render the demo separately
+                }))}
+                className="w-fit"
+              />
             </div>
 
             {/* Custom preview (big) — click to play */}
             <div className="p-4">
-              <button
+              <Button
                 onClick={play}
-                className="w-full rounded-xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 h-56 mb-4 relative overflow-hidden group cursor-pointer transition-colors hover:border-indigo-300 dark:hover:border-indigo-700"
+                variant="ghost"
+                className="w-full h-56 mb-4 border border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 rounded-xl p-0 hover:border-indigo-300 dark:hover:border-indigo-700 relative overflow-hidden group"
               >
                 {(() => {
                   const Demo = demoComponents[demoKey] || ToastDemo;
@@ -1017,7 +1002,7 @@ export default function PhysicsPlayground() {
                     Click to play
                   </span>
                 </div>
-              </button>
+              </Button>
 
               {/* Preset grid 2×2 */}
               <div className="grid grid-cols-2 gap-3">
@@ -1027,19 +1012,18 @@ export default function PhysicsPlayground() {
                   const Demo = demoComponents[demoKey] || ToastDemo;
                   const springTransition = { type: "spring" as const, stiffness: p.stiffness, damping: p.damping, mass: p.mass };
                   return (
-                    <motion.button
+                    <Button
                       key={key}
                       onClick={() => {
                         handlePreset(key);
                         play();
                       }}
-                      className={`relative text-left rounded-xl border-2 overflow-hidden transition-colors ${
+                      variant="ghost"
+                      className={`relative text-left w-full h-auto p-0 border-2 overflow-hidden transition-colors ${
                         isActive
                           ? "border-indigo-500 dark:border-indigo-400 shadow-md shadow-indigo-500/10"
                           : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
-                      } bg-neutral-50 dark:bg-neutral-950`}
-                      whileHover={{ y: -1 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                      } bg-neutral-50 dark:bg-neutral-950 rounded-xl`}
                     >
                       <div className="h-28 relative overflow-hidden">
                         <Demo isPlaying={isPlaying} color={meta.color} springTransition={springTransition} />
@@ -1049,7 +1033,7 @@ export default function PhysicsPlayground() {
                           </span>
                         </div>
                       </div>
-                    </motion.button>
+                    </Button>
                   );
                 })}
               </div>

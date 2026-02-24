@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/button";
 
 // Component categories with their components
 const componentCategories = {
@@ -132,15 +133,17 @@ function MobileSidebar() {
 
   return (
     <>
-      <button
+      <Button
         onClick={() => setOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm"
+        variant="ghost"
+        size="sm"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 h-auto w-auto min-w-0 border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm"
         aria-label="Open navigation"
       >
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
         </svg>
-      </button>
+      </Button>
 
       <AnimatePresence>
         {open && (
@@ -163,11 +166,11 @@ function MobileSidebar() {
                 <Link href="/docs" className="block text-lg font-medium" onClick={() => setOpen(false)}>
                   Docs
                 </Link>
-                <button onClick={() => setOpen(false)} className="p-1" aria-label="Close navigation">
+                <Button onClick={() => setOpen(false)} variant="ghost" size="sm" className="p-1 h-auto w-auto min-w-0" aria-label="Close navigation">
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                   </svg>
-                </button>
+                </Button>
               </div>
               <MobileSidebarNav onNavigate={() => setOpen(false)} />
             </motion.aside>
