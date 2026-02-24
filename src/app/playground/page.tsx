@@ -936,7 +936,6 @@ export default function PhysicsPlayground() {
               ))}
             </div>
             <ShareButton />
-            <CodeOutput config={config} />
           </div>
 
           {/* Right — Preview area */}
@@ -1038,12 +1037,14 @@ export default function PhysicsPlayground() {
                 })}
               </div>
 
-              {/* Spring Curve */}
-              <div className="mt-4">
-                <SpringCurveDetail config={config} />
-              </div>
             </div>
           </div>
+        </section>
+
+        {/* Bento row: Spring Curve + Export Code */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <SpringCurveDetail config={config} />
+          <CodeOutput config={config} />
         </section>
       </main>
     </div>
