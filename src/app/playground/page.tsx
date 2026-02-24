@@ -514,6 +514,7 @@ interface CodeOutputProps {
 
 function CodeOutput({ config }: CodeOutputProps) {
   const [activeFormat, setActiveFormat] = useState<CodeFormat>("framer");
+  const [copied, setCopied] = useState(false);
 
   // Framer Motion code (existing)
   const framerCode = useMemo(() => {
@@ -717,7 +718,6 @@ function ContinuousAnimation() {
     try {
       await navigator.clipboard.writeText(code);
     } catch (err) {
-      // Fallback for older browsers
       const textArea = document.createElement("textarea");
       textArea.value = code;
       document.body.appendChild(textArea);
@@ -726,6 +726,8 @@ function ContinuousAnimation() {
       document.execCommand("copy");
       document.body.removeChild(textArea);
     }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }, [getCurrentCode]);
 
   const tabs = [
@@ -735,40 +737,45 @@ function ContinuousAnimation() {
   ];
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-          Export Code
-        </h3>
-        <motion.button
-          onClick={copyToClipboard}
-          whileTap={{ scale: 0.95 }}
-          className="px-3 py-1.5 text-xs font-mono bg-neutral-800 dark:bg-neutral-700 text-neutral-300 dark:text-neutral-200 hover:bg-neutral-700 dark:hover:bg-neutral-600 rounded transition-colors"
-        >
-          Copy
-        </motion.button>
+    <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden">
+      {/* Header: title + tabs */}
+      <div className="px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-800">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-xs font-semibold text-neutral-900 dark:text-white">Export Code</h3>
+        </div>
+        <div className="flex gap-1 p-0.5 bg-neutral-100 dark:bg-neutral-800 rounded-md">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveFormat(tab.id)}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-medium rounded transition-all whitespace-nowrap ${
+                activeFormat === tab.id
+                  ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm"
+                  : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200"
+              }`}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Format Tabs */}
-      <div className="flex gap-1 p-1 bg-neutral-200 dark:bg-neutral-800 rounded-lg">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveFormat(tab.id)}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all whitespace-nowrap ${
-              activeFormat === tab.id
-                ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm"
-                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200"
-            }`}
-          >
-            {tab.icon}
-            {tab.label}
-          </button>
-        ))}
-      </div>
-      
-      <div className="bg-neutral-950 border border-neutral-800 rounded-lg overflow-auto">
-        <pre className="p-3 text-[10px] font-mono text-neutral-200 leading-relaxed overflow-x-auto">
+      {/* Code block with inline copy button */}
+      <div className="relative bg-neutral-950">
+        <motion.button
+          onClick={copyToClipboard}
+          whileTap={{ scale: 0.9 }}
+          className="absolute top-2 right-2 p-1.5 rounded-md bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-neutral-200 transition-colors z-10"
+          title="Copy code"
+        >
+          {copied ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          )}
+        </motion.button>
+        <pre className="p-3 pr-10 text-[10px] font-mono text-neutral-200 leading-relaxed overflow-x-auto max-h-[400px] overflow-y-auto">
           <code>{getCurrentCode()}</code>
         </pre>
       </div>
