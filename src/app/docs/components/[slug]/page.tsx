@@ -88,24 +88,6 @@ export default async function ComponentPage({ params }: PageProps) {
           </div>
         </section>
 
-        {/* Usage Examples */}
-        <section className="mb-12">
-          <h2 className="text-base font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-4">Usage</h2>
-          <div className="space-y-8">
-            {info.examples.map((example, index) => (
-              <div key={index}>
-                <h3 className="text-sm font-semibold text-neutral-900 dark:text-white mb-4">
-                  Example {index + 1}
-                </h3>
-                <div className="space-y-4">
-                  <ComponentPreview componentName={info.name} />
-                  <CodeBlock code={example} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* Props */}
         {info.props.length > 0 && (
           <section className="mb-12">
