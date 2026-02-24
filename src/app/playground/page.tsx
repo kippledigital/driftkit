@@ -743,19 +743,24 @@ function ContinuousAnimation() {
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-xs font-semibold text-neutral-900 dark:text-white">Export Code</h3>
         </div>
-        <div className="flex gap-1 p-0.5 bg-neutral-100 dark:bg-neutral-800 rounded-md">
+        <div className="relative flex gap-1 p-0.5 bg-neutral-100 dark:bg-neutral-800 rounded-md">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveFormat(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-medium rounded transition-all whitespace-nowrap ${
-                activeFormat === tab.id
-                  ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm"
-                  : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200"
-              }`}
+              className="relative z-10 flex-1 flex items-center justify-center gap-1.5 px-2 py-1 text-[11px] font-medium rounded transition-colors whitespace-nowrap"
             >
-              {tab.icon}
-              {tab.label}
+              {activeFormat === tab.id && (
+                <motion.div
+                  layoutId="export-tab-blob"
+                  className="absolute inset-0 rounded bg-white dark:bg-neutral-900 shadow-sm"
+                  transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.8 }}
+                  style={{ zIndex: -1 }}
+                />
+              )}
+              <span className={activeFormat === tab.id ? "text-neutral-900 dark:text-white" : "text-neutral-500 dark:text-neutral-400"}>
+                <span className="flex items-center gap-1.5">{tab.icon}{tab.label}</span>
+              </span>
             </button>
           ))}
         </div>
