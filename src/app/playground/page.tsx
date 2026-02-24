@@ -729,9 +729,9 @@ function ContinuousAnimation() {
   }, [getCurrentCode]);
 
   const tabs = [
-    { id: "framer" as const, label: "Framer Motion", icon: "🎨" },
-    { id: "spring" as const, label: "React Spring", icon: "🌸" },
-    { id: "css" as const, label: "CSS", icon: "🎯" },
+    { id: "framer" as const, label: "Framer", icon: <svg viewBox="0 0 14 21" fill="currentColor" className="w-3 h-3"><path d="M0 0h14v7H7L0 0zm0 7h7l7 7H7v7L0 14V7z"/></svg> },
+    { id: "spring" as const, label: "Spring", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3"><path d="M12 2a10 10 0 1 0 10 10" strokeLinecap="round"/><path d="M12 2a7 7 0 0 1 7 7" strokeLinecap="round"/></svg> },
+    { id: "css" as const, label: "CSS", icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path d="M4.192 3.143h15.615l-1.42 16.034-6.404 1.812-6.369-1.813L4.192 3.143zm5.53 7.248l-.204-2.29 7.158-.005.208-2.256-9.974-.004.581 6.559h6.69l-.292 3.1-2.902.777-2.893-.777-.187-2.106h-2.29l.37 4.158L12 18.854l3.995-1.12.572-6.344H9.722z"/></svg> },
   ];
 
   return (
@@ -755,13 +755,13 @@ function ContinuousAnimation() {
           <button
             key={tab.id}
             onClick={() => setActiveFormat(tab.id)}
-            className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-all ${
+            className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 text-[11px] font-medium rounded-md transition-all whitespace-nowrap ${
               activeFormat === tab.id
                 ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm"
-                : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200"
+                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200"
             }`}
           >
-            <span className="mr-1.5">{tab.icon}</span>
+            {tab.icon}
             {tab.label}
           </button>
         ))}
