@@ -903,7 +903,7 @@ export default function PhysicsPlayground() {
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         {/* Sidebar + Preview Area */}
-        <section className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6">
+        <section className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6 items-start">
           {/* Left sidebar — Controls */}
           <div className="flex flex-col gap-4">
             <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 space-y-4">
@@ -936,6 +936,7 @@ export default function PhysicsPlayground() {
               ))}
             </div>
             <ShareButton />
+            <CodeOutput config={config} />
           </div>
 
           {/* Right — Preview area */}
@@ -1037,14 +1038,12 @@ export default function PhysicsPlayground() {
                 })}
               </div>
 
+              {/* Spring Curve */}
+              <div className="mt-4">
+                <SpringCurveDetail config={config} />
+              </div>
             </div>
           </div>
-        </section>
-
-        {/* Bento row: Spring Curve + Export Code */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <SpringCurveDetail config={config} />
-          <CodeOutput config={config} />
         </section>
       </main>
     </div>
