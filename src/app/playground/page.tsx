@@ -1041,17 +1041,13 @@ export default function PhysicsPlayground() {
                 })}
               </div>
 
-              {/* Spring Curve */}
-              <div className="mt-4">
+              {/* Spring Curve + Export Code side by side */}
+              <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <SpringCurveDetail config={config} />
+                <CodeOutput config={config} />
               </div>
             </div>
           </div>
-        </section>
-
-        {/* Code output — full width */}
-        <section>
-          <CodeOutput config={config} />
         </section>
       </main>
     </div>
