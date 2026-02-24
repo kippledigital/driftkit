@@ -55,6 +55,24 @@ export function GlobalNav() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              // Trigger the command palette by dispatching a keyboard event
+              window.dispatchEvent(new KeyboardEvent('keydown', {
+                key: 'k',
+                metaKey: true,
+                bubbles: true
+              }));
+            }}
+            className="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white border border-neutral-200 dark:border-neutral-800 rounded-[6px] hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors group"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <span>Search</span>
+            <kbd className="text-xs px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-500 rounded border border-neutral-200 dark:border-neutral-700 font-mono">⌘K</kbd>
+          </button>
           <a
             href="https://github.com/kippledigital/driftkit"
             target="_blank"

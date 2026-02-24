@@ -1,73 +1,113 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { CommandPalette, CommandItem } from "./command-palette";
+import { componentsData } from "../app/docs/data/components";
 
-interface ComponentEntry {
+interface SearchEntry {
   id: string;
   title: string;
   group: string;
+  description?: string;
+  category?: string;
+  url?: string;
+  type: "component" | "docs" | "page";
 }
 
-const components: ComponentEntry[] = [
-  // Showpieces
-  { id: "typewriter", title: "Typewriter", group: "Showpiece" },
-  { id: "magnetic-dock", title: "Magnetic Dock", group: "Showpiece" },
-  { id: "magnetic-button", title: "Magnetic Button", group: "Showpiece" },
-  { id: "cursor-glow-card", title: "Cursor Glow Card", group: "Showpiece" },
-  { id: "number-ticker", title: "Number Ticker", group: "Showpiece" },
-  { id: "morphing-hamburger", title: "Morphing Hamburger", group: "Showpiece" },
-  { id: "staggered-list", title: "Staggered List", group: "Showpiece" },
-  { id: "mode-switcher", title: "Mode Switcher", group: "Showpiece" },
-  { id: "parallax-tilt-card", title: "Parallax Tilt Card", group: "Showpiece" },
-  { id: "swipe-cards", title: "Swipe Cards", group: "Showpiece" },
-  { id: "marquee", title: "Marquee", group: "Showpiece" },
-  { id: "gradient-border", title: "Gradient Border", group: "Showpiece" },
-  { id: "spotlight-beam", title: "Spotlight Beam", group: "Showpiece" },
-  { id: "ripple-button", title: "Ripple Button", group: "Showpiece" },
-  { id: "scroll-reveal", title: "Scroll Reveal", group: "Showpiece" },
-  { id: "text-shimmer", title: "Text Shimmer", group: "Showpiece" },
-  { id: "wobble-card", title: "Wobble Card", group: "Showpiece" },
-  { id: "animated-tabs", title: "Animated Tabs", group: "Showpiece" },
-  { id: "command-palette", title: "Command Palette", group: "Showpiece" },
-  { id: "expandable-card", title: "Expandable Card", group: "Showpiece" },
-  { id: "cursor-trail", title: "Cursor Trail", group: "Showpiece" },
-  { id: "liquid-button", title: "Liquid Button", group: "Showpiece" },
-  { id: "animated-counter", title: "Animated Counter", group: "Showpiece" },
-  { id: "progress-ring", title: "Progress Ring", group: "Showpiece" },
-  { id: "spring-carousel", title: "Spring Carousel", group: "Showpiece" },
-  { id: "parallax-scroll", title: "Parallax Scroll", group: "Showpiece" },
-  { id: "morphing-shape", title: "Morphing Shape", group: "Showpiece" },
-  { id: "schedule-picker", title: "Schedule Picker", group: "Showpiece" },
-  { id: "date-range-picker", title: "Date Range Picker", group: "Showpiece" },
-  { id: "multi-select", title: "Multi Select", group: "Showpiece" },
-  { id: "stepper", title: "Stepper", group: "Showpiece" },
-  { id: "drawer", title: "Drawer", group: "Showpiece" },
-  { id: "context-menu", title: "Context Menu", group: "Showpiece" },
-  { id: "popover", title: "Popover", group: "Showpiece" },
-  { id: "breadcrumbs", title: "Breadcrumbs", group: "Showpiece" },
-  { id: "badge", title: "Badge", group: "Showpiece" },
-  { id: "code-block", title: "Code Block", group: "Showpiece" },
-  { id: "code-display", title: "Code Display", group: "Showpiece" },
-  { id: "component-switcher", title: "Component Switcher", group: "Showpiece" },
-  { id: "control-panel", title: "Control Panel", group: "Showpiece" },
-  // Standard
-  { id: "nav-menu", title: "Navigation Menu", group: "Standard" },
-  { id: "button", title: "Button", group: "Standard" },
-  { id: "input", title: "Input", group: "Standard" },
-  { id: "toggle", title: "Toggle", group: "Standard" },
-  { id: "tabs", title: "Tabs", group: "Standard" },
-  { id: "accordion", title: "Accordion", group: "Standard" },
-  { id: "dialog", title: "Dialog", group: "Standard" },
-  { id: "tooltip", title: "Tooltip", group: "Standard" },
-  { id: "dropdown", title: "Dropdown Menu", group: "Standard" },
-  { id: "card", title: "Card", group: "Standard" },
-  { id: "skeleton", title: "Skeleton", group: "Standard" },
-  { id: "toast", title: "Toast", group: "Standard" },
+// Storage keys for recent searches
+const RECENT_SEARCHES_KEY = "driftkit-recent-searches";
+const FREQUENT_SEARCHES_KEY = "driftkit-frequent-searches";
+
+// Get components from the actual data
+const getComponentEntries = (): SearchEntry[] => {
+  return Object.entries(componentsData).map(([key, data]) => ({
+    id: key,
+    title: data.displayName,
+    group: data.category,
+    description: data.description,
+    category: data.category,
+    url: `/docs/components/${key}`,
+    type: "component" as const,
+  }));
+};
+
+// Add docs pages and general pages
+const getDocsEntries = (): SearchEntry[] => {
+  return [
+    {
+      id: "docs-overview",
+      title: "Documentation Overview",
+      group: "Docs",
+      description: "Overview of all DriftKit components and features",
+      url: "/docs",
+      type: "docs",
+    },
+    {
+      id: "playground",
+      title: "Playground",
+      group: "Tools",
+      description: "Interactive playground for testing components",
+      url: "/playground",
+      type: "page",
+    },
+    {
+      id: "playground-button",
+      title: "Button Playground", 
+      group: "Tools",
+      description: "Interactive button component playground",
+      url: "/playground/button",
+      type: "page",
+    },
+    {
+      id: "github",
+      title: "GitHub Repository",
+      group: "Links",
+      description: "View source code and contribute",
+      url: "https://github.com/kippledigital/driftkit",
+      type: "page",
+    },
+  ];
+};
+
+const allEntries: SearchEntry[] = [
+  ...getComponentEntries(),
+  ...getDocsEntries(),
 ];
+
+// Recent searches utilities
+const getRecentSearches = (): string[] => {
+  if (typeof window === "undefined") return [];
+  const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+  return stored ? JSON.parse(stored) : [];
+};
+
+const addToRecentSearches = (entryId: string) => {
+  if (typeof window === "undefined") return;
+  const recent = getRecentSearches().filter(id => id !== entryId);
+  recent.unshift(entryId);
+  // Keep only last 10 recent searches
+  const updated = recent.slice(0, 10);
+  localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+};
+
+const getFrequentSearches = (): Record<string, number> => {
+  if (typeof window === "undefined") return {};
+  const stored = localStorage.getItem(FREQUENT_SEARCHES_KEY);
+  return stored ? JSON.parse(stored) : {};
+};
+
+const incrementSearchFrequency = (entryId: string) => {
+  if (typeof window === "undefined") return;
+  const frequent = getFrequentSearches();
+  frequent[entryId] = (frequent[entryId] || 0) + 1;
+  localStorage.setItem(FREQUENT_SEARCHES_KEY, JSON.stringify(frequent));
+};
 
 export function ComponentSearch() {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const router = useRouter();
 
   // ⌘K / Ctrl+K to open
   useEffect(() => {
@@ -81,27 +121,159 @@ export function ComponentSearch() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const scrollTo = useCallback((id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+  const handleSelect = useCallback((entry: SearchEntry) => {
+    // Track usage
+    addToRecentSearches(entry.id);
+    incrementSearchFrequency(entry.id);
+
+    if (entry.type === "component") {
+      // For components, try to scroll to them on current page first
+      const el = document.getElementById(entry.id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else if (entry.url) {
+        // If not found, navigate to component docs page
+        router.push(entry.url);
+      }
+    } else if (entry.url) {
+      // For docs and pages, navigate directly
+      if (entry.url.startsWith("http")) {
+        window.open(entry.url, "_blank", "noopener,noreferrer");
+      } else {
+        router.push(entry.url);
+      }
     }
+  }, [router]);
+
+  const getRecentEntries = useCallback((): SearchEntry[] => {
+    const recentIds = getRecentSearches();
+    return recentIds
+      .map(id => allEntries.find(entry => entry.id === id))
+      .filter((entry): entry is SearchEntry => entry !== undefined)
+      .slice(0, 5);
   }, []);
 
-  const items: CommandItem[] = useMemo(
-    () =>
-      components.map((c) => ({
-        id: c.id,
-        label: c.title,
+  const getFrequentEntries = useCallback((): SearchEntry[] => {
+    const frequent = getFrequentSearches();
+    return allEntries
+      .filter(entry => frequent[entry.id] > 0)
+      .sort((a, b) => (frequent[b.id] || 0) - (frequent[a.id] || 0))
+      .slice(0, 5);
+  }, []);
+
+  const items: CommandItem[] = useMemo(() => {
+    const recentEntries = getRecentEntries();
+    const frequentEntries = getFrequentEntries();
+    const hasRecent = recentEntries.length > 0;
+    const hasFrequent = frequentEntries.length > 0;
+
+    const items: CommandItem[] = [];
+
+    // Add recent searches section
+    if (!query && hasRecent) {
+      items.push({
+        id: "recent-header",
+        label: "Recent",
         icon: (
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 font-medium">
-            {c.group}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-400">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12,6 12,12 16,14" />
+          </svg>
+        ),
+        onSelect: () => {},
+      });
+
+      recentEntries.forEach(entry => {
+        items.push({
+          id: `recent-${entry.id}`,
+          label: entry.title,
+          icon: (
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium">
+              {entry.group}
+            </span>
+          ),
+          onSelect: () => handleSelect(entry),
+        });
+      });
+    }
+
+    // Add frequent searches section  
+    if (!query && hasFrequent && frequentEntries.some(e => !recentEntries.includes(e))) {
+      const uniqueFrequent = frequentEntries.filter(e => !recentEntries.includes(e));
+      if (uniqueFrequent.length > 0) {
+        items.push({
+          id: "frequent-header",
+          label: "Frequently Used",
+          icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-400">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+            </svg>
+          ),
+          onSelect: () => {},
+        });
+
+        uniqueFrequent.slice(0, 3).forEach(entry => {
+          items.push({
+            id: `frequent-${entry.id}`,
+            label: entry.title,
+            icon: (
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 font-medium">
+                {entry.group}
+              </span>
+            ),
+            onSelect: () => handleSelect(entry),
+          });
+        });
+      }
+    }
+
+    // Add all entries section
+    if (!query && (hasRecent || hasFrequent)) {
+      items.push({
+        id: "all-header",
+        label: "All Items",
+        icon: (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-400">
+            <path d="M3 3h18v18H3z" />
+            <path d="M9 9h6v6H9z" />
+          </svg>
+        ),
+        onSelect: () => {},
+      });
+    }
+
+    // Add filtered entries based on query
+    const filteredEntries = query 
+      ? allEntries.filter(entry => 
+          entry.title.toLowerCase().includes(query.toLowerCase()) ||
+          entry.description?.toLowerCase().includes(query.toLowerCase()) ||
+          entry.group.toLowerCase().includes(query.toLowerCase())
+        )
+      : allEntries;
+
+    filteredEntries.forEach(entry => {
+      items.push({
+        id: entry.id,
+        label: entry.title,
+        icon: (
+          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
+            entry.type === "component" 
+              ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-500"
+              : entry.type === "docs"
+              ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+              : "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+          }`}>
+            {entry.group}
           </span>
         ),
-        onSelect: () => scrollTo(c.id),
-      })),
-    [scrollTo]
-  );
+        onSelect: () => handleSelect(entry),
+      });
+    });
+
+    return items;
+  }, [query, handleSelect, getRecentEntries, getFrequentEntries]);
+
+  const totalCount = allEntries.length;
 
   return (
     <>
@@ -124,7 +296,9 @@ export function ComponentSearch() {
         items={items}
         open={open}
         onClose={() => setOpen(false)}
-        placeholder="Search 52 components…"
+        placeholder={`Search ${totalCount} components, docs & more…`}
+        query={query}
+        onQueryChange={setQuery}
       />
     </>
   );

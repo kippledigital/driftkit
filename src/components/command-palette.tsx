@@ -16,10 +16,13 @@ export interface CommandPaletteProps {
   open: boolean;
   onClose: () => void;
   placeholder?: string;
+  query?: string;
+  onQueryChange?: (query: string) => void;
 }
 
-const OVERLAY_SPRING = { type: "spring" as const, stiffness: 500, damping: 35 };
+const OVERLAY_SPRING = { type: "spring" as const, stiffness: 400, damping: 30, mass: 0.8 };
 const PANEL_SPRING = { type: "spring" as const, stiffness: 500, damping: 32, mass: 0.8 };
+const RESULT_SPRING = { type: "spring" as const, stiffness: 600, damping: 35, mass: 0.6 };
 
 function fuzzy(query: string, text: string): boolean {
   const q = query.toLowerCase();
@@ -31,10 +34,21 @@ function fuzzy(query: string, text: string): boolean {
   return qi === q.length;
 }
 
-export function CommandPalette({ items, open, onClose, placeholder = "Type a command…" }: CommandPaletteProps) {
-  const [query, setQuery] = useState("");
+export function CommandPalette({ 
+  items, 
+  open, 
+  onClose, 
+  placeholder = "Type a command…",
+  query: externalQuery,
+  onQueryChange
+}: CommandPaletteProps) {
+  const [internalQuery, setInternalQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Use external query if provided, otherwise use internal
+  const query = externalQuery !== undefined ? externalQuery : internalQuery;
+  const setQuery = externalQuery !== undefined ? onQueryChange! : setInternalQuery;
 
   const filtered = useMemo(
     () => (query ? items.filter((i) => fuzzy(query, i.label)) : items),
@@ -43,11 +57,13 @@ export function CommandPalette({ items, open, onClose, placeholder = "Type a com
 
   useEffect(() => {
     if (open) {
-      setQuery("");
+      if (externalQuery === undefined) {
+        setInternalQuery("");
+      }
       setActiveIndex(0);
       setTimeout(() => inputRef.current?.focus(), 50);
     }
-  }, [open]);
+  }, [open, externalQuery]);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -109,25 +125,55 @@ export function CommandPalette({ items, open, onClose, placeholder = "Type a com
             </div>
             <div className="max-h-64 overflow-y-auto py-2">
               {filtered.length === 0 && (
-                <p className="px-4 py-3 text-sm text-neutral-400">No results found.</p>
+                <motion.p 
+                  className="px-4 py-3 text-sm text-neutral-400"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, ...RESULT_SPRING }}
+                >
+                  No results found.
+                </motion.p>
               )}
               {filtered.map((item, i) => (
-                <button
+                <motion.button
                   key={item.id}
                   onClick={() => select(item)}
                   onMouseEnter={() => setActiveIndex(i)}
-                  className={`w-full flex items-center gap-3 px-4 py-2 text-sm text-left transition-colors ${
+                  className={`w-full flex items-center gap-3 px-4 py-2 text-sm text-left relative overflow-hidden ${
                     i === activeIndex
-                      ? "bg-neutral-100 dark:bg-neutral-800"
-                      : "hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
+                      ? "text-neutral-900 dark:text-white"
+                      : "text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white"
                   }`}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.02, ...RESULT_SPRING }}
+                  whileHover={{ x: 2 }}
                 >
-                  {item.icon && <span className="text-base">{item.icon}</span>}
-                  <span className="flex-1">{item.label}</span>
-                  {item.shortcut && (
-                    <kbd className="text-xs text-neutral-400 font-mono">{item.shortcut}</kbd>
+                  {i === activeIndex && (
+                    <motion.div
+                      className="absolute inset-0 bg-neutral-100 dark:bg-neutral-800 rounded-[4px] mx-1"
+                      layoutId="active-result"
+                      transition={RESULT_SPRING}
+                    />
                   )}
-                </button>
+                  <div className="relative flex items-center gap-3 flex-1">
+                    {item.icon && (
+                      <motion.span 
+                        className="text-base"
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                      >
+                        {item.icon}
+                      </motion.span>
+                    )}
+                    <span className="flex-1">{item.label}</span>
+                    {item.shortcut && (
+                      <kbd className="text-xs text-neutral-400 font-mono bg-neutral-50 dark:bg-neutral-800/50 px-1.5 py-0.5 rounded border border-neutral-200 dark:border-neutral-700">
+                        {item.shortcut}
+                      </kbd>
+                    )}
+                  </div>
+                </motion.button>
               ))}
             </div>
           </motion.div>
