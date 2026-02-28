@@ -2,8 +2,9 @@ import React from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getComponentInfo, getAllComponentNames } from "../../data/components";
-import { CodeBlock, ComponentPreview } from "./client";
+import { CodeBlock } from "./client";
 import TryIt from "./try-it";
+import ComponentTabs from "./tabs";
 
 interface PageProps {
   params: Promise<{
@@ -68,11 +69,8 @@ export default async function ComponentPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Preview */}
-        <section className="mb-12">
-          <h2 className="text-base font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-4">Preview</h2>
-          <ComponentPreview componentName={info.name} />
-        </section>
+        {/* Preview & Usage Tabs */}
+        <ComponentTabs componentName={info.name} />
 
         {/* Installation */}
         <section className="mb-12">
