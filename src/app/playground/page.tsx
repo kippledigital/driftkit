@@ -904,8 +904,8 @@ export default function PhysicsPlayground() {
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         {/* Sidebar + Preview Area */}
         <section className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6 items-start">
-          {/* Left sidebar — Controls */}
-          <div className="flex flex-col gap-4">
+          {/* Left sidebar — Controls (order-2 on mobile so preview shows first) */}
+          <div className="flex flex-col gap-4 order-2 lg:order-1">
             <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 space-y-4">
               <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">Fine-tune</h3>
               {sliders.map(s => (
@@ -939,8 +939,8 @@ export default function PhysicsPlayground() {
             <CodeOutput config={config} />
           </div>
 
-          {/* Right — Preview area */}
-          <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden">
+          {/* Right — Preview area (order-1 on mobile so it shows first) */}
+          <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden order-1 lg:order-2">
             {/* Header bar */}
             <div className="px-5 py-3 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
               <div>
