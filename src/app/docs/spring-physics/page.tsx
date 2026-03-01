@@ -24,12 +24,12 @@ function SpringDemo() {
       </div>
 
       {/* Animation preview */}
-      <div className="h-16 mb-6 relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800">
+      <div className="h-10 mb-6 relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800">
         <motion.div
           key={key}
-          className="w-12 h-12 rounded-xl bg-neutral-900 dark:bg-indigo-400 absolute top-2 left-2"
-          initial={{ left: "8px", scale: 0.8, opacity: 0 }}
-          animate={{ left: "calc(100% - 56px)", scale: 1, opacity: 1 }}
+          className="w-8 h-8 rounded-lg bg-neutral-900 dark:bg-indigo-400 absolute top-1 left-1"
+          initial={{ left: "4px", scale: 0.8, opacity: 0 }}
+          animate={{ left: "calc(100% - 36px)", scale: 1, opacity: 1 }}
           transition={{
             type: "spring",
             stiffness: config.stiffness,
@@ -219,10 +219,10 @@ function PresetExamples() {
               {preset.config.stiffness}/{preset.config.damping}/{preset.config.mass}
             </code>
           </div>
-          <div className="h-8 relative overflow-hidden bg-neutral-100 dark:bg-neutral-800 rounded-lg">
+          <div className="h-10 relative overflow-hidden bg-neutral-100 dark:bg-neutral-800 rounded-lg">
             <motion.div
               key={`${preset.name}-${key}`}
-              className="w-8 h-6 rounded bg-neutral-900 dark:bg-indigo-400 absolute top-1 left-1"
+              className="w-8 h-8 rounded-lg bg-neutral-900 dark:bg-indigo-400 absolute top-1 left-1"
               initial={{ left: "4px" }}
               animate={{ left: "calc(100% - 36px)" }}
               transition={{ type: "spring", ...preset.config }}
