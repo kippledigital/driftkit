@@ -27,7 +27,7 @@ function SpringDemo() {
       <div className="h-16 mb-6 flex items-center">
         <motion.div
           key={key}
-          className="w-12 h-12 rounded-xl bg-neutral-900 dark:bg-white"
+          className="w-12 h-12 rounded-xl bg-neutral-900 dark:bg-indigo-400"
           initial={{ x: 0, scale: 0.8, opacity: 0 }}
           animate={{ x: 280, scale: 1, opacity: 1 }}
           transition={{
@@ -142,13 +142,13 @@ function ComparisonDemo() {
         {/* Spring */}
         <div>
           <div className="text-xs text-neutral-500 mb-2 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-neutral-900 dark:bg-white" />
+            <span className="w-2 h-2 rounded-full bg-neutral-900 dark:bg-indigo-400" />
             Spring — interruptible, no fixed duration
           </div>
-          <div className="h-10 flex items-center bg-neutral-100 dark:bg-neutral-800/50 rounded-lg px-2">
+          <div className="h-10 flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-lg px-2">
             <motion.div
               key={`spring-${key}`}
-              className="w-8 h-8 rounded-lg bg-neutral-900 dark:bg-white"
+              className="w-8 h-8 rounded-lg bg-neutral-900 dark:bg-indigo-400"
               initial={{ x: 0 }}
               animate={{ x: 280 }}
               transition={{ type: "spring", stiffness: 300, damping: 20, mass: 1 }}
@@ -159,13 +159,13 @@ function ComparisonDemo() {
         {/* Bezier */}
         <div>
           <div className="text-xs text-neutral-500 mb-2 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-neutral-400" />
+            <span className="w-2 h-2 rounded-full bg-neutral-400 dark:bg-neutral-500" />
             CSS ease-in-out — fixed 500ms, can&apos;t interrupt
           </div>
-          <div className="h-10 flex items-center bg-neutral-100 dark:bg-neutral-800/50 rounded-lg px-2">
+          <div className="h-10 flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-lg px-2">
             <motion.div
               key={`bezier-${key}`}
-              className="w-8 h-8 rounded-lg bg-neutral-400"
+              className="w-8 h-8 rounded-lg bg-neutral-400 dark:bg-neutral-500"
               initial={{ x: 0 }}
               animate={{ x: 280 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -222,7 +222,7 @@ function PresetExamples() {
           <div className="h-8 flex items-center">
             <motion.div
               key={`${preset.name}-${key}`}
-              className="w-8 h-6 rounded bg-neutral-900 dark:bg-white"
+              className="w-8 h-6 rounded bg-neutral-900 dark:bg-indigo-400"
               initial={{ x: 0 }}
               animate={{ x: 260 }}
               transition={{ type: "spring", ...preset.config }}
