@@ -1871,6 +1871,47 @@ export const componentsData: Record<string, ComponentInfo> = {
       `<WobbleCard><h2>Hover me!</h2></WobbleCard>`
     ],
   },
+  "pagination": {
+    name: "pagination",
+    displayName: "Pagination",
+    description: "Page navigation with spring-animated active indicator blob. The active page highlight morphs between positions using layout animation. Includes smart ellipsis, prev/next buttons, and keyboard-friendly design.",
+    importPath: 'import { Pagination } from "@/components/pagination";',
+    props: [
+      { name: "page", type: "number", required: true, description: "Current page (1-indexed)." },
+      { name: "totalPages", type: "number", required: true, description: "Total number of pages." },
+      { name: "onPageChange", type: "(page: number) => void", required: true, description: "Page change callback." },
+      { name: "siblingCount", type: "number", required: false, defaultValue: "1", description: "Pages shown on each side of current." },
+      { name: "showEdges", type: "boolean", required: false, defaultValue: "true", description: "Always show first/last page." },
+    ],
+    examples: [
+      `<Pagination page={currentPage} totalPages={20} onPageChange={setCurrentPage} />`,
+      `<Pagination page={5} totalPages={50} onPageChange={setPage} siblingCount={2} />`,
+    ],
+    category: "Navigation",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/pagination.tsx",
+  },
+  "data-table": {
+    name: "data-table",
+    displayName: "Data Table",
+    description: "Sortable data table with spring-animated row reorder. When sort changes, rows animate to their new positions with layout animation. Includes sort indicators, row selection, hover highlight, striped mode, and empty states.",
+    importPath: 'import { DataTable } from "@/components/data-table";',
+    props: [
+      { name: "columns", type: "Column<T>[]", required: true, description: "Column definitions with key, header, cell renderer, sortable flag." },
+      { name: "data", type: "T[]", required: true, description: "Row data array." },
+      { name: "rowKey", type: "(row: T) => string", required: true, description: "Unique key extractor." },
+      { name: "onRowClick", type: "(row: T) => void", required: false, description: "Row click handler." },
+      { name: "selectedKeys", type: "Set<string>", required: false, description: "Selected row keys for highlighting." },
+      { name: "hoverable", type: "boolean", required: false, defaultValue: "true", description: "Enable row hover highlight." },
+      { name: "striped", type: "boolean", required: false, defaultValue: "false", description: "Alternating row colors." },
+      { name: "compact", type: "boolean", required: false, defaultValue: "false", description: "Reduced padding." },
+      { name: "emptyContent", type: "ReactNode", required: false, description: "Custom empty state." },
+    ],
+    examples: [
+      `<DataTable columns={[{ key: "name", header: "Name", cell: (r) => r.name, sortable: true }]} data={users} rowKey={(r) => r.id} />`,
+    ],
+    category: "Data Display",
+    githubUrl: "https://github.com/kippledigital/driftkit/blob/main/src/components/data-table.tsx",
+  },
 };
 
 export function getComponentInfo(slug: string): ComponentInfo | null {
