@@ -15,7 +15,7 @@ const componentCategories = {
     "nav-menu", "breadcrumbs", "tabs", "animated-tabs", "stepper", "magnetic-dock"
   ],
   "Feedback": [
-    "toast", "tooltip", "dialog", "drawer", "progress-ring", "skeleton"
+    "toast", "tooltip", "dialog", "drawer", "progress-ring", "progress-bar", "alert", "skeleton"
   ],
   "Data Display": [
     "badge", "accordion", "code-block", "code-display", "number-ticker", "animated-counter"
@@ -24,7 +24,7 @@ const componentCategories = {
     "popover", "context-menu", "dropdown", "command-palette", "spotlight"
   ],
   "Input": [
-    "button", "input", "toggle", "multi-select", "date-range-picker", "schedule-picker"
+    "button", "input", "toggle", "tag-input", "multi-select", "date-range-picker", "schedule-picker"
   ],
   "Animation": [
     "typewriter", "marquee", "text-shimmer", "staggered-list", "scroll-reveal", 
