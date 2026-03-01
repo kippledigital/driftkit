@@ -17,19 +17,19 @@ export function GlobalNav() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 h-14 flex items-center justify-between gap-2">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 group shrink-0">
           <span className="text-sm font-bold text-neutral-900 dark:text-white tracking-tight">
             driftkit
           </span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 font-medium">
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-300 font-medium hidden sm:inline">
             beta
           </span>
         </Link>
 
         {/* Nav links */}
-        <nav className="flex items-center gap-1 p-1 rounded-[8px] bg-neutral-100 dark:bg-neutral-800/60">
+        <nav className="flex items-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 rounded-[8px] bg-neutral-100 dark:bg-neutral-800/60">
           {navItems.map(item => {
             // More specific paths should match first — check exact or startsWith,
             // but exclude sub-paths that have their own nav item
@@ -40,7 +40,7 @@ export function GlobalNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="relative z-10 px-3 py-1.5 text-sm font-medium rounded-[6px] transition-colors"
+                className="relative z-10 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium rounded-[6px] transition-colors"
               >
                 {isActive && (
                   <motion.div
@@ -59,7 +59,7 @@ export function GlobalNav() {
         </nav>
 
         {/* Right side */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             onClick={() => {
               // Trigger the command palette by dispatching a keyboard event
