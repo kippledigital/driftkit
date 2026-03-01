@@ -754,7 +754,7 @@ function ContinuousAnimation() {
             label: <span className="flex items-center gap-1.5">{tab.icon}{tab.label}</span>,
             content: <div></div>, // Empty content since we render code separately
           }))}
-          className="w-full"
+          className="w-full [&_[role=tablist]]:w-full [&_[role=tab]]:flex-1 [&_[role=tab]]:text-center"
         />
       </div>
 
