@@ -78,8 +78,8 @@ function StripeCard({
         <h3
           className={`text-sm font-semibold uppercase tracking-wider mb-2 ${
             highlighted
-              ? "text-neutral-400 dark:text-neutral-500"
-              : "text-neutral-500 dark:text-neutral-400"
+              ? "text-neutral-400 dark:text-neutral-500 dark:text-neutral-300"
+              : "text-neutral-500 dark:text-neutral-300"
           }`}
         >
           {title}
@@ -178,7 +178,7 @@ export default function StripeCardHoverRecipe() {
   return (
     <div className="py-12 px-8 max-w-5xl">
       {/* Breadcrumb */}
-      <div className="mb-8 flex items-center gap-2 text-sm text-neutral-500">
+      <div className="mb-8 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-300">
         <Link href="/docs/recipes" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
           Recipes
         </Link>
@@ -282,7 +282,7 @@ export default function StripeCardHoverRecipe() {
         <pre className="p-6 bg-neutral-950 text-neutral-400 rounded-xl text-sm overflow-x-auto leading-relaxed">
           <code>{springExplanation}</code>
         </pre>
-        <p className="text-sm text-neutral-500 mt-4">
+        <p className="text-sm text-neutral-500 dark:text-neutral-300 mt-4">
           Try it: increase stiffness to 600 for a snappier feel, or drop damping to 15 for more wobble.
           Use the <Link href="/playground" className="text-neutral-900 dark:text-white underline">Spring Playground</Link> to visualize.
         </p>
@@ -292,13 +292,13 @@ export default function StripeCardHoverRecipe() {
       <div className="pt-8 border-t border-neutral-200 dark:border-neutral-800 flex justify-between">
         <Link
           href="/docs/recipes"
-          className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
+          className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
         >
           ← All Recipes
         </Link>
         <Link
           href="/docs/recipes/form-micro-interactions"
-          className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
+          className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
         >
           Next: Form Micro-Interactions →
         </Link>

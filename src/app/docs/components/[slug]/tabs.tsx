@@ -19,7 +19,7 @@ export default function ComponentTabs({ componentName }: TabsProps) {
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'preview'
                 ? 'border-neutral-900 dark:border-white text-neutral-900 dark:text-white'
-                : 'border-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
+                : 'border-transparent text-neutral-500 dark:text-neutral-300 hover:text-neutral-700 dark:hover:text-neutral-300'
             }`}
             onClick={() => setActiveTab('preview')}
           >
@@ -29,7 +29,7 @@ export default function ComponentTabs({ componentName }: TabsProps) {
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'usage'
                 ? 'border-neutral-900 dark:border-white text-neutral-900 dark:text-white'
-                : 'border-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
+                : 'border-transparent text-neutral-500 dark:text-neutral-300 hover:text-neutral-700 dark:hover:text-neutral-300'
             }`}
             onClick={() => setActiveTab('usage')}
           >

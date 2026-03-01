@@ -59,7 +59,7 @@ function SpringDemo() {
             }}
             className="w-full accent-neutral-900 dark:accent-white"
           />
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+          <p className="text-xs text-neutral-500 dark:text-neutral-300 mt-0.5">
             Higher = snappier, more force pulling toward target
           </p>
         </div>
@@ -82,7 +82,7 @@ function SpringDemo() {
             }}
             className="w-full accent-neutral-900 dark:accent-white"
           />
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+          <p className="text-xs text-neutral-500 dark:text-neutral-300 mt-0.5">
             Higher = less oscillation, settles faster. Lower = more bounce.
           </p>
         </div>
@@ -106,7 +106,7 @@ function SpringDemo() {
             }}
             className="w-full accent-neutral-900 dark:accent-white"
           />
-          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+          <p className="text-xs text-neutral-500 dark:text-neutral-300 mt-0.5">
             Higher = heavier, more momentum, slower to start/stop
           </p>
         </div>
@@ -141,7 +141,7 @@ function ComparisonDemo() {
       <div className="space-y-4">
         {/* Spring */}
         <div>
-          <div className="text-xs text-neutral-500 dark:text-neutral-400 mb-2 flex items-center gap-2">
+          <div className="text-xs text-neutral-500 dark:text-neutral-300 mb-2 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-neutral-900 dark:bg-indigo-400" />
             Spring — interruptible, no fixed duration
           </div>
@@ -158,7 +158,7 @@ function ComparisonDemo() {
 
         {/* Bezier */}
         <div>
-          <div className="text-xs text-neutral-500 dark:text-neutral-400 mb-2 flex items-center gap-2">
+          <div className="text-xs text-neutral-500 dark:text-neutral-300 mb-2 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-neutral-400 dark:bg-neutral-500" />
             CSS ease-in-out — fixed 500ms, can&apos;t interrupt
           </div>
@@ -174,7 +174,7 @@ function ComparisonDemo() {
         </div>
       </div>
 
-      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-4">
+      <p className="text-xs text-neutral-500 dark:text-neutral-300 mt-4">
         Notice how the spring overshoots and settles naturally, while the bezier curve just... stops. The spring <em>feels</em> like a real object.
       </p>
     </div>
@@ -213,7 +213,7 @@ function PresetExamples() {
           <div className="flex items-center justify-between mb-2">
             <div>
               <span className="text-sm font-medium text-neutral-900 dark:text-white">{preset.name}</span>
-              <span className="text-xs text-neutral-500 dark:text-neutral-400 ml-2">{preset.desc}</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-300 ml-2">{preset.desc}</span>
             </div>
             <code className="text-xs text-neutral-400">
               {preset.config.stiffness}/{preset.config.damping}/{preset.config.mass}
@@ -286,28 +286,28 @@ export default function SpringPhysicsPage() {
             <div className="p-4 rounded-lg bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/40 dark:border-neutral-800/40">
               <div className="flex items-center gap-2 mb-1">
                 <code className="text-sm font-mono font-bold text-neutral-900 dark:text-white">stiffness</code>
-                <span className="text-xs text-neutral-500 dark:text-neutral-400">default: 100</span>
+                <span className="text-xs text-neutral-500 dark:text-neutral-300">default: 100</span>
               </div>
               <p className="text-sm">How strong the spring pulls toward the target. Higher = snappier response. Think of it as the &quot;urgency&quot; of the animation.</p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Low (50-150): Lazy, floaty. High (400-1000): Snappy, immediate.</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-300 mt-1">Low (50-150): Lazy, floaty. High (400-1000): Snappy, immediate.</p>
             </div>
 
             <div className="p-4 rounded-lg bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/40 dark:border-neutral-800/40">
               <div className="flex items-center gap-2 mb-1">
                 <code className="text-sm font-mono font-bold text-neutral-900 dark:text-white">damping</code>
-                <span className="text-xs text-neutral-500 dark:text-neutral-400">default: 10</span>
+                <span className="text-xs text-neutral-500 dark:text-neutral-300">default: 10</span>
               </div>
               <p className="text-sm">How quickly oscillation dies out. This is the &quot;friction.&quot; Low damping = more bounce. High damping = smooth settle.</p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Low (5-15): Bouncy, playful. High (25-50): Smooth, controlled.</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-300 mt-1">Low (5-15): Bouncy, playful. High (25-50): Smooth, controlled.</p>
             </div>
 
             <div className="p-4 rounded-lg bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/40 dark:border-neutral-800/40">
               <div className="flex items-center gap-2 mb-1">
                 <code className="text-sm font-mono font-bold text-neutral-900 dark:text-white">mass</code>
-                <span className="text-xs text-neutral-500 dark:text-neutral-400">default: 1</span>
+                <span className="text-xs text-neutral-500 dark:text-neutral-300">default: 1</span>
               </div>
               <p className="text-sm">How &quot;heavy&quot; the animated element feels. Higher mass = more momentum, slower to start and stop.</p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">Light (0.1-0.5): Quick, responsive. Heavy (2-5): Weighty, deliberate.</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-300 mt-1">Light (0.1-0.5): Quick, responsive. Heavy (2-5): Weighty, deliberate.</p>
             </div>
           </div>
         </section>
@@ -389,7 +389,7 @@ export default function SpringPhysicsPage() {
       <div className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-800 flex justify-between">
         <Link
           href="/docs/installation"
-          className="text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+          className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
         >
           ← Installation
         </Link>

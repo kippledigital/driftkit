@@ -32,7 +32,7 @@ export function ComponentPreview({ componentName }: { componentName: string }) {
         {DemoComponent ? (
           <DemoComponent />
         ) : (
-          <div className="text-neutral-500 dark:text-neutral-400">
+          <div className="text-neutral-500 dark:text-neutral-300">
             Interactive preview coming soon
           </div>
         )}

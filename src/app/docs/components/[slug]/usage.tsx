@@ -1292,7 +1292,7 @@ const usageData: Record<string, any> = {
           <img src={user.avatar} className="w-8 h-8 rounded-full" />
           <div className="text-sm">
             <div className="font-medium">{user.name}</div>
-            <div className="text-neutral-500">{user.email}</div>
+            <div className="text-neutral-500 dark:text-neutral-300">{user.email}</div>
           </div>
         </div>
       </DropdownTrigger>
@@ -1344,7 +1344,7 @@ export default function Usage({ componentName }: UsageProps) {
   if (!data) {
     return (
       <div className="text-center py-12">
-        <p className="text-neutral-500 dark:text-neutral-400">
+        <p className="text-neutral-500 dark:text-neutral-300">
           Usage examples coming soon for {componentName}
         </p>
       </div>
@@ -1448,7 +1448,7 @@ export default function Usage({ componentName }: UsageProps) {
                       </code>
                     </td>
                     <td className="py-3 pr-6">
-                      <span className={`text-sm ${prop.required ? 'text-red-600 dark:text-red-400' : 'text-neutral-500 dark:text-neutral-500'}`}>
+                      <span className={`text-sm ${prop.required ? 'text-red-600 dark:text-red-400' : 'text-neutral-500 dark:text-neutral-300 dark:text-neutral-500 dark:text-neutral-300'}`}>
                         {prop.required ? 'Yes' : 'No'}
                       </span>
                     </td>

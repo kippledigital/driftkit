@@ -181,7 +181,7 @@ const springs = {
       <div className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-800 flex justify-between">
         <Link
           href="/docs/introduction"
-          className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
+          className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
         >
           ← Introduction
         </Link>

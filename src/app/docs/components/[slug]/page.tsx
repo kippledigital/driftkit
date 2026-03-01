@@ -46,7 +46,7 @@ export default async function ComponentPage({ params }: PageProps) {
     <div className="py-12 px-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400 mb-4">
+          <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-300 mb-4">
             <Link href="/docs" className="hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors">
               Components
             </Link>
@@ -114,7 +114,7 @@ export default async function ComponentPage({ params }: PageProps) {
                         </code>
                       </td>
                       <td className="py-3 pr-6">
-                        <span className={`text-sm ${prop.required ? 'text-red-600 dark:text-red-400' : 'text-neutral-500 dark:text-neutral-500'}`}>
+                        <span className={`text-sm ${prop.required ? 'text-red-600 dark:text-red-400' : 'text-neutral-500 dark:text-neutral-300 dark:text-neutral-500 dark:text-neutral-300'}`}>
                           {prop.required ? 'Yes' : 'No'}
                         </span>
                       </td>

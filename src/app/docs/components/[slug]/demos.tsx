@@ -191,7 +191,7 @@ export function ToggleDemo() {
         <Toggle size="sm" checked={checked} onChange={setChecked} aria-label="Small" />
         <Toggle size="md" checked={checked} onChange={setChecked} aria-label="Medium" />
         <Toggle size="lg" checked={checked} onChange={setChecked} aria-label="Large" />
-        <span className="text-sm text-neutral-500">{checked ? "On" : "Off"}</span>
+        <span className="text-sm text-neutral-500 dark:text-neutral-300">{checked ? "On" : "Off"}</span>
       </div>
       <div className="flex items-center gap-4">
         <Toggle disabled checked={false} aria-label="Disabled off" />
@@ -254,7 +254,7 @@ export function AnimatedCounterDemo() {
         <div className="text-3xl font-bold">
           <AnimatedCounter target={target} />
         </div>
-        <p className="text-sm text-neutral-500 mt-1">Revenue this month</p>
+        <p className="text-sm text-neutral-500 dark:text-neutral-300 mt-1">Revenue this month</p>
       </div>
       <div className="flex gap-2">
         <Button size="sm" variant="secondary" onClick={() => setTarget(567)}>$567</Button>
@@ -938,7 +938,7 @@ export function SkeletonDemo() {
             </div>
             <div className="space-y-1">
               <p className="font-medium">John Doe</p>
-              <p className="text-sm text-neutral-500">Software Engineer</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-300">Software Engineer</p>
             </div>
           </div>
           <div className="h-[200px] bg-neutral-100 dark:bg-neutral-800 rounded-lg flex items-center justify-center">

@@ -209,7 +209,7 @@ function DropdownDemo({ isPlaying, springTransition }: { isPlaying: boolean; spr
     <div className="flex flex-col items-center justify-center h-full px-6">
       <div className="w-full max-w-sm">
         <div className="w-full h-8 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 flex items-center px-3 justify-between">
-          <span className="text-sm text-neutral-500">Select option...</span>
+          <span className="text-sm text-neutral-500 dark:text-neutral-300">Select option...</span>
           <span className="text-xs text-neutral-400">▼</span>
         </div>
         <motion.div
@@ -250,7 +250,7 @@ function ModalDemo({ isPlaying, springTransition }: { isPlaying: boolean; spring
         <div className="w-32 h-2 rounded-full bg-neutral-200 dark:bg-neutral-600 mb-2" />
         <div className="w-48 h-2 rounded-full bg-neutral-200 dark:bg-neutral-600 mb-6" />
         <div className="flex gap-3 justify-end">
-          <div className="px-4 py-2 rounded text-sm bg-neutral-100 dark:bg-neutral-700 text-neutral-500">Cancel</div>
+          <div className="px-4 py-2 rounded text-sm bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-300">Cancel</div>
           <div className="px-4 py-2 rounded text-sm bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-medium">Confirm</div>
         </div>
       </motion.div>
@@ -524,7 +524,7 @@ export default function TryIt({ componentName }: TryItProps) {
         </div>
 
         {/* Help Text */}
-        <div className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg space-y-2">
+        <div className="text-xs text-neutral-500 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg space-y-2">
           <div><strong>Stiffness:</strong> Controls animation speed. Higher values create snappier animations.</div>
           <div><strong>Damping:</strong> Controls resistance to motion. Lower values create more bounce and overshoot.</div>
           <div><strong>Mass:</strong> Controls the perceived weight. Higher values make animations slower with more momentum.</div>

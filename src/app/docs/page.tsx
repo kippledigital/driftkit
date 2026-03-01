@@ -116,7 +116,7 @@ export default function DocsPage() {
           <p className="text-base text-neutral-600 dark:text-neutral-400 mb-1">
             Motion-first UI components built with Framer Motion and TypeScript.
           </p>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-300">
             {totalComponents} components across {Object.keys(componentCategories).length} categories
           </p>
         </div>
@@ -128,7 +128,7 @@ export default function DocsPage() {
                 <h2 className="text-base font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1">
                   {categoryName}
                 </h2>
-                <p className="text-sm text-neutral-500 dark:text-neutral-500">
+                <p className="text-sm text-neutral-500 dark:text-neutral-300 dark:text-neutral-500 dark:text-neutral-300">
                   {description}
                 </p>
               </div>
@@ -143,7 +143,7 @@ export default function DocsPage() {
                     <h3 className="text-sm font-semibold text-neutral-900 dark:text-white mb-1 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
                       {name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                     </h3>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-300">
                       {description}
                     </p>
                   </Link>

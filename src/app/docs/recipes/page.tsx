@@ -74,7 +74,7 @@ export default function RecipesPage() {
         <p className="text-base text-neutral-600 dark:text-neutral-400 mb-1">
           Real-world animation patterns from apps you use every day — rebuilt with DriftKit components and spring physics.
         </p>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-neutral-500 dark:text-neutral-300">
           {recipes.filter(r => r.ready).length} recipes available · {recipes.filter(r => !r.ready).length} more coming soon
         </p>
       </div>
@@ -84,7 +84,7 @@ export default function RecipesPage() {
           const Card = (
             <div className={`p-6 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/40 dark:border-neutral-800/40 rounded-xl ${recipe.ready ? "hover:border-neutral-300 dark:hover:border-neutral-700" : "opacity-60"} transition-colors`}>
               <div className="flex items-start justify-between mb-3">
-                <h3 className={`text-lg font-semibold ${recipe.ready ? "text-neutral-900 dark:text-white group-hover:text-neutral-600 dark:group-hover:text-neutral-300" : "text-neutral-500 dark:text-neutral-500"} transition-colors`}>
+                <h3 className={`text-lg font-semibold ${recipe.ready ? "text-neutral-900 dark:text-white group-hover:text-neutral-600 dark:group-hover:text-neutral-300" : "text-neutral-500 dark:text-neutral-300 dark:text-neutral-500 dark:text-neutral-300"} transition-colors`}>
                   {recipe.title}
                 </h3>
                 <div className="flex gap-2">
@@ -100,7 +100,7 @@ export default function RecipesPage() {
                   </span>
                 </div>
               </div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
+              <p className="text-sm text-neutral-500 dark:text-neutral-300 mb-4">
                 {recipe.description}
               </p>
               <div className="flex flex-wrap gap-1.5">

@@ -260,7 +260,7 @@ const codeString = `// Floating label — spring-animated y + scale
 export default function FormMicroInteractionsRecipe() {
   return (
     <div className="py-12 px-8 max-w-5xl">
-      <div className="mb-8 flex items-center gap-2 text-sm text-neutral-500">
+      <div className="mb-8 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-300">
         <Link href="/docs/recipes" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
           Recipes
         </Link>
@@ -294,7 +294,7 @@ export default function FormMicroInteractionsRecipe() {
         <h2 className="text-lg font-semibold text-neutral-900 dark:text-white mb-4">
           Live Demo
         </h2>
-        <p className="text-sm text-neutral-500 mb-4">
+        <p className="text-sm text-neutral-500 dark:text-neutral-300 mb-4">
           Try submitting empty, then fill in valid values. Watch the error shake, success checkmarks, and button state change.
         </p>
         <div className="p-12 bg-neutral-100 dark:bg-neutral-950 rounded-xl border border-neutral-200 dark:border-neutral-800">
@@ -352,13 +352,13 @@ export default function FormMicroInteractionsRecipe() {
       <div className="pt-8 border-t border-neutral-200 dark:border-neutral-800 flex justify-between">
         <Link
           href="/docs/recipes/stripe-card-hover"
-          className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
+          className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
         >
           ← Stripe Card Hover
         </Link>
         <Link
           href="/docs/recipes"
-          className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
+          className="text-sm text-neutral-500 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
         >
           All Recipes →
         </Link>
