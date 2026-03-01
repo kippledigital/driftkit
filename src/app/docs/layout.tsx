@@ -67,10 +67,49 @@ function ComponentSidebar() {
           href="/docs" 
           className="block mb-4 text-xl font-medium text-neutral-900 dark:text-white hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
         >
-          Components
+          Docs
         </Link>
         
         <nav className="space-y-6">
+          {/* Getting Started */}
+          <div>
+            <div className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+              Getting Started
+            </div>
+            <div className="space-y-1 ml-4">
+              {[
+                { href: "/docs/introduction", label: "Introduction" },
+                { href: "/docs/installation", label: "Installation" },
+                { href: "/docs/spring-physics", label: "Spring Physics 101" },
+              ].map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`block px-3 py-1.5 text-sm rounded-md transition-colors ${
+                    pathname === href
+                      ? "text-neutral-900 dark:text-white bg-neutral-100 dark:bg-neutral-800"
+                      : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
+                  }`}
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Recipes link */}
+          <div>
+            <Link
+              href="/docs/recipes"
+              className={`block text-sm font-medium transition-colors mb-2 ${
+                pathname?.startsWith("/docs/recipes")
+                  ? "text-neutral-900 dark:text-white"
+                  : "text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white"
+              }`}
+            >
+              Motion Recipes
+            </Link>
+          </div>
           {Object.entries(componentCategories).map(([category, components]) => (
             <div key={category}>
               <button
