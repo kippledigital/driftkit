@@ -12,13 +12,13 @@ const componentCategories = {
     "card", "skeleton", "gradient-border", "glow-card", "expandable-card", "wobble-card"
   ],
   "Navigation": [
-    "nav-menu", "breadcrumbs", "tabs", "animated-tabs", "stepper", "magnetic-dock"
+    "nav-menu", "breadcrumbs", "tabs", "animated-tabs", "stepper", "pagination", "magnetic-dock"
   ],
   "Feedback": [
     "toast", "tooltip", "dialog", "drawer", "progress-ring", "skeleton"
   ],
   "Data Display": [
-    "badge", "accordion", "code-block", "code-display", "number-ticker", "animated-counter"
+    "badge", "accordion", "data-table", "code-block", "code-display", "number-ticker", "animated-counter"
   ],
   "Overlay": [
     "popover", "context-menu", "dropdown", "command-palette", "spotlight"
