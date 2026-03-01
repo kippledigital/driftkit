@@ -742,7 +742,7 @@ function ContinuousAnimation() {
   return (
     <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden">
       {/* Header: title + tabs */}
-      <div className="px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-800">
+      <div className="px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-800 overflow-x-auto">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-xs font-semibold text-neutral-900 dark:text-white">Export Code</h3>
         </div>
@@ -961,7 +961,7 @@ export default function PhysicsPlayground() {
             </div>
 
             {/* Component selector */}
-            <div className="px-5 py-2 border-b border-neutral-100 dark:border-neutral-800">
+            <div className="px-5 py-2 border-b border-neutral-100 dark:border-neutral-800 overflow-x-auto scrollbar-none">
               <Tabs
                 value={demoKey}
                 onValueChange={setDemoKey}
@@ -970,7 +970,7 @@ export default function PhysicsPlayground() {
                   label: opt.label,
                   content: <div></div>, // Empty content since we render the demo separately
                 }))}
-                className="w-fit"
+                className="w-max"
               />
             </div>
 
