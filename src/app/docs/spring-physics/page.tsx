@@ -24,12 +24,12 @@ function SpringDemo() {
       </div>
 
       {/* Animation preview */}
-      <div className="h-16 mb-6 flex items-center">
+      <div className="h-16 mb-6 relative overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800">
         <motion.div
           key={key}
-          className="w-12 h-12 rounded-xl bg-neutral-900 dark:bg-indigo-400"
-          initial={{ x: 0, scale: 0.8, opacity: 0 }}
-          animate={{ x: 280, scale: 1, opacity: 1 }}
+          className="w-12 h-12 rounded-xl bg-neutral-900 dark:bg-indigo-400 absolute top-2 left-2"
+          initial={{ left: "8px", scale: 0.8, opacity: 0 }}
+          animate={{ left: "calc(100% - 56px)", scale: 1, opacity: 1 }}
           transition={{
             type: "spring",
             stiffness: config.stiffness,
@@ -145,12 +145,12 @@ function ComparisonDemo() {
             <span className="w-2 h-2 rounded-full bg-neutral-900 dark:bg-indigo-400" />
             Spring — interruptible, no fixed duration
           </div>
-          <div className="h-10 flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-lg px-2">
+          <div className="h-10 relative overflow-hidden bg-neutral-100 dark:bg-neutral-800 rounded-lg">
             <motion.div
               key={`spring-${key}`}
-              className="w-8 h-8 rounded-lg bg-neutral-900 dark:bg-indigo-400"
-              initial={{ x: 0 }}
-              animate={{ x: 280 }}
+              className="w-8 h-8 rounded-lg bg-neutral-900 dark:bg-indigo-400 absolute top-1 left-1"
+              initial={{ left: "4px" }}
+              animate={{ left: "calc(100% - 36px)" }}
               transition={{ type: "spring", stiffness: 300, damping: 20, mass: 1 }}
             />
           </div>
@@ -162,12 +162,12 @@ function ComparisonDemo() {
             <span className="w-2 h-2 rounded-full bg-neutral-400 dark:bg-neutral-500" />
             CSS ease-in-out — fixed 500ms, can&apos;t interrupt
           </div>
-          <div className="h-10 flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-lg px-2">
+          <div className="h-10 relative overflow-hidden bg-neutral-100 dark:bg-neutral-800 rounded-lg">
             <motion.div
               key={`bezier-${key}`}
-              className="w-8 h-8 rounded-lg bg-neutral-400 dark:bg-neutral-500"
-              initial={{ x: 0 }}
-              animate={{ x: 280 }}
+              className="w-8 h-8 rounded-lg bg-neutral-400 dark:bg-neutral-500 absolute top-1 left-1"
+              initial={{ left: "4px" }}
+              animate={{ left: "calc(100% - 36px)" }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             />
           </div>
@@ -219,12 +219,12 @@ function PresetExamples() {
               {preset.config.stiffness}/{preset.config.damping}/{preset.config.mass}
             </code>
           </div>
-          <div className="h-8 flex items-center">
+          <div className="h-8 relative overflow-hidden bg-neutral-100 dark:bg-neutral-800 rounded-lg">
             <motion.div
               key={`${preset.name}-${key}`}
-              className="w-8 h-6 rounded bg-neutral-900 dark:bg-indigo-400"
-              initial={{ x: 0 }}
-              animate={{ x: 260 }}
+              className="w-8 h-6 rounded bg-neutral-900 dark:bg-indigo-400 absolute top-1 left-1"
+              initial={{ left: "4px" }}
+              animate={{ left: "calc(100% - 36px)" }}
               transition={{ type: "spring", ...preset.config }}
             />
           </div>
