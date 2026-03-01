@@ -8,6 +8,7 @@ import { ModeSwitcher } from "./mode-switcher";
 
 const navItems = [
   { href: "/docs", label: "Docs" },
+  { href: "/docs/recipes", label: "Recipes" },
   { href: "/playground", label: "Playground" },
 ];
 
@@ -30,7 +31,11 @@ export function GlobalNav() {
         {/* Nav links */}
         <nav className="flex items-center gap-1 p-1 rounded-[8px] bg-neutral-100 dark:bg-neutral-800/60">
           {navItems.map(item => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+            // More specific paths should match first — check exact or startsWith,
+            // but exclude sub-paths that have their own nav item
+            const isActive = item.href === "/docs"
+              ? (pathname === "/docs" || (pathname.startsWith("/docs/") && !pathname.startsWith("/docs/recipes")))
+              : (pathname === item.href || pathname.startsWith(item.href + "/"));
             return (
               <Link
                 key={item.href}
