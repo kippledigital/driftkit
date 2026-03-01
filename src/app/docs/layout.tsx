@@ -18,13 +18,13 @@ const componentCategories = {
     "toast", "tooltip", "dialog", "drawer", "progress-ring", "skeleton"
   ],
   "Data Display": [
-    "badge", "accordion", "code-block", "code-display", "number-ticker", "animated-counter"
+    "badge", "accordion", "avatar", "avatar-group", "code-block", "code-display", "number-ticker", "animated-counter"
   ],
   "Overlay": [
     "popover", "context-menu", "dropdown", "command-palette", "spotlight"
   ],
   "Input": [
-    "button", "input", "toggle", "multi-select", "date-range-picker", "schedule-picker"
+    "button", "input", "toggle", "select", "checkbox", "radio", "slider", "multi-select", "date-range-picker", "schedule-picker"
   ],
   "Animation": [
     "typewriter", "marquee", "text-shimmer", "staggered-list", "scroll-reveal", 
