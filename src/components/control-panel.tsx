@@ -246,8 +246,10 @@ function CustomDropdown({
 }
 
 export function ControlPanel({ title, config, controls, onChange }: ControlPanelProps) {
+  // The controls are styled for a dark surface, so the panel brings its own
+  // instead of relying on the page being in dark mode.
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rounded-[10px] border border-neutral-800 bg-neutral-950 p-5 text-neutral-100 shadow-lg">
       <h2 className="text-lg font-semibold text-white">{title}</h2>
       
       <div className="space-y-4">

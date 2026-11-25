@@ -188,6 +188,12 @@ export function DateRangePicker({
   const [dropdownPos, setDropdownPos] = useState<{x: number; y: number; width: number}>({ x: 0, y: 0, width: 0 });
   const ref = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard mount flag for portals
+    setMounted(true);
+  }, []);
 
   const today = useMemo(() => new Date(), []);
   const [viewYear, setViewYear] = useState(range.start?.getFullYear() ?? today.getFullYear());
@@ -229,34 +235,65 @@ export function DateRangePicker({
     [selecting, range, update]
   );
 
-  // Close on outside click
+  // Close on outside click. The calendar lives in a portal, so it is
+  // "outside" the component in the DOM and must be checked separately.
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      const t = e.target as Node;
+      if (ref.current?.contains(t) || dropdownRef.current?.contains(t)) return;
+      setOpen(false);
+      setSelecting(null);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
         setOpen(false);
         setSelecting(null);
+        triggerRef.current?.focus();
       }
     };
-    if (open) document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    if (open) {
+      document.addEventListener("mousedown", handler);
+      document.addEventListener("keydown", onKey);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("keydown", onKey);
+    };
   }, [open]);
 
+  // The calendar is position: fixed, so it needs viewport coordinates, and it
+  // has to follow the trigger while the page scrolls. It flips above the
+  // trigger when there isn't room below.
+  const place = useCallback(() => {
+    const rect = triggerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const height = dropdownRef.current?.offsetHeight ?? 340;
+    const below = rect.bottom + 8;
+    const y = below + height > window.innerHeight && rect.top - 8 - height > 0 ? rect.top - 8 - height : below;
+    setDropdownPos({ x: Math.min(rect.left, window.innerWidth - Math.max(rect.width, 280) - 8), y, width: rect.width });
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const raf = requestAnimationFrame(place);
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
+    };
+  }, [open, place]);
+
   const handleOpen = useCallback(() => {
-    if (triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      setDropdownPos({
-        x: rect.left + window.scrollX,
-        y: rect.bottom + window.scrollY + 8,
-        width: rect.width,
-      });
-    }
+    place();
     setOpen(true);
     setSelecting("start");
     if (range.start) {
       setViewYear(range.start.getFullYear());
       setViewMonth(range.start.getMonth());
     }
-  }, [range]);
+  }, [range, place]);
 
   return (
     <div ref={ref} className={`relative inline-block ${className}`}>
@@ -265,6 +302,8 @@ export function DateRangePicker({
         ref={triggerRef}
         type="button"
         onClick={handleOpen}
+        aria-haspopup="dialog"
+        aria-expanded={open}
         className="flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm cursor-pointer hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors min-w-[280px]"
         whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
         transition={springs.quick}
@@ -276,7 +315,7 @@ export function DateRangePicker({
         <span className={range.start ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-400"}>
           {range.start ? formatDate(range.start) : (placeholder?.start ?? "Start date")}
         </span>
-        <span className="text-neutral-300 dark:text-neutral-600">→</span>
+        <span className="text-neutral-400 dark:text-neutral-500">→</span>
         <span className={range.end ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-400"}>
           {range.end ? formatDate(range.end) : (placeholder?.end ?? "End date")}
         </span>
@@ -293,9 +332,16 @@ export function DateRangePicker({
       )}
 
       {/* Calendar dropdown */}
-      <AnimatePresence>
-        {open && typeof window !== "undefined" && createPortal(
+      {/* AnimatePresence drops anything that isn't an element, including a
+          portal, so the presence lives inside the portal rather than around it. */}
+      {mounted && createPortal(
+        <AnimatePresence>
+          {open && (
           <motion.div
+            key="calendar"
+            ref={dropdownRef}
+            role="dialog"
+            aria-label="Choose a date range"
             initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.96 }}
@@ -323,10 +369,11 @@ export function DateRangePicker({
                 {selecting === "start" ? "Select start date" : "Select end date"}
               </div>
             )}
-          </motion.div>,
-          document.body
-        )}
-      </AnimatePresence>
+          </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }

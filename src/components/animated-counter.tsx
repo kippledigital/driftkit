@@ -30,6 +30,7 @@ export function AnimatedCounter({
   const controls = useRef<AnimationPlaybackControls | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [runs, setRuns] = useState(0);
+  const lastRun = useRef(-1);
 
   const display = useTransform(value, (v: number) => `${prefix}${v.toFixed(decimals)}${suffix}`);
 
@@ -43,7 +44,12 @@ export function AnimatedCounter({
       value.set(target);
       return;
     }
-    value.set(0);
+    // Count up from zero the first time it's seen and on replay; when only the
+    // target changes, roll from the current number to the new one.
+    if (lastRun.current !== runs) {
+      value.set(0);
+      lastRun.current = runs;
+    }
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reflects a running animation
     setIsAnimating(true);
     controls.current = animate(value, target, {

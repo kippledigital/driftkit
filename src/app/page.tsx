@@ -368,7 +368,7 @@ function RippleButtonDemo() {
   return (
     <div className="flex flex-wrap gap-4 items-center">
       <RippleButton>Click for ripple</RippleButton>
-      <RippleButton rippleColor="rgba(99,102,241,0.4)" className="bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-600 dark:hover:bg-indigo-500 dark:text-white">Custom color</RippleButton>
+      <RippleButton rippleColor="rgba(255,255,255,0.4)" colorClassName="bg-indigo-600 text-white hover:bg-indigo-500">Custom color</RippleButton>
     </div>
   );
 }
@@ -491,12 +491,23 @@ function LiquidButtonDemo() {
 }
 
 function AnimatedCounterDemo() {
+  // Remounting the grid replays both the staggered entrance and the count.
+  const [run, setRun] = useState(0);
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      <StatCard value={12847} label="Total Users" icon="👥" />
-      <StatCard value={99.9} label="Uptime" suffix="%" decimals={1} icon="⚡" />
-      <StatCard value={3.2} label="Avg Rating" prefix="" suffix="/5" decimals={1} icon="⭐" />
-      <StatCard value={482} label="Components" suffix="+" icon="🧩" />
+    <div className="flex flex-col gap-4">
+      <div key={run} className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <StatCard value={12847} label="Total Users" icon="👥" />
+        <StatCard value={99.9} label="Uptime" suffix="%" decimals={1} icon="⚡" />
+        <StatCard value={3.2} label="Avg Rating" prefix="" suffix="/5" decimals={1} icon="⭐" />
+        <StatCard value={482} label="Components" suffix="+" icon="🧩" />
+      </div>
+      <button
+        type="button"
+        onClick={() => setRun((n) => n + 1)}
+        className="self-start rounded-full border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
+      >
+        ↻ Replay
+      </button>
     </div>
   );
 }

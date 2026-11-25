@@ -15,6 +15,13 @@ interface RippleButtonProps {
   className?: string;
   /** Ripple color (CSS value) */
   rippleColor?: string;
+  /**
+   * Background and text color classes. Replaces the default neutral colors
+   * entirely. Use this rather than className for colors: Tailwind classes that
+   * set the same property don't override by order in className, so a color in
+   * className can lose to the default (white text on a white button).
+   */
+  colorClassName?: string;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
 }
@@ -32,6 +39,7 @@ export function RippleButton({
   children,
   className = "",
   rippleColor = "rgba(255,255,255,0.35)",
+  colorClassName = "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200",
   onClick,
   disabled = false,
 }: RippleButtonProps) {
@@ -59,7 +67,7 @@ export function RippleButton({
     <motion.button
       onClick={handleClick}
       disabled={disabled}
-      className={`relative overflow-hidden rounded-[8px] bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 px-5 py-2.5 text-sm font-medium transition-colors hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      className={`relative overflow-hidden rounded-[8px] px-5 py-2.5 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${colorClassName} ${className}`}
       whileTap={!disabled && !prefersReduced ? { scale: 0.95 } : {}}
       transition={spring.bouncy}
     >

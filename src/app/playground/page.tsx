@@ -27,10 +27,10 @@ const presets = {
 };
 
 const presetMeta: Record<string, { emoji: string; label: string; description: string; color: string }> = {
-  snappy: { emoji: "⚡", label: "Snappy", description: "Quick, decisive interactions", color: "#ef4444" },
-  smooth: { emoji: "✨", label: "Smooth", description: "Balanced, natural movement", color: "#10b981" },
-  bouncy: { emoji: "🎾", label: "Bouncy", description: "Playful, energetic feel", color: "#f59e0b" },
-  gentle: { emoji: "🌸", label: "Gentle", description: "Calm, elegant transitions", color: "#8b5cf6" },
+  snappy: { emoji: "⚡", label: "Snappy", description: "Quick, decisive interactions", color: "#dc2626" },
+  smooth: { emoji: "✨", label: "Smooth", description: "Balanced, natural movement", color: "#059669" },
+  bouncy: { emoji: "🎾", label: "Bouncy", description: "Playful, energetic feel", color: "#d97706" },
+  gentle: { emoji: "🌸", label: "Gentle", description: "Calm, elegant transitions", color: "#7c3aed" },
 };
 
 const defaultConfig: PhysicsConfig = { ...presets.smooth, preset: "smooth" };

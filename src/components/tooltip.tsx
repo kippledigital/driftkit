@@ -12,6 +12,7 @@ import {
   motion,
   AnimatePresence,
   useReducedMotion,
+  type MotionStyle,
 } from "framer-motion";
 import { spring } from "./motion";
 
@@ -87,35 +88,40 @@ function getFlippedPosition(
 function getFixedPositionStyles(
   pos: TooltipPosition,
   triggerPos: { x: number; y: number; width: number; height: number }
-): React.CSSProperties {
+): MotionStyle {
+  // Offsets go through Motion's x/y rather than a CSS transform string:
+  // Motion writes `transform` itself for the scale animation, which used
+  // to wipe out the centering translate.
   switch (pos) {
     case "top":
       return {
         position: "fixed",
         left: triggerPos.x + triggerPos.width / 2,
         top: triggerPos.y - TOOLTIP_OFFSET,
-        transform: "translate(-50%, -100%)",
+        x: "-50%",
+        y: "-100%",
       };
     case "bottom":
       return {
         position: "fixed",
         left: triggerPos.x + triggerPos.width / 2,
         top: triggerPos.y + triggerPos.height + TOOLTIP_OFFSET,
-        transform: "translateX(-50%)",
+        x: "-50%",
       };
     case "left":
       return {
         position: "fixed",
         left: triggerPos.x - TOOLTIP_OFFSET,
         top: triggerPos.y + triggerPos.height / 2,
-        transform: "translate(-100%, -50%)",
+        x: "-100%",
+        y: "-50%",
       };
     case "right":
       return {
         position: "fixed",
         left: triggerPos.x + triggerPos.width + TOOLTIP_OFFSET,
         top: triggerPos.y + triggerPos.height / 2,
-        transform: "translateY(-50%)",
+        y: "-50%",
       };
   }
 }
@@ -155,6 +161,11 @@ export function Tooltip({
 }: TooltipProps) {
   const prefersReducedMotion = useReducedMotion();
   const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard mount flag for portals
+    setMounted(true);
+  }, []);
   const [resolvedPos, setResolvedPos] = useState(position);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [triggerPos, setTriggerPos] = useState({ x: 0, y: 0, width: 0, height: 0 });
@@ -171,8 +182,10 @@ export function Tooltip({
         const rect = triggerRef.current.getBoundingClientRect();
         setResolvedPos(getFlippedPosition(position, rect));
         setTriggerPos({
-          x: rect.left + window.scrollX,
-          y: rect.top + window.scrollY,
+          // Viewport coordinates: the tooltip is position: fixed, so adding
+          // the page scroll here pushed it off-screen on long pages.
+          x: rect.left,
+          y: rect.top,
           width: rect.width,
           height: rect.height,
         });
@@ -189,15 +202,21 @@ export function Tooltip({
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
       if (followCursor) {
-        // Use page coordinates for correct positioning with scrolling
-        setCursorPos({ 
-          x: e.pageX,
-          y: e.pageY
-        });
+        // Viewport coordinates to match position: fixed.
+        setCursorPos({ x: e.clientX, y: e.clientY });
       }
     },
     [followCursor]
   );
+
+  // A fixed tooltip would drift away from its trigger while the page
+  // scrolls, so dismiss it instead.
+  useEffect(() => {
+    if (!visible) return;
+    const hide = () => setVisible(false);
+    window.addEventListener("scroll", hide, { passive: true, capture: true });
+    return () => window.removeEventListener("scroll", hide, { capture: true });
+  }, [visible]);
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -230,12 +249,11 @@ export function Tooltip({
       };
 
   // Follow-cursor positioning: fixed position at cursor coords
-  const followCursorStyle: React.CSSProperties = followCursor
+  const followCursorStyle: MotionStyle = followCursor
     ? {
         position: "fixed",
         left: cursorPos.x + 12,
         top: cursorPos.y - 8,
-        transform: "none",
       }
     : getFixedPositionStyles(resolvedPos, triggerPos);
 
@@ -252,9 +270,11 @@ export function Tooltip({
       </span>
       
       {/* Portal the tooltip to avoid parent container clipping */}
-      <AnimatePresence>
-        {visible && typeof window !== "undefined" && createPortal(
+      {mounted && createPortal(
+        <AnimatePresence>
+          {visible && (
           <motion.div
+            key="tip"
             role="tooltip"
             className={`z-[9999] px-3 py-1.5 text-xs font-medium rounded-[8px] bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 whitespace-nowrap pointer-events-none ${className}`}
             style={{
@@ -280,10 +300,11 @@ export function Tooltip({
                 aria-hidden
               />
             )}
-          </motion.div>,
-          document.body
-        )}
-      </AnimatePresence>
+          </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }

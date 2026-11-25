@@ -59,9 +59,9 @@ const recipes = [
 ];
 
 const difficultyColor: Record<string, string> = {
-  Beginner: "text-green-500 bg-green-500/10 border-green-500/20",
-  Intermediate: "text-amber-500 bg-amber-500/10 border-amber-500/20",
-  Advanced: "text-red-500 bg-red-500/10 border-red-500/20",
+  Beginner: "text-green-700 dark:text-green-400 bg-green-500/10 border-green-500/20",
+  Intermediate: "text-amber-700 dark:text-amber-400 bg-amber-500/10 border-amber-500/20",
+  Advanced: "text-red-700 dark:text-red-400 bg-red-500/10 border-red-500/20",
 };
 
 export default function RecipesPage() {
@@ -89,7 +89,7 @@ export default function RecipesPage() {
                 </h3>
                 <div className="flex gap-2">
                   {!recipe.ready && (
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full border text-neutral-400 bg-neutral-400/10 border-neutral-400/20">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full border text-neutral-500 dark:text-neutral-400 bg-neutral-400/10 border-neutral-400/20">
                       Coming Soon
                     </span>
                   )}

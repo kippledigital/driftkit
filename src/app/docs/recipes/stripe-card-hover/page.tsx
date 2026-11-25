@@ -193,7 +193,7 @@ export default function StripeCardHoverRecipe() {
         The signature Stripe pricing card hover — lift, 3D tilt, and cursor glow that makes flat cards feel physical.
       </p>
       <div className="flex gap-2 mb-10">
-        <span className="text-xs px-2 py-0.5 rounded-full border text-green-500 bg-green-500/10 border-green-500/20">
+        <span className="text-xs px-2 py-0.5 rounded-full border text-green-700 dark:text-green-400 bg-green-500/10 border-green-500/20">
           Beginner
         </span>
         <span className="text-xs px-2 py-0.5 rounded-md bg-neutral-200/60 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-400">
