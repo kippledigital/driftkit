@@ -197,7 +197,7 @@ export function MultiSelect({
             if (inputValue.trim()) addTag(inputValue);
           }}
           placeholder={tags.length === 0 ? placeholder : ""}
-          className="flex-1 min-w-[100px] bg-transparent outline-none text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
+          className="flex-1 min-w-[100px] bg-transparent outline-none text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-500 dark:placeholder:text-neutral-500"
         />
       </motion.div>
 
@@ -229,7 +229,7 @@ export function MultiSelect({
       </AnimatePresence>
 
       {maxTags && (
-        <div className="mt-1 text-[10px] text-neutral-400 text-right">
+        <div className="mt-1 text-[10px] text-neutral-500 text-right">
           {tags.length}/{maxTags}
         </div>
       )}

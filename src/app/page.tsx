@@ -35,6 +35,7 @@ import { AnimatedTabs } from "@/components/animated-tabs";
 import { CommandPalette } from "@/components/command-palette";
 import { ExpandableCard } from "@/components/expandable-card";
 import { CursorTrail } from "@/components/cursor-trail";
+import { ReplayButton } from "@/components/replay-button";
 import { LiquidButton } from "@/components/liquid-button";
 import { AnimatedCounter, StatCard } from "@/components/animated-counter";
 import { ProgressRing } from "@/components/progress-ring";
@@ -300,7 +301,7 @@ function StaggeredListDemo() {
         {(["slide-up", "fade-blur", "slide-left"] as const).map((v) => (
           <Button key={v} size="sm" variant={variant === v ? "default" : "secondary"} onClick={() => { setVariant(v); setKey((k) => k + 1); }}>{v}</Button>
         ))}
-        <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>Replay</Button>
+        <ReplayButton onReplay={() => setKey((k) => k + 1)} />
       </div>
       <div className="h-[260px] overflow-hidden">
         <StaggeredList key={key} items={items} variant={variant} className="flex flex-col gap-2" />
@@ -333,7 +334,7 @@ function ScrollRevealDemo() {
   const rvariants: Array<"fade-up" | "fade-left" | "scale" | "blur"> = ["fade-up", "fade-left", "scale", "blur"];
   return (
     <div className="flex flex-col gap-4">
-      <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>Replay</Button>
+      <ReplayButton className="self-start" onReplay={() => setKey((k) => k + 1)} />
       <div key={key} className="grid grid-cols-2 gap-3">
         {rvariants.map((v, i) => (
           <ScrollReveal key={v} variant={v} delay={i * 0.1}>
@@ -391,8 +392,8 @@ function RippleButtonDemo() {
 function GradientBorderDemo() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <GradientBorder><div className="p-5"><h3 className="text-base font-semibold mb-1">Rainbow Spin</h3><p className="text-sm text-neutral-400">Default gradient, 3s rotation.</p></div></GradientBorder>
-      <GradientBorder colors={["#6366f1", "#8b5cf6", "#a78bfa", "#6366f1"]} duration={2} borderWidth={2}><div className="p-5"><h3 className="text-base font-semibold mb-1">Purple Pulse</h3><p className="text-sm text-neutral-400">Custom colors, faster spin.</p></div></GradientBorder>
+      <GradientBorder><div className="p-5"><h3 className="text-base font-semibold mb-1">Rainbow Spin</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Default gradient, 3s rotation.</p></div></GradientBorder>
+      <GradientBorder colors={["#6366f1", "#8b5cf6", "#a78bfa", "#6366f1"]} duration={2} borderWidth={2}><div className="p-5"><h3 className="text-base font-semibold mb-1">Purple Pulse</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Custom colors, faster spin.</p></div></GradientBorder>
     </div>
   );
 }
@@ -490,7 +491,7 @@ function SwipeCardsDemo() {
       <div className="h-[280px] overflow-hidden">
         <SwipeCards key={key} cards={cards} />
       </div>
-      <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>Reset cards</Button>
+      <ReplayButton className="self-center" onReplay={() => setKey((k) => k + 1)}>Reset cards</ReplayButton>
     </div>
   );
 }
@@ -516,13 +517,7 @@ function AnimatedCounterDemo() {
         <StatCard value={3.2} label="Avg Rating" prefix="" suffix="/5" decimals={1} icon="⭐" />
         <StatCard value={482} label="Components" suffix="+" icon="🧩" />
       </div>
-      <button
-        type="button"
-        onClick={() => setRun((n) => n + 1)}
-        className="self-start rounded-full border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
-      >
-        ↻ Replay
-      </button>
+      <ReplayButton className="self-start" onReplay={() => setRun((n) => n + 1)} />
     </div>
   );
 }
@@ -634,6 +629,7 @@ function MultiSelectDemo() {
 
 function StepperDemo() {
   const [finished, setFinished] = useState(false);
+  const [run, setRun] = useState(0);
   const steps = [
     { id: "details", label: "Details", content: <div className="p-4 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm text-neutral-600 dark:text-neutral-400"><p className="font-medium text-neutral-800 dark:text-neutral-200 mb-2">Project Details</p><p>Enter your project name, description, and select a category. All fields are required.</p></div> },
     { id: "config", label: "Configure", content: <div className="p-4 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm text-neutral-600 dark:text-neutral-400"><p className="font-medium text-neutral-800 dark:text-neutral-200 mb-2">Configuration</p><p>Choose your framework, set up environment variables, and configure build settings.</p></div> },
@@ -641,8 +637,13 @@ function StepperDemo() {
   ];
   return (
     <div className="flex flex-col gap-4">
-      <Stepper steps={steps} onFinish={() => setFinished(true)} />
-      {finished && <p className="text-xs text-green-600 dark:text-green-400 text-center">✓ Complete! (reset by navigating back)</p>}
+      <Stepper key={run} steps={steps} onFinish={() => setFinished(true)} />
+      {finished && (
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs text-green-700 dark:text-green-400">✓ Complete</p>
+          <ReplayButton onReplay={() => { setFinished(false); setRun((n) => n + 1); }}>Start over</ReplayButton>
+        </div>
+      )}
     </div>
   );
 }
@@ -994,13 +995,7 @@ function CardDemo() {
           {showGrid ? "Hide Grid Demo" : "Show Grid Demo"}
         </Button>
         {showGrid && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setGridKey(k => k + 1)}
-          >
-            Replay Animation
-          </Button>
+          <ReplayButton onReplay={() => setGridKey(k => k + 1)} />
         )}
       </div>
 
@@ -1805,11 +1800,11 @@ export default function Home() {
             <TabsDemo />
           </Section>
 
-          <Section id="accordion" title="Accordion" code={codeSnippets["accordion"]}>
+          <Section id="accordion" title="Accordion" description="Panels open with a spring height animation and staggered content. Full keyboard support." code={codeSnippets["accordion"]}>
             <AccordionDemo />
           </Section>
 
-          <Section id="dialog" title="Dialog" code={codeSnippets["dialog"]}>
+          <Section id="dialog" title="Dialog" description="Spring entrance over a blurred backdrop. Focus is trapped and restored; Escape closes." code={codeSnippets["dialog"]}>
             <DialogDemo />
           </Section>
 
@@ -1821,7 +1816,7 @@ export default function Home() {
             </div>
           </Section>
 
-          <Section id="dropdown" title="Dropdown Menu" code={codeSnippets["dropdown"]}>
+          <Section id="dropdown" title="Dropdown Menu" description="Staggered items, arrow-key navigation, and click-outside to dismiss." code={codeSnippets["dropdown"]}>
             <DropdownDemo />
           </Section>
 

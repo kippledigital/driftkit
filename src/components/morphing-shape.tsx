@@ -99,7 +99,7 @@ export function MorphingShape({
           />
         </svg>
       </button>
-      <span className="text-xs text-neutral-400 capitalize">{currentShape} — click to morph</span>
+      <span className="text-xs text-neutral-600 dark:text-neutral-400"><span className="capitalize">{currentShape}</span> · click to morph</span>
     </div>
   );
 }

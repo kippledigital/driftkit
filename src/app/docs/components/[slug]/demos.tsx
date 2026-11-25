@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
+import { ReplayButton } from "@/components/replay-button";
 import { Button } from "@/components/button";
 import { Toggle } from "@/components/toggle";
 import { Dialog, DialogTitle, DialogDescription, DialogFooter } from "@/components/dialog";
@@ -93,7 +94,7 @@ export function SwipeCardsDemo() {
   return (
     <div className="flex flex-col gap-4 items-center">
       <SwipeCards key={key} cards={cards} />
-      <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>Reset cards</Button>
+      <ReplayButton onReplay={() => setKey((k) => k + 1)}>Reset cards</ReplayButton>
     </div>
   );
 }
@@ -250,7 +251,7 @@ export function AnimatedCounterDemo() {
     <div className="flex flex-col items-center gap-6">
       <div className="text-center">
         <div className="text-3xl font-bold">
-          <AnimatedCounter target={target} />
+          <AnimatedCounter target={target} prefix="$" />
         </div>
         <p className="text-sm text-neutral-500 dark:text-neutral-300 mt-1">Revenue this month</p>
       </div>
@@ -624,22 +625,25 @@ export function GlowCardDemo() {
 export function GradientBorderDemo() {
   return (
     <div className="space-y-6">
-      <GradientBorder className="p-6 rounded-lg">
-        <h3 className="text-lg font-semibold mb-2">Default Gradient</h3>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          A subtle animated gradient border that pulses with color.
-        </p>
+      <GradientBorder>
+        <div className="p-6">
+          <h3 className="text-lg font-semibold mb-2">Default Gradient</h3>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            A subtle animated gradient border that pulses with color.
+          </p>
+        </div>
       </GradientBorder>
       
       <GradientBorder 
         colors={["#ff6b6b", "#ffa726", "#66bb6a", "#4ecdc4", "#ff6b6b"]}
-        className="p-6 rounded-lg"
         duration={2}
       >
-        <h3 className="text-lg font-semibold mb-2">Custom Gradient</h3>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Create vibrant custom gradients for specific themes.
-        </p>
+        <div className="p-6">
+          <h3 className="text-lg font-semibold mb-2">Custom Gradient</h3>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            Create vibrant custom gradients for specific themes.
+          </p>
+        </div>
       </GradientBorder>
     </div>
   );
@@ -691,7 +695,7 @@ export function LiquidButtonDemo() {
 
 export function MarqueeDemo() {
   return (
-    <div className="space-y-6">
+    <div className="w-full min-w-0 space-y-6 overflow-hidden">
       <Marquee speed={30}>
         <div className="flex gap-8 text-lg font-semibold">
           <span>🚀 DriftKit</span>
@@ -953,7 +957,7 @@ export function SpotlightDemo() {
     <div className="relative">
       <Spotlight className="h-64 bg-neutral-900 dark:bg-neutral-950 rounded-lg overflow-hidden">
         <div className="relative z-10 h-full flex items-center justify-center">
-          <div className="text-center text-white">
+          <div className="px-6 text-center text-white">
             <h2 className="text-2xl font-bold mb-2">Spotlight Effect</h2>
             <p className="text-neutral-300">Move your cursor around to reveal the spotlight</p>
           </div>
@@ -978,6 +982,7 @@ export function SpringCarouselDemo() {
 }
 
 export function StaggeredListDemo() {
+  const [run, setRun] = useState(0);
   const items = [
     { id: "1", content: <div className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-800">First item slides in</div> },
     { id: "2", content: <div className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-800">Second item follows</div> },
@@ -985,8 +990,9 @@ export function StaggeredListDemo() {
     { id: "4", content: <div className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-800">Fourth completes the sequence</div> },
   ];
   return (
-    <div className="max-w-sm">
-      <StaggeredList items={items} />
+    <div className="flex max-w-sm flex-col gap-4">
+      <StaggeredList key={run} items={items} />
+      <ReplayButton className="self-start" onReplay={() => setRun((n) => n + 1)} />
     </div>
   );
 }
@@ -1054,7 +1060,7 @@ export function TabsDemo() {
 
 export function TextShimmerDemo() {
   return (
-    <div className="space-y-4 text-center">
+    <div className="flex flex-col items-center gap-4 text-center">
       <TextShimmer className="text-2xl font-bold">Motion-first components</TextShimmer>
       <TextShimmer className="text-lg">Spring physics for the web</TextShimmer>
       <TextShimmer className="text-sm">Subtle shimmer effect</TextShimmer>

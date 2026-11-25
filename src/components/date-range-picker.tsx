@@ -308,15 +308,15 @@ export function DateRangePicker({
         whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
         transition={springs.quick}
       >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-neutral-400 shrink-0">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-neutral-500 shrink-0">
           <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.2" />
           <path d="M2 7h12M5 1v4M11 1v4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
         </svg>
-        <span className={range.start ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-400"}>
+        <span className={range.start ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-500 dark:text-neutral-400"}>
           {range.start ? formatDate(range.start) : (placeholder?.start ?? "Start date")}
         </span>
         <span className="text-neutral-400 dark:text-neutral-500">→</span>
-        <span className={range.end ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-400"}>
+        <span className={range.end ? "text-neutral-900 dark:text-neutral-100" : "text-neutral-500 dark:text-neutral-400"}>
           {range.end ? formatDate(range.end) : (placeholder?.end ?? "End date")}
         </span>
       </motion.button>

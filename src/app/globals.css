@@ -10,7 +10,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  /* Satoshi is the site face (set on <body>); keep font-sans pointing at it
+     rather than at a Geist Sans variable that is never defined. */
+  --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 

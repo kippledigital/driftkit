@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useId } from "react";
 import {
   motion,
   useReducedMotion,
@@ -121,9 +121,13 @@ export function ModeSwitcher({
   const center = 12;
   const sunRadius = isDark ? 5 : 4; // Moon is slightly larger
   // Moon "bite" — a circle that overlaps to create the crescent
-  const maskCx = isDark ? 15 : 12; // Moves in to create bite, or stays centered (hidden)
-  const maskCy = isDark ? 7 : 12;
-  const maskRadius = isDark ? 4.5 : 0; // 0 = no bite = full circle = sun
+  // The bite keeps its size and slides off the sun's edge in light mode.
+  // Shrinking it to r=0 let the spring overshoot into negative radii.
+  const maskCx = isDark ? 15 : 22;
+  const maskCy = isDark ? 7 : 2;
+  const maskRadius = 4.5;
+  // Unique per instance: the header and the docs demo render this together.
+  const maskId = `moon-mask-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
 
   // Sun rays — 8 lines radiating from center
   const rays = Array.from({ length: 8 }, (_, i) => {
@@ -165,10 +169,14 @@ export function ModeSwitcher({
       >
         <defs>
           {/* Mask to create the crescent "bite" in the moon */}
-          <mask id="moon-mask">
+          <mask id={maskId}>
             <rect x="0" y="0" width="24" height="24" fill="white" />
             <motion.circle
-              animate={{ cx: maskCx, cy: maskCy, r: maskRadius }}
+              initial={false}
+              cx={maskCx}
+              cy={maskCy}
+              r={maskRadius}
+              animate={{ cx: maskCx, cy: maskCy }}
               transition={MORPH_SPRING}
               fill="black"
             />
@@ -180,7 +188,9 @@ export function ModeSwitcher({
           cx={center}
           cy={center}
           fill="currentColor"
-          mask="url(#moon-mask)"
+          mask={`url(#${maskId})`}
+          r={sunRadius}
+          initial={false}
           animate={{ r: sunRadius }}
           transition={MORPH_SPRING}
           className="text-neutral-800 dark:text-neutral-100"
@@ -191,10 +201,11 @@ export function ModeSwitcher({
           {rays.map((ray, i) => (
             <motion.line
               key={i}
-              x1={ray.x1}
-              y1={ray.y1}
-              x2={ray.x2}
-              y2={ray.y2}
+              initial={false}
+              x1={isDark ? center : ray.x1}
+              y1={isDark ? center : ray.y1}
+              x2={isDark ? center : ray.x2}
+              y2={isDark ? center : ray.y2}
               stroke="currentColor"
               strokeWidth={1.5}
               strokeLinecap="round"

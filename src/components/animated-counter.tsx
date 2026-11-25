@@ -1,5 +1,6 @@
 "use client";
 
+import { ReplayButton } from "./replay-button";
 import { useEffect, useRef, useState } from "react";
 import { motion, animate, useInView, useMotionValue, useTransform, type AnimationPlaybackControls } from "framer-motion";
 import { spring, useMotionPrefs } from "./motion";
@@ -32,7 +33,11 @@ export function AnimatedCounter({
   const [runs, setRuns] = useState(0);
   const lastRun = useRef(-1);
 
-  const display = useTransform(value, (v: number) => `${prefix}${v.toFixed(decimals)}${suffix}`);
+  const display = useTransform(
+    value,
+    (v: number) =>
+      `${prefix}${v.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}${suffix}`
+  );
 
   // A spring with a fixed duration and no bounce: counts fast, then eases into
   // the final number without overshooting it (a counter that passes its target
@@ -67,14 +72,7 @@ export function AnimatedCounter({
         {display}
       </motion.span>
       {showReplayButton && (
-        <button
-          type="button"
-          onClick={() => setRuns((n) => n + 1)}
-          disabled={isAnimating}
-          className="rounded-md border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium transition-colors hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700"
-        >
-          {isAnimating ? "Counting…" : "↻ Replay"}
-        </button>
+        <ReplayButton onReplay={() => setRuns((n) => n + 1)} disabled={isAnimating} />
       )}
     </div>
   );

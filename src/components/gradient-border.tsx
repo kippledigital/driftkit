@@ -45,7 +45,7 @@ export function GradientBorder({
       <motion.div aria-hidden className="pointer-events-none absolute inset-0 rounded-[8px] opacity-40 blur-md" style={{ background }} />
       {/* The border is the gradient showing through the padding around the content. */}
       <motion.div className="relative rounded-[8px]" style={{ background, padding: borderWidth }}>
-        <div className="relative h-full rounded-[6px] bg-neutral-950 text-neutral-100">{children}</div>
+        <div className="relative h-full rounded-[6px] bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">{children}</div>
       </motion.div>
     </div>
   );
