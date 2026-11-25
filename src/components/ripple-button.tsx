@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, type ReactNode, type MouseEvent } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // RIPPLE BUTTON
@@ -50,9 +51,6 @@ export function RippleButton({
 
       const newRipple = { id: ++rippleId, x, y, size };
       setRipples((prev) => [...prev, newRipple]);
-      setTimeout(() => {
-        setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
-      }, 1000);
     },
     [disabled, onClick, prefersReduced]
   );
@@ -63,7 +61,7 @@ export function RippleButton({
       disabled={disabled}
       className={`relative overflow-hidden rounded-[8px] bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 px-5 py-2.5 text-sm font-medium transition-colors hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
       whileTap={!disabled && !prefersReduced ? { scale: 0.95 } : {}}
-      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      transition={spring.bouncy}
     >
       <span className="relative z-10">{children}</span>
       <AnimatePresence>
@@ -80,9 +78,10 @@ export function RippleButton({
             }}
             initial={{ scale: 0, opacity: 0.6 }}
             animate={{ scale: 1, opacity: 0 }}
+            onAnimationComplete={() => setRipples((prev) => prev.filter((r) => r.id !== ripple.id))}
             exit={{ opacity: 0 }}
             transition={{
-              scale: { type: "spring", stiffness: 200, damping: 15 },
+              scale: spring.bouncy,
               opacity: { duration: 0.5, ease: "easeOut" },
             }}
           />

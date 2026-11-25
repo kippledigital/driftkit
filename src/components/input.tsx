@@ -2,14 +2,15 @@
 
 import React, { forwardRef, useState, useId } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // SPRING PHYSICS — matching button.tsx system
 // =============================================================================
 const springs = {
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-  quick: { type: "spring" as const, stiffness: 500, damping: 40, mass: 0.3 },
+  snappy: spring.snappy,
+  smooth: spring.smooth,
+  quick: spring.snappy,
 };
 
 // Error shake — spring-based oscillation feels more natural than CSS keyframes.

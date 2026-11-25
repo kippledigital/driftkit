@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { spring } from "./motion";
 import { createPortal } from "react-dom";
 
 export interface ContextMenuItem {
@@ -40,11 +41,7 @@ const menuVariants = {
   },
 };
 
-const springConfig = {
-  type: "spring" as const,
-  stiffness: 300,
-  damping: 30,
-};
+const springConfig = spring.smooth;
 
 export function ContextMenu({ children, items, disabled = false, className = "" }: ContextMenuProps) {
   const [isOpen, setIsOpen] = useState(false);

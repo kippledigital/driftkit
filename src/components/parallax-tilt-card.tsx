@@ -64,6 +64,12 @@ export function ParallaxTiltCard({
     mouseY.set(0.5);
   };
 
+  // Declared unconditionally: hooks can't live inside the `glare &&` branch.
+  const glareBackground = useTransform(
+    [glareX, glareY],
+    ([x, y]) => `radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,0.25) 0%, transparent 60%)`
+  );
+
   return (
     <motion.div
       ref={ref}
@@ -82,11 +88,7 @@ export function ParallaxTiltCard({
         <motion.div
           className="pointer-events-none absolute inset-0 rounded-[8px]"
           style={{
-            background: useTransform(
-              [glareX, glareY],
-              ([x, y]) =>
-                `radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,0.25) 0%, transparent 60%)`
-            ),
+            background: glareBackground,
           }}
         />
       )}

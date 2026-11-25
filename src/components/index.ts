@@ -1,3 +1,6 @@
+// Motion system: shared springs and reduced-motion helper
+export * from './motion';
+
 // Core Components
 export * from './button';
 export * from './input';

@@ -7,6 +7,7 @@ import {
   useSpring,
   useReducedMotion,
 } from "framer-motion";
+import { springValue } from "./motion";
 
 // =============================================================================
 // MAGNETIC BUTTON
@@ -30,7 +31,7 @@ const MAX_DISPLACEMENT = 8; // px — maximum pull distance (keeps it elegant)
 
 // Smooth spring — balanced feel for the magnetic pull
 // Not too snappy (would feel twitchy), not too slow (would feel laggy)
-const SPRING_CONFIG = { stiffness: 300, damping: 30, mass: 1 };
+const SPRING_CONFIG = springValue.smooth;
 
 export interface MagneticButtonProps {
   children: React.ReactNode;

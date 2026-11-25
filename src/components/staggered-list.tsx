@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // STAGGERED LIST
@@ -45,13 +46,13 @@ const itemVariantsSlideUp: Variants = {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { type: "spring", stiffness: 400, damping: 25, mass: 0.8 },
+    transition: spring.smooth,
   },
   exit: {
     opacity: 0,
     y: -8,
     filter: "blur(4px)",
-    transition: { type: "spring", stiffness: 500, damping: 30, mass: 0.5 },
+    transition: spring.snappy,
   },
 };
 
@@ -60,7 +61,7 @@ const itemVariantsFade: Variants = {
   show: {
     opacity: 1,
     filter: "blur(0px)",
-    transition: { type: "spring", stiffness: 300, damping: 30 },
+    transition: spring.smooth,
   },
   exit: {
     opacity: 0,
@@ -75,13 +76,13 @@ const itemVariantsSlideLeft: Variants = {
     opacity: 1,
     x: 0,
     filter: "blur(0px)",
-    transition: { type: "spring", stiffness: 400, damping: 25 },
+    transition: spring.bouncy,
   },
   exit: {
     opacity: 0,
     x: 20,
     filter: "blur(4px)",
-    transition: { type: "spring", stiffness: 500, damping: 30 },
+    transition: spring.bouncy,
   },
 };
 

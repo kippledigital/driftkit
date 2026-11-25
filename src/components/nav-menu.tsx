@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // NAVIGATION MENU
@@ -16,8 +17,8 @@ import { motion, useReducedMotion } from "framer-motion";
 // =============================================================================
 
 const springs = {
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
+  snappy: spring.snappy,
+  smooth: spring.smooth,
 };
 
 export interface NavItem {

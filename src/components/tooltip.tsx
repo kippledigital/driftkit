@@ -13,11 +13,12 @@ import {
   AnimatePresence,
   useReducedMotion,
 } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // SPRING PHYSICS
 // =============================================================================
-// Tooltip uses the "smooth" spring for pop-in — stiffness 300, damping 30, mass 1.
+// Tooltip uses the "smooth" token from ./motion.ts.
 // WHY: Tooltips need to feel light and informational, not bouncy. The smooth
 // spring gives a gentle settle that says "here's some context" without demanding
 // attention. Scale 0.9 → 1.0 creates a subtle "growing into place" effect that
@@ -29,7 +30,7 @@ import {
 // =============================================================================
 
 const springs = {
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
+  smooth: spring.smooth,
 };
 
 // =============================================================================

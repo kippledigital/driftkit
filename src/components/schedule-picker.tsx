@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useState, useCallback, useId, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 import { Toggle } from "@/components/toggle";
 
 // =============================================================================
 // SPRING PHYSICS
 // =============================================================================
 const springs = {
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-  quick: { type: "spring" as const, stiffness: 500, damping: 40, mass: 0.3 },
+  snappy: spring.snappy,
+  smooth: spring.smooth,
+  quick: spring.snappy,
 };
 
 // =============================================================================
@@ -94,7 +95,6 @@ function TimeInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="px-2.5 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:ring-2 focus:ring-blue-500/40 transition-shadow w-[110px] tabular-nums [&::-webkit-calendar-picker-indicator]:opacity-70 [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:hover:opacity-100"
-        style={{ fontFamily: "Satoshi, sans-serif" }}
       />
     </motion.label>
   );
@@ -338,7 +338,6 @@ export function SchedulePicker({
   return (
     <motion.div
       className={`flex flex-col gap-2 ${className}`}
-      style={{ fontFamily: "Satoshi, sans-serif" }}
       initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={springs.smooth}

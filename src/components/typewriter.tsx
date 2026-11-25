@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 
-const CHAR_SPRING = { type: "spring" as const, stiffness: 600, damping: 35, mass: 0.3 };
+const CHAR_SPRING = spring.snappy;
 
 export interface TypewriterProps {
   text: string;

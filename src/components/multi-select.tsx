@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // SPRING PHYSICS
 // =============================================================================
 const springs = {
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-  quick: { type: "spring" as const, stiffness: 500, damping: 40, mass: 0.3 },
+  snappy: spring.snappy,
+  smooth: spring.smooth,
+  quick: spring.snappy,
 };
 
 // =============================================================================
@@ -59,12 +60,7 @@ function TagPill({
         filter: "blur(2px)" 
       }}
       transition={{
-        layout: {
-          type: "spring",
-          stiffness: 400,
-          damping: 30,
-          mass: 0.8,
-        },
+        layout: spring.smooth,
         scale: springs.snappy,
         opacity: { duration: 0.15, ease: "easeOut" },
         y: springs.snappy,
@@ -163,7 +159,6 @@ export function MultiSelect({
     <motion.div
       ref={containerRef}
       className={`relative ${className}`}
-      style={{ fontFamily: "Satoshi, sans-serif" }}
       initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={springs.smooth}

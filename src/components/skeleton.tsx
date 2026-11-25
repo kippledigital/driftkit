@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // SKELETON
@@ -12,7 +13,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 // =============================================================================
 
 const springs = {
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
+  smooth: spring.smooth,
 };
 
 export type SkeletonVariant = "text" | "avatar" | "card" | "custom";

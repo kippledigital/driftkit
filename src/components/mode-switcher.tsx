@@ -5,6 +5,7 @@ import {
   motion,
   useReducedMotion,
 } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // MODE SWITCHER
@@ -25,8 +26,8 @@ import {
 // =============================================================================
 
 // Smooth spring — the morph should feel natural, not snappy
-const MORPH_SPRING = { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 };
-const RAY_SPRING = { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 };
+const MORPH_SPRING = spring.smooth;
+const RAY_SPRING = spring.snappy;
 
 export interface ModeSwitcherProps {
   /** Controlled mode. If not provided, manages its own state. */

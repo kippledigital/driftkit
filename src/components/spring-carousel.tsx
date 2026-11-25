@@ -1,127 +1,145 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, animate, PanInfo } from "framer-motion";
-import { useRef, useState, useCallback, useEffect } from "react";
+/**
+ * Spring Carousel
+ * =============================================================================
+ * Drag, flick, or use the arrow keys. When you let go, the carousel projects
+ * where your throw would have landed (position + velocity x 0.2s) and snaps to
+ * the nearest slide from there, so a hard flick skips several slides and a lazy
+ * drag moves one, the way a real list feels on a phone.
+ *
+ * The snap uses the `gentle` spring and starts at your release velocity, so the
+ * hand-off from finger to spring is seamless. Neighbors scale down slightly so
+ * the active slide reads as the subject.
+ *
+ * It never scrolls past the last slide, re-measures on resize, and keyboard
+ * arrows only work while the carousel has focus (not on the whole page).
+ *
+ * Needs: ./motion.ts
+ * =============================================================================
+ */
+
+import { motion, useMotionValue, animate, type PanInfo } from "framer-motion";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { spring, useMotionPrefs } from "./motion";
 
 interface SpringCarouselProps {
-  items: React.ReactNode[];
+  items: ReactNode[];
   itemWidth?: number;
   gap?: number;
   className?: string;
+  /** Accessible name. Default "Carousel". */
+  label?: string;
 }
 
-// Consistent spring configuration for smooth tracking
-const SPRING_CONFIG = { stiffness: 300, damping: 20, mass: 0.4 };
-
-export function SpringCarousel({
-  items,
-  itemWidth = 260,
-  gap = 16,
-  className = "",
-}: SpringCarouselProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
+export function SpringCarousel({ items, itemWidth = 260, gap = 16, className = "", label = "Carousel" }: SpringCarouselProps) {
+  const m = useMotionPrefs();
+  const uid = useId();
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const [viewport, setViewport] = useState(0);
+  const [index, setIndex] = useState(0);
   const x = useMotionValue(0);
-  const springX = useSpring(x, SPRING_CONFIG);
 
-  // Calculate proper constraints - ensure we don't overshoot
-  const getConstraints = useCallback(() => {
-    if (!containerRef.current) return { left: 0, right: 0 };
-    
-    const containerWidth = containerRef.current.offsetWidth;
-    const contentWidth = items.length * (itemWidth + gap) - gap;
-    const maxScroll = Math.max(0, contentWidth - containerWidth);
-    
-    return {
-      left: -maxScroll,
-      right: 0,
-    };
-  }, [items.length, itemWidth, gap]);
+  const step = itemWidth + gap;
+  const content = items.length * step - gap;
+  const maxScroll = Math.max(0, content - viewport);
+  // Last index whose left edge can still be reached without overscrolling.
+  const lastIndex = Math.max(0, Math.min(items.length - 1, Math.ceil(maxScroll / step)));
 
-  const snapTo = useCallback(
-    (index: number) => {
-      const clamped = Math.max(0, Math.min(items.length - 1, index));
-      setActiveIndex(clamped);
-      const target = -clamped * (itemWidth + gap);
-      animate(x, target, { type: "spring", ...SPRING_CONFIG });
-    },
-    [items.length, itemWidth, gap, x]
-  );
-
-  const handleDragEnd = useCallback(
-    (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-      const velocity = info.velocity.x;
-      const offset = info.offset.x;
-      let newIndex = activeIndex;
-
-      // More sensitive velocity threshold for better responsiveness
-      if (Math.abs(velocity) > 200) {
-        newIndex = velocity > 0 ? activeIndex - 1 : activeIndex + 1;
-      } 
-      // Reduced offset threshold for easier swiping
-      else if (Math.abs(offset) > itemWidth / 4) {
-        newIndex = offset > 0 ? activeIndex - 1 : activeIndex + 1;
-      }
-
-      snapTo(newIndex);
-    },
-    [activeIndex, itemWidth, snapTo]
-  );
-
-  // Keyboard nav
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") snapTo(activeIndex - 1);
-      if (e.key === "ArrowRight") snapTo(activeIndex + 1);
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [activeIndex, snapTo]);
+    const el = viewportRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setViewport(entry.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const offsetFor = (i: number) => -Math.min(i * step, maxScroll);
+
+  const goTo = (i: number, velocity = 0) => {
+    const next = Math.max(0, Math.min(lastIndex, i));
+    setIndex(next);
+    animate(x, offsetFor(next), m.reduced ? { duration: 0 } : { ...spring.gentle, velocity });
+  };
+
+  // Keep position valid if the viewport resizes.
+  useEffect(() => {
+    if (viewport) x.set(offsetFor(Math.min(index, lastIndex)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on size changes
+  }, [viewport, maxScroll]);
+
+  const onDragEnd = (_: unknown, info: PanInfo) => {
+    const projected = x.get() + info.velocity.x * 0.2;
+    goTo(Math.round(-projected / step), info.velocity.x);
+  };
 
   return (
-    <div className={`overflow-hidden ${className}`} ref={containerRef}>
-      <motion.div
-        className="flex cursor-grab active:cursor-grabbing"
-        style={{ x: springX, gap }}
-        drag="x"
-        dragConstraints={getConstraints()}
-        dragElastic={0.3}
-        dragMomentum={false}
-        onDragEnd={handleDragEnd}
+    <section aria-roledescription="carousel" aria-label={label} className={className}>
+      <div
+        ref={viewportRef}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            goTo(index - 1);
+          } else if (e.key === "ArrowRight") {
+            e.preventDefault();
+            goTo(index + 1);
+          }
+        }}
+        className="overflow-hidden rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
       >
-        {items.map((item, i) => (
-          <motion.div
-            key={i}
-            className="flex-shrink-0 rounded-[8px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden"
-            style={{ width: itemWidth }}
-            animate={{
-              scale: i === activeIndex ? 1 : 0.92,
-              opacity: i === activeIndex ? 1 : 0.6,
-            }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          >
-            {item}
-          </motion.div>
-        ))}
-      </motion.div>
-      {/* Dots */}
-      <div className="flex justify-center gap-2 mt-4">
-        {items.map((_, i) => (
+        <motion.div
+          className="flex cursor-grab active:cursor-grabbing"
+          style={{ x, gap, touchAction: "pan-y" }}
+          drag={m.reduced ? false : "x"}
+          dragConstraints={{ left: -maxScroll, right: 0 }}
+          dragElastic={0.12}
+          dragMomentum={false}
+          onDragEnd={onDragEnd}
+        >
+          {items.map((item, i) => (
+            <motion.div
+              key={i}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${i + 1} of ${items.length}`}
+              className="shrink-0 overflow-hidden rounded-[8px] border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
+              style={{ width: itemWidth }}
+              initial={false}
+              animate={{ scale: i === index || m.reduced ? 1 : 0.94, opacity: i === index ? 1 : 0.65 }}
+              transition={m.spring("smooth")}
+            >
+              {item}
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+
+      <div className="mt-4 flex justify-center gap-1" role="group" aria-label="Choose slide">
+        {Array.from({ length: lastIndex + 1 }, (_, i) => (
           <button
             key={i}
-            onClick={() => snapTo(i)}
-            className="relative w-2 h-2 rounded-full bg-neutral-300 dark:bg-neutral-700"
+            type="button"
+            onClick={() => goTo(i)}
+            aria-label={`Go to slide ${i + 1}`}
+            aria-current={i === index ? "true" : undefined}
+            className="grid h-6 w-6 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
-            {i === activeIndex && (
-              <motion.div
-                layoutId="carousel-dot"
-                className="absolute inset-0 rounded-full bg-neutral-900 dark:bg-neutral-100"
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              />
-            )}
+            <span className="relative block h-2 w-2 rounded-full bg-neutral-300 dark:bg-neutral-700">
+              {i === index && (
+                <motion.span
+                  layoutId={`${uid}-dot`}
+                  className="absolute inset-0 rounded-full bg-neutral-900 dark:bg-neutral-100"
+                  transition={m.spring("snappy")}
+                />
+              )}
+            </span>
           </button>
         ))}
       </div>
-    </div>
+    </section>
   );
 }
+
+export default SpringCarousel;

@@ -15,8 +15,31 @@ A premium collection of **49+ React components** built with spring physics at th
 - **Motion IS the design** — not decoration bolted on afterward
 - **Spring physics over bezier curves** — interactive elements should feel physical
 - **Interruptible animations** — hover mid-press? It should feel smooth, not jarring
-- **Reduced motion respected** — every component degrades gracefully
+- **Reduced motion respected** — motion degrades to a short crossfade, decorative loops switch off
 - **Copy, don't install** — grab the code, make it yours, customize freely
+
+---
+
+## Motion system
+
+Every component draws its motion from one file, [`src/components/motion.ts`](src/components/motion.ts), so the whole library moves like one family and a single edit retunes everything.
+
+| Token | Use it for | Feel |
+|---|---|---|
+| `snappy` | toggles, presses, indicators | fast, lands without wobble |
+| `smooth` | dialogs, popovers, tab content | the default; a hint of settle |
+| `gentle` | drawers, carousels, big moves | no overshoot over long distances |
+| `bouncy` | moments of delight | visible overshoot, one per screen |
+| `wobbly` | decorative jelly only | never on UI someone is waiting on |
+
+Two rules sit on top of the tokens:
+
+- **Enter with a spring, exit with a tween.** People wait for things to appear; they've already moved on when they dismiss them.
+- **Reduced motion is a first-class state.** `useMotionPrefs()` swaps travel for a short crossfade when someone asks for less motion.
+
+Overlays (Dialog, Drawer, Command Palette, Expandable Card) also share [`overlay.ts`](src/components/overlay.ts): focus trap and restore, Escape that closes only the topmost layer, and scroll lock without a layout jump.
+
+Copying a component? Copy `motion.ts` (and `overlay.ts` for overlays) into the same folder. Each component's docs page says which it needs.
 
 ---
 

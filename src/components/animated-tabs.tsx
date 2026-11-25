@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback, useId } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { spring } from "./motion";
 
 export interface AnimatedTabItem {
   id: string;
@@ -15,12 +16,11 @@ export interface AnimatedTabsProps {
   className?: string;
 }
 
-const TAB_SPRING = { type: "spring" as const, stiffness: 400, damping: 30, mass: 0.8 };
+const TAB_SPRING = spring.smooth;
 
 export function AnimatedTabs({ items, defaultId, className = "" }: AnimatedTabsProps) {
   const [activeId, setActiveId] = useState(defaultId || items[0]?.id);
   const active = items.find((i) => i.id === activeId) || items[0];
-  const instanceId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const [blobStyle, setBlobStyle] = useState<{ left: number; width: number } | null>(null);
@@ -67,9 +67,10 @@ export function AnimatedTabs({ items, defaultId, className = "" }: AnimatedTabsP
         {blobStyle && (
           <motion.div
             className="absolute top-1 bottom-1 rounded-[6px] bg-white dark:bg-neutral-700 shadow-sm"
-            animate={{ left: blobStyle.left, width: blobStyle.width }}
+            initial={false}
+            animate={{ x: blobStyle.left, width: blobStyle.width }}
             transition={isResizing.current ? { duration: 0 } : TAB_SPRING}
-            style={{ zIndex: 0 }}
+            style={{ zIndex: 0, left: 0 }}
           />
         )}
         {items.map((item) => (
@@ -89,7 +90,7 @@ export function AnimatedTabs({ items, defaultId, className = "" }: AnimatedTabsP
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
-          transition={{ type: "spring", stiffness: 500, damping: 35 }}
+          transition={spring.snappy}
           className="mt-3"
         >
           {active.content}

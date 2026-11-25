@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
+import { spring } from "./motion";
 
 export interface BreadcrumbItem {
   /** Unique identifier */
@@ -37,11 +38,7 @@ const itemVariants = {
   exit: { opacity: 0, x: -10 },
 };
 
-const springConfig = {
-  type: "spring" as const,
-  stiffness: 300,
-  damping: 30,
-};
+const springConfig = spring.smooth;
 
 const defaultSeparator = (
   <svg

@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { spring } from "./motion";
 import { createPortal } from "react-dom";
 
 export type PopoverPlacement = 
@@ -52,11 +53,7 @@ const popoverVariants = {
   },
 };
 
-const springConfig = {
-  type: "spring" as const,
-  stiffness: 300,
-  damping: 30,
-};
+const springConfig = spring.smooth;
 
 export function Popover({
   children,
@@ -272,7 +269,7 @@ export function Popover({
   };
 
   // Arrow component
-  const Arrow = () => {
+  const renderArrow = () => {
     if (!arrow) return null;
 
     const arrowSize = 8;
@@ -298,8 +295,9 @@ export function Popover({
     return <div className={arrowClassName} style={arrowStyle} />;
   };
 
-  const popover = isOpen && (
+  const popover = (
     <AnimatePresence>
+      {isOpen && (
       <motion.div
         ref={popoverRef}
         initial="closed"
@@ -321,9 +319,10 @@ export function Popover({
         onMouseEnter={trigger === "hover" ? handleMouseEnter : undefined}
         onMouseLeave={trigger === "hover" ? handleMouseLeave : undefined}
       >
-        <Arrow />
+        {renderArrow()}
         {content}
       </motion.div>
+      )}
     </AnimatePresence>
   );
 

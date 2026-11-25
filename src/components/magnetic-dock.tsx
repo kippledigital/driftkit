@@ -1,34 +1,23 @@
 "use client";
 
-import React, { useRef, useCallback } from "react";
-import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useTransform,
-  useReducedMotion,
-  MotionValue,
-} from "framer-motion";
+/**
+ * Magnetic Dock
+ * =============================================================================
+ * A real fisheye: icons grow in width, not just scale, so their neighbors make
+ * room instead of being overlapped, like the macOS dock. Size follows pointer
+ * distance through a cosine falloff (smooth at the edges, no visible "edge" to
+ * the effect), then a `bouncy` spring adds just enough life.
+ *
+ * Works with keyboard too: the focused icon grows as if the pointer were on it.
+ * Labels sit above the grown icon, and reduced motion turns magnification off.
+ *
+ * Needs: ./motion.ts
+ * =============================================================================
+ */
 
-// =============================================================================
-// MAGNETIC DOCK
-// =============================================================================
-// WHY: The macOS Dock is one of the most satisfying micro-interactions ever
-// designed. Items scale up as the cursor approaches, with neighbors scaling
-// proportionally less — creating a "fisheye" magnification lens. It communicates
-// "you're about to select this" with zero cognitive load.
-//
-// HOW: A shared mouseX motion value tracks cursor position across the dock.
-// Each item calculates its distance from the cursor and derives a scale factor
-// using useTransform. Close items scale to ~1.5x, far items stay at 1x.
-// Springs smooth the transitions so items don't snap.
-//
-// WHY useTransform over manual math: useTransform creates a reactive pipeline
-// that runs outside React's render cycle. The mouse moves 60fps, and all
-// calculations happen in Framer Motion's animation frame — zero re-renders.
-// =============================================================================
-
-const DOCK_SPRING = { stiffness: 400, damping: 25, mass: 0.5 };
+import React, { useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform, type MotionValue } from "framer-motion";
+import { springValue, useMotionPrefs } from "./motion";
 
 export interface DockItem {
   id: string;
@@ -39,123 +28,90 @@ export interface DockItem {
 
 export interface MagneticDockProps {
   items: DockItem[];
-  /** Max scale for the hovered item. Default 1.5 */
+  /** Largest size as a multiple of the base size. Default 1.6. */
   maxScale?: number;
-  /** Distance in px that affects scaling. Default 80 */
+  /** How far (px) the effect reaches from the pointer. Default 110. */
   magneticRange?: number;
+  /** Base icon size in px. Default 44. */
+  size?: number;
   className?: string;
 }
 
 function DockIcon({
   item,
-  mouseX,
-  index,
-  itemWidth,
-  maxScale,
-  magneticRange,
+  pointerX,
+  base,
+  max,
+  range,
+  reduced,
 }: {
   item: DockItem;
-  mouseX: MotionValue<number>;
-  index: number;
-  itemWidth: number;
-  maxScale: number;
-  magneticRange: number;
+  pointerX: MotionValue<number>;
+  base: number;
+  max: number;
+  range: number;
+  reduced: boolean;
 }) {
   const ref = useRef<HTMLButtonElement>(null);
-  const prefersReducedMotion = useReducedMotion();
+  const focused = useMotionValue(0);
 
-  // Distance from cursor to this item's center
-  const distance = useTransform(mouseX, (val: number) => {
-    if (!ref.current || val === -999) return magneticRange + 1;
-    const rect = ref.current.getBoundingClientRect();
-    const center = rect.left + rect.width / 2;
-    return Math.abs(val - center);
+  const target = useTransform([pointerX, focused], ([x, f]: number[]) => {
+    if (reduced) return base;
+    if (f) return max;
+    const el = ref.current;
+    if (!el || !Number.isFinite(x)) return base;
+    const r = el.getBoundingClientRect();
+    const d = Math.abs(x - (r.left + r.width / 2));
+    if (d >= range) return base;
+    // Cosine falloff: 1 at the pointer, easing smoothly to 0 at the edge of range.
+    const t = (Math.cos((d / range) * Math.PI) + 1) / 2;
+    return base + (max - base) * t;
   });
-
-  // Map distance → scale: close = maxScale, far = 1
-  const rawScale = useTransform(
-    distance,
-    [0, magneticRange],
-    [maxScale, 1]
-  );
-
-  const scale = useSpring(rawScale, DOCK_SPRING);
+  const width = useSpring(target, springValue.bouncy);
+  const iconScale = useTransform(width, [base, max], [1, 1.18]);
 
   return (
     <motion.button
       ref={ref}
+      type="button"
       onClick={item.onClick}
-      className="group relative flex flex-col items-center justify-center cursor-pointer
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-[8px]"
-      style={{ width: itemWidth, height: itemWidth }}
-      whileTap={prefersReducedMotion ? undefined : { scale: maxScale * 0.85 }}
-      transition={DOCK_SPRING}
+      onFocus={(e) => e.currentTarget.matches(":focus-visible") && focused.set(1)}
+      onBlur={() => focused.set(0)}
       aria-label={item.label}
+      style={{ width, height: width }}
+      className="group relative flex shrink-0 items-center justify-center self-end rounded-[12px] border border-neutral-200 bg-neutral-100 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-800"
+      whileTap={reduced ? undefined : { scale: 0.92 }}
     >
-      {/* Icon container */}
-      <motion.div
-        className="flex items-center justify-center w-full h-full rounded-[8px]
-          bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700
-          shadow-sm"
-        style={{ scale }}
-      >
-        <span className="text-xl">{item.icon}</span>
-      </motion.div>
-
-      {/* Label tooltip — shows on hover */}
-      <motion.span
-        className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs
-          rounded-[6px] bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900
-          whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none
-          transition-opacity duration-150"
+      <motion.span className="pointer-events-none text-xl leading-none" style={{ scale: iconScale }}>
+        {item.icon}
+      </motion.span>
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-[6px] bg-neutral-900 px-2 py-1 text-xs text-white opacity-0 transition duration-150 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 dark:bg-neutral-100 dark:text-neutral-900"
       >
         {item.label}
-      </motion.span>
+      </span>
     </motion.button>
   );
 }
 
-export function MagneticDock({
-  items,
-  maxScale = 1.5,
-  magneticRange = 80,
-  className = "",
-}: MagneticDockProps) {
-  const mouseX = useMotionValue(-999);
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => mouseX.set(e.clientX),
-    [mouseX]
-  );
-
-  const handleMouseLeave = useCallback(
-    () => mouseX.set(-999),
-    [mouseX]
-  );
-
-  const itemWidth = 48;
+export function MagneticDock({ items, maxScale = 1.6, magneticRange = 110, size = 44, className = "" }: MagneticDockProps) {
+  const m = useMotionPrefs();
+  const pointerX = useMotionValue(Number.POSITIVE_INFINITY);
+  const max = size * maxScale;
 
   return (
-    <motion.div
-      className={`inline-flex items-center gap-2 px-3 py-2 rounded-2xl
-        bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md
-        border border-neutral-200 dark:border-neutral-800
-        shadow-lg ${className}`}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+    <nav
+      aria-label="Dock"
+      onPointerMove={(e) => e.pointerType === "mouse" && pointerX.set(e.clientX)}
+      onPointerLeave={() => pointerX.set(Number.POSITIVE_INFINITY)}
+      className={`inline-flex items-end gap-2 rounded-[18px] border border-neutral-200 bg-white/80 px-2.5 pb-2.5 pt-2.5 shadow-lg backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-900/80 ${className}`}
+      style={{ height: max + 20 }}
     >
-      {items.map((item, i) => (
-        <DockIcon
-          key={item.id}
-          item={item}
-          mouseX={mouseX}
-          index={i}
-          itemWidth={itemWidth}
-          maxScale={maxScale}
-          magneticRange={magneticRange}
-        />
+      {items.map((item) => (
+        <DockIcon key={item.id} item={item} pointerX={pointerX} base={size} max={max} range={magneticRange} reduced={m.reduced} />
       ))}
-    </motion.div>
+    </nav>
   );
 }
 

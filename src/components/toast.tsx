@@ -1,52 +1,35 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useCallback,
-  useState,
-  useEffect,
-  useRef,
-  type ReactNode,
-} from "react";
+/**
+ * Toast
+ * =============================================================================
+ * Toasts slide up and in on the `smooth` spring, and the stack reflows with
+ * layout animation when one leaves. Exits are a quick tween.
+ *
+ * Swipe sideways to dismiss: distance or a fast flick both count, and the toast
+ * leaves in the direction you threw it, carrying your velocity.
+ *
+ * The countdown bar is a transform (scaleX) driven by a motion value, so it
+ * runs on the compositor and never re-renders React. It pauses while the toast
+ * is hovered, focused, being dragged, or the tab is in the background.
+ *
+ * Errors are announced assertively (role="alert"); everything else politely.
+ *
+ * Needs: ./motion.ts
+ * =============================================================================
+ */
+
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   motion,
   AnimatePresence,
+  animate,
   useMotionValue,
   useTransform,
+  type AnimationPlaybackControls,
   type PanInfo,
-  useReducedMotion,
 } from "framer-motion";
-
-// =============================================================================
-// SPRING PHYSICS
-// =============================================================================
-// "snappy" — stiffness 500, damping 30, mass 0.5
-//   Used for the slide-in entrance. Toasts should arrive with presence —
-//   a quick spring with subtle overshoot says "hey, look at me" without
-//   being jarring. The low mass keeps small notification cards feeling light.
-//
-// "smooth" — stiffness 300, damping 30, mass 1
-//   Used for layout animations when toasts stack/reorder. When a new toast
-//   pushes others up, the movement should feel like physical cards being
-//   nudged — weighty, not jittery. Layout springs need more mass to look
-//   natural with multiple elements moving simultaneously.
-//
-// Drag dismiss uses velocity detection — if the user flicks fast enough
-// (velocity > 500px/s), dismiss even if drag distance is small. This
-// matches iOS notification behavior where intent matters more than distance.
-// =============================================================================
-
-const springs = {
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-};
-
-const exitTransition = { duration: 0.2, ease: "easeIn" as const };
-
-// =============================================================================
-// TYPES
-// =============================================================================
+import { spring, useMotionPrefs } from "./motion";
 
 export type ToastVariant = "default" | "success" | "error" | "warning";
 
@@ -55,17 +38,14 @@ export interface Toast {
   title: string;
   description?: string;
   variant?: ToastVariant;
-  duration?: number; // ms, default 4000
+  /** Milliseconds before auto-dismiss. Default 4000. Use Infinity to keep it. */
+  duration?: number;
 }
 
 interface ToastContextValue {
   toast: (t: Omit<Toast, "id">) => string;
   dismiss: (id: string) => void;
 }
-
-// =============================================================================
-// CONTEXT
-// =============================================================================
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
@@ -75,178 +55,159 @@ export function useToast(): ToastContextValue {
   return ctx;
 }
 
-// =============================================================================
-// VARIANT STYLES
-// =============================================================================
-
-const variantStyles: Record<
-  ToastVariant,
-  { border: string; icon: string; iconColor: string }
-> = {
-  default: {
-    border: "border-neutral-200 dark:border-neutral-700",
-    icon: "",
-    iconColor: "",
-  },
-  success: {
-    border: "border-green-200 dark:border-green-800",
-    icon: "✓",
-    iconColor: "text-green-600 dark:text-green-400",
-  },
-  error: {
-    border: "border-red-200 dark:border-red-800",
-    icon: "✕",
-    iconColor: "text-red-600 dark:text-red-400",
-  },
-  warning: {
-    border: "border-amber-200 dark:border-amber-800",
-    icon: "!",
-    iconColor: "text-amber-600 dark:text-amber-400",
-  },
+const tone: Record<ToastVariant, { ring: string; icon: string; bar: string }> = {
+  default: { ring: "border-neutral-200 dark:border-neutral-700", icon: "", bar: "bg-neutral-400 dark:bg-neutral-500" },
+  success: { ring: "border-green-200 dark:border-green-900", icon: "text-green-600 dark:text-green-400", bar: "bg-green-500" },
+  error: { ring: "border-red-200 dark:border-red-900", icon: "text-red-600 dark:text-red-400", bar: "bg-red-500" },
+  warning: { ring: "border-amber-200 dark:border-amber-900", icon: "text-amber-600 dark:text-amber-400", bar: "bg-amber-500" },
 };
 
-const progressColors: Record<ToastVariant, string> = {
-  default: "bg-neutral-400 dark:bg-neutral-500",
-  success: "bg-green-500",
-  error: "bg-red-500",
-  warning: "bg-amber-500",
-};
-
-// =============================================================================
-// TOAST ITEM
-// =============================================================================
-
-function ToastItem({
-  toast: t,
-  onDismiss,
-}: {
-  toast: Toast;
-  onDismiss: (id: string) => void;
-}) {
-  const prefersReducedMotion = useReducedMotion();
-  const variant = t.variant || "default";
-  const style = variantStyles[variant];
-  const duration = t.duration ?? 4000;
-  const [progress, setProgress] = useState(1);
-  const startRef = useRef(Date.now());
-  const pausedRef = useRef(false);
-
-  // Auto-dismiss countdown with progress bar
-  useEffect(() => {
-    let raf: number;
-    const tick = () => {
-      if (pausedRef.current) {
-        raf = requestAnimationFrame(tick);
-        return;
-      }
-      const elapsed = Date.now() - startRef.current;
-      const remaining = 1 - elapsed / duration;
-      if (remaining <= 0) {
-        onDismiss(t.id);
-        return;
-      }
-      setProgress(remaining);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [duration, onDismiss, t.id]);
-
-  // Drag-to-dismiss
-  const x = useMotionValue(0);
-  const opacity = useTransform(x, [-150, 0, 150], [0.3, 1, 0.3]);
-
-  const handleDragEnd = useCallback(
-    (_: unknown, info: PanInfo) => {
-      // Velocity-based dismiss: fast flick = dismiss even with small distance
-      if (
-        Math.abs(info.velocity.x) > 500 ||
-        Math.abs(info.offset.x) > 100
-      ) {
-        onDismiss(t.id);
-      }
-    },
-    [onDismiss, t.id]
-  );
-
+function Icon({ variant }: { variant: ToastVariant }) {
+  if (variant === "default") return null;
+  const paths = {
+    success: <path d="M5 8.2l2 2 4-4.4" />,
+    error: <path d="M5.5 5.5l5 5M10.5 5.5l-5 5" />,
+    warning: <path d="M8 4.5v4.2M8 11.2v.1" />,
+  }[variant];
   return (
-    <motion.div
-      layout
-      layoutId={t.id}
-      // Slide in from right with spring
-      initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: 100, scale: 0.95 }}
-      animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, x: 0, scale: 1 }}
-      exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: 80 }}
-      transition={prefersReducedMotion ? { duration: 0.15, layout: springs.smooth } : { ...springs.snappy, layout: springs.smooth }}
-      // Drag to dismiss horizontally
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.7}
-      onDragEnd={handleDragEnd}
-      style={{ x, opacity, touchAction: "none" }}
-      className={`relative w-80 rounded-[8px] border bg-white dark:bg-neutral-900 shadow-lg overflow-hidden cursor-grab active:cursor-grabbing ${style.border}`}
-      onMouseEnter={() => {
-        pausedRef.current = true;
-      }}
-      onMouseLeave={() => {
-        // Adjust start time to account for pause
-        startRef.current = Date.now() - (1 - progress) * duration;
-        pausedRef.current = false;
-      }}
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`mt-0.5 shrink-0 ${tone[variant].icon}`}
+      aria-hidden
     >
-      <div className="p-4 flex gap-3 items-start">
-        {/* Variant icon */}
-        {style.icon && (
-          <span
-            className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${style.iconColor}`}
-          >
-            {style.icon}
-          </span>
-        )}
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-            {t.title}
-          </p>
-          {t.description && (
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-              {t.description}
-            </p>
-          )}
-        </div>
-        <button
-          onClick={() => onDismiss(t.id)}
-          className="flex-shrink-0 text-neutral-400 dark:text-neutral-500 text-sm cursor-pointer"
-          aria-label="Dismiss"
-        >
-          ✕
-        </button>
-      </div>
-
-      {/* Progress bar — shrinks as auto-dismiss timer runs down */}
-      <div className="h-0.5 w-full bg-neutral-100 dark:bg-neutral-800">
-        <motion.div
-          className={`h-full ${progressColors[variant]}`}
-          style={{ width: `${progress * 100}%` }}
-        />
-      </div>
-    </motion.div>
+      <circle cx="8" cy="8" r="6.6" strokeOpacity=".35" />
+      {paths}
+    </svg>
   );
 }
 
-// =============================================================================
-// PROVIDER
-// =============================================================================
+function ToastItem({ toast: t, onDismiss }: { toast: Toast; onDismiss: (id: string) => void }) {
+  const m = useMotionPrefs();
+  const variant = t.variant ?? "default";
+  const duration = t.duration ?? 4000;
+
+  const x = useMotionValue(0);
+  const dragOpacity = useTransform(x, [-160, 0, 160], [0, 1, 0]);
+  const progress = useMotionValue(1);
+  const timer = useRef<AnimationPlaybackControls | null>(null);
+  const holds = useRef(new Set<string>());
+  const leaving = useRef(false);
+
+  useEffect(() => {
+    if (!Number.isFinite(duration)) return;
+    const controls = animate(progress, 0, {
+      duration: duration / 1000,
+      ease: "linear",
+      onComplete: () => !leaving.current && onDismiss(t.id),
+    });
+    timer.current = controls;
+    const onVisibility = () => (document.hidden ? controls.pause() : holds.current.size === 0 && controls.play());
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      controls.stop();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [duration, onDismiss, progress, t.id]);
+
+  const hold = (reason: string, on: boolean) => {
+    if (on) holds.current.add(reason);
+    else holds.current.delete(reason);
+    if (holds.current.size > 0) timer.current?.pause();
+    else if (!document.hidden) timer.current?.play();
+  };
+
+  const onDragEnd = (_: unknown, info: PanInfo) => {
+    hold("drag", false);
+    const { offset, velocity } = info;
+    if (Math.abs(offset.x) > 90 || Math.abs(velocity.x) > 450) {
+      leaving.current = true;
+      const dir = Math.sign(offset.x || velocity.x) || 1;
+      animate(x, dir * 420, { ...spring.smooth, velocity: velocity.x }).then(() => onDismiss(t.id));
+    } else {
+      animate(x, 0, spring.snappy);
+    }
+  };
+
+  const assertive = variant === "error";
+
+  return (
+    <motion.li
+      layout={m.reduced ? false : "position"}
+      initial={m.reduced ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1, transition: m.spring("smooth") }}
+      exit={{ opacity: 0, scale: m.reduced ? 1 : 0.97, transition: m.exit("quick") }}
+      transition={{ layout: spring.smooth }}
+      className="pointer-events-auto list-none"
+      onPointerEnter={() => hold("hover", true)}
+      onPointerLeave={() => hold("hover", false)}
+      onFocus={() => hold("focus", true)}
+      onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node) && hold("focus", false)}
+    >
+      <motion.div
+        role={assertive ? "alert" : "status"}
+        aria-atomic="true"
+        drag={m.reduced ? false : "x"}
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.9}
+        dragMomentum={false}
+        onDragStart={() => hold("drag", true)}
+        onDragEnd={onDragEnd}
+        style={{ x, opacity: dragOpacity, touchAction: "pan-y" }}
+        className={`relative w-[min(22rem,calc(100vw-2rem))] cursor-grab overflow-hidden rounded-[10px] border bg-white shadow-lg active:cursor-grabbing dark:bg-neutral-900 ${tone[variant].ring}`}
+      >
+        <div className="flex items-start gap-3 p-4">
+          <Icon variant={variant} />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{t.title}</p>
+            {t.description && <p className="mt-0.5 text-[13px] leading-snug text-neutral-500 dark:text-neutral-400">{t.description}</p>}
+          </div>
+          <button
+            type="button"
+            onClick={() => onDismiss(t.id)}
+            aria-label="Dismiss notification"
+            className="-mr-1 -mt-1 grid h-7 w-7 shrink-0 place-items-center rounded-[6px] text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
+              <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+        {Number.isFinite(duration) && (
+          <div aria-hidden className="h-0.5 w-full bg-neutral-100 dark:bg-neutral-800">
+            <motion.div className={`h-full origin-left ${tone[variant].bar}`} style={{ scaleX: progress }} />
+          </div>
+        )}
+      </motion.div>
+    </motion.li>
+  );
+}
 
 let toastCounter = 0;
 
-export function ToastProvider({ children }: { children: ReactNode }) {
+export interface ToastProviderProps {
+  children: ReactNode;
+  /** Most toasts visible at once; older ones leave first. Default 4. */
+  max?: number;
+}
+
+export function ToastProvider({ children, max = 4 }: ToastProviderProps) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const toast = useCallback((t: Omit<Toast, "id">) => {
-    const id = `toast-${++toastCounter}`;
-    setToasts((prev) => [...prev, { ...t, id }]);
-    return id;
-  }, []);
+  const toast = useCallback(
+    (t: Omit<Toast, "id">) => {
+      const id = `toast-${++toastCounter}`;
+      setToasts((prev) => [...prev, { ...t, id }].slice(-max));
+      return id;
+    },
+    [max]
+  );
 
   const dismiss = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -255,21 +216,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast, dismiss }}>
       {children}
-
-      {/* Toast container — fixed bottom-right */}
-      <div
-        className="fixed bottom-4 right-4 z-[100] flex flex-col-reverse gap-2 pointer-events-none"
-        aria-live="polite"
-        aria-label="Notifications"
-      >
-        <AnimatePresence mode="popLayout">
-          {toasts.map((t) => (
-            <div key={t.id} className="pointer-events-auto">
-              <ToastItem toast={t} onDismiss={dismiss} />
-            </div>
-          ))}
-        </AnimatePresence>
-      </div>
+      <section aria-label="Notifications" className="pointer-events-none fixed bottom-4 right-4 z-[100]">
+        <ol className="flex flex-col-reverse gap-2">
+          <AnimatePresence initial={false}>
+            {toasts.map((t) => (
+              <ToastItem key={t.id} toast={t} onDismiss={dismiss} />
+            ))}
+          </AnimatePresence>
+        </ol>
+      </section>
     </ToastContext.Provider>
   );
 }

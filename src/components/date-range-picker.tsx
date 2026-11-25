@@ -3,14 +3,15 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // SPRING PHYSICS
 // =============================================================================
 const springs = {
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-  quick: { type: "spring" as const, stiffness: 500, damping: 40, mass: 0.3 },
+  snappy: spring.snappy,
+  smooth: spring.smooth,
+  quick: spring.snappy,
 };
 
 // =============================================================================
@@ -93,7 +94,7 @@ function Calendar({
   const effectiveStart = range.start;
 
   return (
-    <div className="p-3" style={{ fontFamily: "Satoshi, sans-serif" }}>
+    <div className="p-3">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <motion.button
@@ -202,7 +203,7 @@ export function DateRangePicker({
 
   const handleMonthChange = useCallback((delta: number) => {
     setViewMonth((m) => {
-      let nm = m + delta;
+      const nm = m + delta;
       if (nm < 0) { setViewYear((y) => y - 1); return 11; }
       if (nm > 11) { setViewYear((y) => y + 1); return 0; }
       return nm;
@@ -258,7 +259,7 @@ export function DateRangePicker({
   }, [range]);
 
   return (
-    <div ref={ref} className={`relative inline-block ${className}`} style={{ fontFamily: "Satoshi, sans-serif" }}>
+    <div ref={ref} className={`relative inline-block ${className}`}>
       {/* Trigger */}
       <motion.button
         ref={triggerRef}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 
 export interface CodeDisplayProps {
@@ -38,6 +38,11 @@ function highlightTSX(code: string): string {
 
 export function CodeDisplay({ title, code, language = "tsx" }: CodeDisplayProps) {
   const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(t);
+  }, [copied]);
 
   const highlightedCode = useMemo(() => {
     if (language === "tsx" || language === "jsx") {
@@ -50,7 +55,6 @@ export function CodeDisplay({ title, code, language = "tsx" }: CodeDisplayProps)
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       // Fallback for older browsers
       const textArea = document.createElement("textarea");
@@ -61,7 +65,6 @@ export function CodeDisplay({ title, code, language = "tsx" }: CodeDisplayProps)
       document.execCommand("copy");
       document.body.removeChild(textArea);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     }
   }, [code]);
 

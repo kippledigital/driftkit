@@ -2,13 +2,14 @@
 
 import React from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
+import { springValue } from "./motion";
 
 export interface WobbleCardProps {
   children: React.ReactNode;
   className?: string;
 }
 
-const SPRING = { stiffness: 300, damping: 8, mass: 0.5 };
+const SPRING = springValue.wobbly;
 
 export function WobbleCard({ children, className = "" }: WobbleCardProps) {
   const rotateX = useMotionValue(0);

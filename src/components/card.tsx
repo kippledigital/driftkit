@@ -3,34 +3,34 @@
 import React, { forwardRef, type ReactNode } from "react";
 import {
   motion,
-  AnimatePresence,
   useReducedMotion,
   type HTMLMotionProps,
   type Variants,
 } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // SPRING PHYSICS
 // =============================================================================
 // Card animations use three distinct spring configurations:
 //
-// "smooth" — stiffness 300, damping 30, mass 1
+// "smooth" token from ./motion.ts.
 //   Used for hover lift. The card should rise gracefully like a physical object
 //   being picked up. Not bouncy, just deliberate and premium feeling.
 //
-// "snappy" — stiffness 500, damping 30, mass 0.5  
+// "snappy" token from ./motion.ts.  
 //   Used for press/tap feedback. Tactile response needs to be immediate.
 //   Lower mass makes it feel nimble and responsive.
 //
-// "gentle" — stiffness 250, damping 35, mass 1.2
+// "gentle" token from ./motion.ts.
 //   Used for enter animations. Cards should settle into view naturally,
 //   not aggressively. Higher damping prevents overshoot on entry.
 // =============================================================================
 
 const springs = {
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
-  gentle: { type: "spring" as const, stiffness: 250, damping: 35, mass: 1.2 },
+  smooth: spring.smooth,
+  snappy: spring.snappy,
+  gentle: spring.gentle,
 };
 
 // =============================================================================

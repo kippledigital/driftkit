@@ -7,6 +7,7 @@ import {
   type HTMLMotionProps,
   useReducedMotion,
 } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // SPRING PHYSICS
@@ -16,26 +17,26 @@ import {
 // into a new target. This makes hover→press→release feel alive instead of
 // queued-up and robotic.
 //
-// "snappy" — stiffness 500, damping 30, mass 0.5
+// "snappy" token from ./motion.ts.
 //   High stiffness + high damping = fast response with no overshoot.
 //   Used for press/tap because tactile feedback needs to feel immediate.
 //   The low mass (0.5) makes it feel nimble — small UI elements should
 //   respond quicker than heavy panels.
 //
-// "smooth" — stiffness 300, damping 30, mass 1
+// "smooth" token from ./motion.ts.
 //   Balanced stiffness with firm damping. Slight settling, no bounce.
 //   Used for hover lift because it should feel natural and premium —
 //   like something physically rising, not snapping into place.
 //
-// "quick" — stiffness 500, damping 40, mass 0.3
+// "snappy" token from ./motion.ts.
 //   Ultra-fast, no bounce. Used for focus ring and subtle state changes
 //   where you want "instant but not harsh."
 // =============================================================================
 
 const springs = {
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-  quick: { type: "spring" as const, stiffness: 500, damping: 40, mass: 0.3 },
+  snappy: spring.snappy,
+  smooth: spring.smooth,
+  quick: spring.snappy,
 };
 
 // =============================================================================

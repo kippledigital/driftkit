@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { spring } from "./motion";
 import { ModeSwitcher } from "./mode-switcher";
 
 const navItems = [
@@ -46,7 +47,7 @@ export function GlobalNav() {
                   <motion.div
                     layoutId="global-nav-blob"
                     className="absolute inset-0 rounded-[6px] bg-white dark:bg-neutral-700 shadow-sm"
-                    transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.8 }}
+                    transition={spring.smooth}
                     style={{ zIndex: -1 }}
                   />
                 )}

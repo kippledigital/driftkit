@@ -14,11 +14,12 @@ import {
   AnimatePresence,
   useReducedMotion,
 } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // SPRING PHYSICS
 // =============================================================================
-// Opening uses "smooth" spring — stiffness 300, damping 30, mass 1.
+// Opening uses the "smooth" token from ./motion.ts.
 // WHY: The dropdown should feel like it's unfurling from the trigger — organic
 // and weighted. Scale 0.95 → 1.0 with origin at top creates a "growing downward"
 // effect that visually connects the menu to its trigger.
@@ -28,14 +29,14 @@ import {
 // craftsmanship. 30ms is fast enough to not slow down power users but visible
 // enough to notice. Each item fades in + slides up 4px for a waterfall effect.
 //
-// Item hover uses "quick" spring — stiffness 500, damping 40, mass 0.3.
+// Item hover uses the "snappy" token from ./motion.ts.
 // WHY: Framer-owned hover backgrounds need to feel instant and responsive as
 // the user scans menu items. Any lag here makes the menu feel sluggish.
 // =============================================================================
 
 const springs = {
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-  quick: { type: "spring" as const, stiffness: 500, damping: 40, mass: 0.3 },
+  smooth: spring.smooth,
+  quick: spring.snappy,
 };
 
 // =============================================================================

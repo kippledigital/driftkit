@@ -1,74 +1,77 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion, useSpring } from "framer-motion";
+/**
+ * Cursor Trail
+ * =============================================================================
+ * Each dot follows the pointer on a slightly softer spring than the last, so
+ * the trail stretches when you move fast and gathers when you stop.
+ *
+ * Pointer position lives in motion values, so moving the mouse never
+ * re-renders React. The trail is purely decorative: hidden from screen
+ * readers, off for touch, and off when reduced motion is requested.
+ * =============================================================================
+ */
+
+import React, { useEffect } from "react";
+import { motion, useMotionValue, useReducedMotion, useSpring, type MotionValue } from "framer-motion";
 
 export interface CursorTrailProps {
   /** Number of trail dots. Default 8 */
   count?: number;
   /** Dot size in px. Default 8 */
   size?: number;
-  /** Color of the dots. Default currentColor */
+  /** Color of the dots. Default "currentColor" (a rainbow). */
   color?: string;
   className?: string;
 }
 
-interface Dot {
-  x: number;
-  y: number;
-}
-
-const SPRING = { stiffness: 200, damping: 20, mass: 0.2 };
-
-function TrailDot({ x, y, size, color, index, total }: { x: number; y: number; size: number; color: string; index: number; total: number }) {
-  const springX = useSpring(x, { ...SPRING, stiffness: SPRING.stiffness - index * 15 });
-  const springY = useSpring(y, { ...SPRING, stiffness: SPRING.stiffness - index * 15 });
-
-  useEffect(() => { springX.set(x); }, [x, springX]);
-  useEffect(() => { springY.set(y); }, [y, springY]);
-
-  const scale = 1 - (index / total) * 0.6;
-  const opacity = 1 - (index / total) * 0.8;
-  
-  // Generate rainbow color based on dot index
-  const hue = (index / total) * 360;
-  const rainbowColor = `hsl(${hue}, 85%, 60%)`;
+function TrailDot({ x, y, size, color, index, total }: { x: MotionValue<number>; y: MotionValue<number>; size: number; color: string; index: number; total: number }) {
+  const config = { stiffness: Math.max(60, 220 - index * 18), damping: 22, mass: 0.25 };
+  const sx = useSpring(x, config);
+  const sy = useSpring(y, config);
+  const s = size * (1 - (index / total) * 0.6);
+  const fill = color === "currentColor" ? `hsl(${(index / total) * 360}, 85%, 60%)` : color;
 
   return (
     <motion.div
-      className="fixed pointer-events-none z-50 rounded-full"
+      aria-hidden
+      className="pointer-events-none fixed left-0 top-0 z-50 rounded-full"
       style={{
-        left: 0,
-        top: 0,
-        x: springX,
-        y: springY,
-        width: size * scale,
-        height: size * scale,
-        opacity,
-        backgroundColor: color === "currentColor" ? rainbowColor : color,
-        transform: "translate(-50%, -50%)",
+        x: sx,
+        y: sy,
+        width: s,
+        height: s,
+        marginLeft: -s / 2,
+        marginTop: -s / 2,
+        opacity: 1 - (index / total) * 0.8,
+        backgroundColor: fill,
       }}
     />
   );
 }
 
 export function CursorTrail({ count = 8, size = 8, color = "currentColor", className = "" }: CursorTrailProps) {
-  const [pos, setPos] = useState<Dot>({ x: 0, y: 0 });
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleMove = useCallback((e: MouseEvent) => {
-    setPos({ x: e.clientX, y: e.clientY });
-  }, []);
+  const reduced = useReducedMotion();
+  const x = useMotionValue(-100);
+  const y = useMotionValue(-100);
 
   useEffect(() => {
-    window.addEventListener("mousemove", handleMove);
-    return () => window.removeEventListener("mousemove", handleMove);
-  }, [handleMove]);
+    if (reduced) return;
+    const move = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      x.set(e.clientX);
+      y.set(e.clientY);
+    };
+    window.addEventListener("pointermove", move, { passive: true });
+    return () => window.removeEventListener("pointermove", move);
+  }, [reduced, x, y]);
+
+  if (reduced) return null;
 
   return (
-    <div ref={containerRef} className={className}>
-      {Array.from({ length: count }).map((_, i) => (
-        <TrailDot key={i} x={pos.x} y={pos.y} size={size} color={color} index={i} total={count} />
+    <div className={className}>
+      {Array.from({ length: count }, (_, i) => (
+        <TrailDot key={i} x={x} y={y} size={size} color={color} index={i} total={count} />
       ))}
     </div>
   );
