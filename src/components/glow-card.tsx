@@ -34,7 +34,7 @@ export interface GlowCardProps {
   glowColor?: string;
   /** Glow radius in px. Default 200 */
   glowSize?: number;
-  /** Glow opacity 0-1. Default 0.15 for the surface glow, 1 for the border glow. */
+  /** Surface glow opacity 0-1. Default 0.15. The border variant lights only the edge and ignores this. */
   glowOpacity?: number;
 }
 
@@ -65,7 +65,6 @@ export function GlowCard({
   // Border-glow layers (declared unconditionally; hooks can't live in a branch).
   const ring = glowColor || "rgba(129,140,248,1)";
   const ringBg = useMotionTemplate`radial-gradient(${glowSize * 0.6}px circle at ${mouseX}px ${mouseY}px, ${ring}, transparent 100%)`;
-  const washBg = useMotionTemplate`radial-gradient(${glowSize}px circle at ${mouseX}px ${mouseY}px, ${ring}, transparent 70%)`;
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
@@ -85,8 +84,8 @@ export function GlowCard({
 
   if (borderGlow) {
     // The glow is painted on top of the static border and masked to a 1px ring,
-    // so only the border lights up. A faint wash on the surface follows along
-    // so the card reads as lit from the same spot.
+    // so only the border lights up. A blurred copy of the same ring gives it a
+    // soft bloom right along the edge without tinting the card's surface.
     return (
       <div
         ref={ref}
@@ -105,8 +104,20 @@ export function GlowCard({
             mask: "linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0)",
           }}
         />
-        <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[7px] opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <motion.div className="h-full w-full rounded-[7px]" style={{ background: washBg, opacity: glowOpacity ?? 0.08 }} />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -inset-px opacity-0 blur-[6px] transition-opacity duration-300 group-hover:opacity-100"
+        >
+          <motion.div
+            className="h-full w-full rounded-[8px]"
+            style={{
+              background: ringBg,
+              padding: 2,
+              WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+              WebkitMaskComposite: "xor",
+              mask: "linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0)",
+            }}
+          />
         </div>
         <div className="relative">{children}</div>
       </div>

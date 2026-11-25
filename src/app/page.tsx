@@ -198,6 +198,7 @@ function GlowCardDemo() {
 function NumberTickerDemo() {
   const [value, setValue] = useState(1234);
   const [price, setPrice] = useState(49.99);
+  const [rate, setRate] = useState(87);
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
@@ -216,8 +217,22 @@ function NumberTickerDemo() {
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <span className="text-xl"><NumberTicker value={87} suffix="%" /></span>
+        <span className="text-xl tabular-nums"><NumberTicker value={rate} suffix="%" /></span>
         <span className="text-sm text-neutral-600 dark:text-neutral-400">Completion rate</span>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() =>
+            setRate((r) => {
+              // Always land somewhere visibly different from the last value.
+              let next = r;
+              while (Math.abs(next - r) < 8) next = 40 + Math.floor(Math.random() * 60);
+              return next;
+            })
+          }
+        >
+          Shuffle
+        </Button>
       </div>
     </div>
   );
