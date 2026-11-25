@@ -18,6 +18,15 @@ export interface TypewriterProps {
   className?: string;
 }
 
+/** Split text into words with their start index; spaces become plain text between them. */
+function words(text: string) {
+  const out: { word: string; start: number }[] = [];
+  const re = /\S+/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) out.push({ word: m[0], start: m.index });
+  return out.flatMap((w, i) => (i < out.length - 1 || /\s$/.test(text) ? [w, { word: " ", start: w.start + w.word.length }] : [w]));
+}
+
 export function Typewriter({
   text,
   speed = 50,
@@ -107,20 +116,31 @@ export function Typewriter({
 
   return (
     <span className={`inline ${className}`} aria-label={currentText} role="status">
-      <AnimatePresence mode="popLayout">
-        {currentText.slice(0, displayedCount).split("").map((char, i) => (
-          <motion.span
-            key={`${currentTextIndex}-${i}-${char}`}
-            initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -2 }}
-            transition={CHAR_SPRING}
-            style={{ display: "inline-block", whiteSpace: "pre" }}
-          >
-            {char}
-          </motion.span>
-        ))}
-      </AnimatePresence>
+      {/* Letters are grouped into words that can't break internally. Each letter
+          is an inline-block (so it can move), and on their own inline-blocks let the
+          browser wrap a line mid-word ("com / ponents"). */}
+      {words(currentText.slice(0, displayedCount)).map(({ word, start }) =>
+        word === " " ? (
+          <React.Fragment key={`${currentTextIndex}-s${start}`}> </React.Fragment>
+        ) : (
+        <span key={`${currentTextIndex}-w${start}`} style={{ display: "inline-block", whiteSpace: "nowrap" }}>
+          <AnimatePresence mode="popLayout">
+            {word.split("").map((char, j) => (
+              <motion.span
+                key={`${currentTextIndex}-${start + j}-${char}`}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -2 }}
+                transition={CHAR_SPRING}
+                style={{ display: "inline-block", whiteSpace: "pre" }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </AnimatePresence>
+        </span>
+        )
+      )}
       {showCursor && (
         <span
           className="inline-block w-[2px] h-[1em] bg-current ml-[1px] align-text-bottom animate-pulse"

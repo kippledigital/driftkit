@@ -1513,7 +1513,7 @@ export default function Home() {
         {/* HERO                                                           */}
         {/* ============================================================= */}
         <header className="pt-24 pb-32 border-b border-neutral-200 dark:border-neutral-800">
-          <div className="mb-6 h-[3.5rem] sm:h-[4rem] overflow-hidden">
+          <div className="mb-6 min-h-[5.75rem] sm:min-h-[3.75rem]">
             <span className="text-4xl sm:text-5xl font-bold leading-tight block">
               <Typewriter
                 text=""
