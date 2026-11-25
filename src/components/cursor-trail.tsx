@@ -13,6 +13,8 @@
  */
 
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
+import { useMounted } from "./overlay";
 import { motion, useMotionValue, useReducedMotion, useSpring, type MotionValue } from "framer-motion";
 
 export interface CursorTrailProps {
@@ -54,6 +56,7 @@ export function CursorTrail({ count = 8, size = 8, color = "currentColor", class
   const reduced = useReducedMotion();
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
+  const mounted = useMounted();
 
   useEffect(() => {
     if (reduced) return;
@@ -66,14 +69,18 @@ export function CursorTrail({ count = 8, size = 8, color = "currentColor", class
     return () => window.removeEventListener("pointermove", move);
   }, [reduced, x, y]);
 
-  if (reduced) return null;
+  if (reduced || !mounted) return null;
 
-  return (
+  // Portaled to <body>: position: fixed is measured from the nearest
+  // transformed ancestor, not the viewport, so inside an animated section the
+  // trail landed far from the pointer.
+  return createPortal(
     <div className={className}>
       {Array.from({ length: count }, (_, i) => (
         <TrailDot key={i} x={x} y={y} size={size} color={color} index={i} total={count} />
       ))}
-    </div>
+    </div>,
+    document.body
   );
 }
 

@@ -13,7 +13,8 @@ import { spring } from "./motion";
 interface RippleButtonProps {
   children: ReactNode;
   className?: string;
-  /** Ripple color (CSS value) */
+  /** Ripple color (CSS value). Defaults to the button's text color, so it
+   *  contrasts with the background in both light and dark themes. */
   rippleColor?: string;
   /**
    * Background and text color classes. Replaces the default neutral colors
@@ -38,7 +39,7 @@ let rippleId = 0;
 export function RippleButton({
   children,
   className = "",
-  rippleColor = "rgba(255,255,255,0.35)",
+  rippleColor = "color-mix(in srgb, currentColor 35%, transparent)",
   colorClassName = "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200",
   onClick,
   disabled = false,
@@ -89,8 +90,10 @@ export function RippleButton({
             onAnimationComplete={() => setRipples((prev) => prev.filter((r) => r.id !== ripple.id))}
             exit={{ opacity: 0 }}
             transition={{
-              scale: spring.bouncy,
-              opacity: { duration: 0.5, ease: "easeOut" },
+              // gentle, not bouncy: a fast spring filled the button in a
+              // single frame, so the ripple read as a flash, not a spread.
+              scale: spring.gentle,
+              opacity: { duration: 0.7, ease: "easeOut" },
             }}
           />
         ))}
