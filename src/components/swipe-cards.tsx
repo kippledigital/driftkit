@@ -72,7 +72,7 @@ export function SwipeCards({ cards: initial, className = "", onSwipe, threshold 
           if (e.key === "ArrowLeft") decide("left");
           if (e.key === "ArrowRight") decide("right");
         }}
-        className="relative h-[300px] w-full max-w-sm rounded-[12px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-4"
+        className="relative mb-6 h-[300px] w-[22rem] max-w-full rounded-[12px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-4"
       >
         <AnimatePresence custom={exitDir}>
           {visible.map((card, i) => (
@@ -165,10 +165,10 @@ function SwipeCard({
         {card.content}
         {isTop && (
           <>
-            <motion.span style={{ opacity: rightLabel }} className="pointer-events-none absolute left-5 top-5 -rotate-12 rounded-[6px] border-2 border-green-500 px-2 py-0.5 text-sm font-bold uppercase tracking-wide text-green-600">
+            <motion.span style={{ opacity: rightLabel }} className="pointer-events-none absolute bottom-5 left-5 -rotate-12 rounded-[6px] border-2 border-green-500 px-2 py-0.5 text-sm font-bold uppercase tracking-wide text-green-600">
               {labels.right}
             </motion.span>
-            <motion.span style={{ opacity: leftLabel }} className="pointer-events-none absolute right-5 top-5 rotate-12 rounded-[6px] border-2 border-red-500 px-2 py-0.5 text-sm font-bold uppercase tracking-wide text-red-600">
+            <motion.span style={{ opacity: leftLabel }} className="pointer-events-none absolute bottom-5 right-5 rotate-12 rounded-[6px] border-2 border-red-500 px-2 py-0.5 text-sm font-bold uppercase tracking-wide text-red-600">
               {labels.left}
             </motion.span>
           </>

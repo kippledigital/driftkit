@@ -92,9 +92,7 @@ export function SwipeCardsDemo() {
   ];
   return (
     <div className="flex flex-col gap-4 items-center">
-      <div className="h-[280px] overflow-hidden">
-        <SwipeCards key={key} cards={cards} />
-      </div>
+      <SwipeCards key={key} cards={cards} />
       <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>Reset cards</Button>
     </div>
   );
