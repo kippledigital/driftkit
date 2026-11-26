@@ -259,7 +259,7 @@ const codeString = `// Floating label — spring-animated y + scale
 
 export default function FormMicroInteractionsRecipe() {
   return (
-    <div className="py-12 px-8 max-w-5xl">
+    <div className="py-8 sm:py-12 sm:px-8 max-w-5xl">
       <div className="mb-8 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-300">
         <Link href="/docs/recipes" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
           Recipes

@@ -67,7 +67,7 @@ export function GlowCard({
   const ringBg = useMotionTemplate`radial-gradient(${glowSize * 0.6}px circle at ${mouseX}px ${mouseY}px, ${ring}, transparent 100%)`;
 
   const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.PointerEvent) => {
       if (prefersReducedMotion || !ref.current) return;
       const rect = ref.current.getBoundingClientRect();
       mouseX.set(e.clientX - rect.left);
@@ -90,8 +90,12 @@ export function GlowCard({
       <div
         ref={ref}
         className={`group relative rounded-[8px] border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-950 ${className}`}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        onPointerMove={handleMouseMove}
+        onPointerDown={handleMouseMove}
+        onPointerLeave={handleMouseLeave}
+        // Touch: the effect follows the finger and releases on lift.
+        onPointerUp={(e) => e.pointerType !== "mouse" && handleMouseLeave()}
+        onPointerCancel={handleMouseLeave}
       >
         <motion.div
           aria-hidden
@@ -128,8 +132,12 @@ export function GlowCard({
     <motion.div
       ref={ref}
       className={`relative overflow-hidden rounded-[8px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-6 ${className}`}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onPointerMove={handleMouseMove}
+        onPointerDown={handleMouseMove}
+      onPointerLeave={handleMouseLeave}
+        // Touch: the effect follows the finger and releases on lift.
+        onPointerUp={(e) => e.pointerType !== "mouse" && handleMouseLeave()}
+        onPointerCancel={handleMouseLeave}
     >
       {/* Glow overlay — pointer-events-none so clicks pass through */}
       <motion.div

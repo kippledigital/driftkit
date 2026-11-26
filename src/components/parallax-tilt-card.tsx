@@ -52,7 +52,7 @@ export function ParallaxTiltCard({
   const glareX = useTransform(mouseX, [0, 1], [0, 100]);
   const glareY = useTransform(mouseY, [0, 1], [0, 100]);
 
-  const handleMove = (e: React.MouseEvent) => {
+  const handleMove = (e: React.PointerEvent) => {
     if (prefersReduced || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     mouseX.set((e.clientX - rect.left) / rect.width);
@@ -73,8 +73,12 @@ export function ParallaxTiltCard({
   return (
     <motion.div
       ref={ref}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
+      onPointerMove={handleMove}
+      onPointerDown={handleMove}
+      onPointerLeave={handleLeave}
+      // Touch: the effect follows the finger and releases on lift.
+      onPointerUp={(e) => e.pointerType !== "mouse" && handleLeave()}
+      onPointerCancel={handleLeave}
       style={{
         rotateX: prefersReduced ? 0 : rotateX,
         rotateY: prefersReduced ? 0 : rotateY,

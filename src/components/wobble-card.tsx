@@ -17,7 +17,7 @@ export function WobbleCard({ children, className = "" }: WobbleCardProps) {
   const springX = useSpring(rotateX, SPRING);
   const springY = useSpring(rotateY, SPRING);
 
-  const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouse = (e: React.PointerEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -34,8 +34,12 @@ export function WobbleCard({ children, className = "" }: WobbleCardProps) {
     <motion.div
       className={`rounded-[8px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden ${className}`}
       style={{ rotateX: springX, rotateY: springY, transformPerspective: 600 }}
-      onMouseMove={handleMouse}
-      onMouseLeave={handleLeave}
+      onPointerMove={handleMouse}
+      onPointerDown={handleMouse}
+      onPointerLeave={handleLeave}
+      // Touch: the effect follows the finger and releases on lift.
+      onPointerUp={(e) => e.pointerType !== "mouse" && handleLeave()}
+      onPointerCancel={handleLeave}
     >
       {children}
     </motion.div>

@@ -93,7 +93,7 @@ function NumberTickerDemo() {
   const [rate, setRate] = useState(87);
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <span className="text-3xl font-bold tabular-nums"><NumberTicker value={value} /></span>
         <div className="flex gap-2">
           <Button size="sm" variant="secondary" onClick={() => setValue((v) => v + 100)}>+100</Button>
@@ -101,14 +101,14 @@ function NumberTickerDemo() {
           <Button size="sm" variant="ghost" onClick={() => setValue(Math.floor(Math.random() * 99999))}>Random</Button>
         </div>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <span className="text-2xl font-semibold"><NumberTicker value={price} prefix="$" decimals={2} /></span>
         <div className="flex gap-2">
           <Button size="sm" variant="secondary" onClick={() => setPrice((p) => +(p + 10).toFixed(2))}>+$10</Button>
           <Button size="sm" variant="secondary" onClick={() => setPrice((p) => +(Math.max(0, p - 10)).toFixed(2))}>−$10</Button>
         </div>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <span className="text-xl tabular-nums"><NumberTicker value={rate} suffix="%" /></span>
         <span className="text-sm text-neutral-600 dark:text-neutral-400">Completion rate</span>
         <Button
@@ -188,7 +188,7 @@ function StaggeredListDemo() {
   ];
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2 [&_button]:whitespace-nowrap">
         {(["slide-up", "fade-blur", "slide-left"] as const).map((v) => (
           <Button key={v} size="sm" variant={variant === v ? "default" : "secondary"} onClick={() => { setVariant(v); setKey((k) => k + 1); }}>{v}</Button>
         ))}

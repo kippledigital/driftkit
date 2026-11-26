@@ -223,7 +223,7 @@ function PresetExamples() {
 
 export default function SpringPhysicsPage() {
   return (
-    <div className="py-12 px-8 max-w-3xl">
+    <div className="py-8 sm:py-12 sm:px-8 max-w-3xl">
       <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white mb-4">
         Spring Physics 101
       </h1>

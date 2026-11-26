@@ -67,7 +67,7 @@ export function MagneticButton({
   const springY = useSpring(y, SPRING_CONFIG);
 
   const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.PointerEvent) => {
       if (disabled || prefersReducedMotion || !ref.current) return;
 
       const rect = ref.current.getBoundingClientRect();
@@ -109,8 +109,12 @@ export function MagneticButton({
       ref={ref}
       className={`inline-block ${className}`}
       style={{ x: springX, y: springY }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onPointerMove={handleMouseMove}
+      onPointerDown={handleMouseMove}
+      onPointerLeave={handleMouseLeave}
+      // Touch: the effect follows the finger and releases on lift.
+      onPointerUp={(e) => e.pointerType !== "mouse" && handleMouseLeave()}
+      onPointerCancel={handleMouseLeave}
       {...props}
     >
       {children}

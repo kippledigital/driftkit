@@ -91,7 +91,7 @@ export function SwipeCardsDemo() {
     { id: "4", content: <div><h3 className="text-lg font-bold mb-1">Card Four</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Last one!</p></div> },
   ];
   return (
-    <div className="flex flex-col gap-4 items-center">
+    <div className="flex w-full flex-col items-center gap-4">
       <SwipeCards key={key} cards={cards} />
       <ReplayButton onReplay={() => setKey((k) => k + 1)}>Reset cards</ReplayButton>
     </div>
@@ -410,7 +410,7 @@ const user: User = {
 
 export function CodeDisplayDemo() {
   return (
-    <div className="space-y-4">
+    <div className="w-full min-w-0 space-y-4">
       <CodeDisplay
         title="Button Component"
         language="tsx"
@@ -773,7 +773,7 @@ export function MultiSelectDemo() {
   const suggestions = ["React", "Vue", "Angular", "Svelte", "Solid", "Next.js", "Nuxt", "Astro"];
   
   return (
-    <div className="max-w-sm">
+    <div className="w-full max-w-sm">
       <MultiSelect
         value={selected}
         onChange={setSelected}
@@ -884,7 +884,7 @@ export function RippleButtonDemo() {
 
 export function SchedulePickerDemo() {
   return (
-    <div className="max-w-lg">
+    <div className="w-full max-w-lg">
       <SchedulePicker />
     </div>
   );
@@ -974,7 +974,7 @@ export function SpringCarouselDemo() {
     <div key="4" className="w-full h-40 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-white font-bold">Slide 4</div>,
   ];
   return (
-    <div className="max-w-lg">
+    <div className="w-full max-w-lg">
       <SpringCarousel items={items} />
     </div>
   );
@@ -1004,7 +1004,7 @@ export function StepperDemo() {
     { id: "review", label: "Review", content: <p className="text-sm text-neutral-600 dark:text-neutral-400">Confirm your choices</p> },
   ];
   return (
-    <div className="max-w-lg">
+    <div className="w-full max-w-lg">
       <Stepper steps={steps} activeStep={step} onChange={setStep} showControls />
     </div>
   );

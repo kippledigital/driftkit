@@ -27,7 +27,7 @@ function CodeBlock({ code }: { code: string; language?: string }) {
 
 export default function InstallationPage() {
   return (
-    <div className="py-12 px-8 max-w-3xl">
+    <div className="py-8 sm:py-12 sm:px-8 max-w-3xl">
       <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white mb-4">
         Installation
       </h1>

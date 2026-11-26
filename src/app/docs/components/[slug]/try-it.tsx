@@ -167,7 +167,7 @@ function TabsDemo({ isPlaying, playCount, springTransition }: DemoProps) {
   const tabs = ["Overview", "Details", "Settings"];
   
   return (
-    <div className="flex flex-col justify-center h-full px-6">
+    <div className="flex flex-col justify-center h-full px-3 sm:px-6">
       <div className="w-full">
         <div className="flex border-b border-neutral-200 dark:border-neutral-700 relative">
           {tabs.map((tab, i) => (

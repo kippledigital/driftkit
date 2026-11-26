@@ -24,7 +24,7 @@ export function ComponentSwitcher({ currentComponent }: ComponentSwitcherProps) 
   return (
     <div className="border-b border-neutral-800 bg-neutral-900">
       <div className="flex items-center px-4 py-2">
-        <span className="mr-4 shrink-0 text-sm font-mono text-neutral-400">Components:</span>
+        <span className="mr-4 hidden shrink-0 text-sm font-mono text-neutral-400 sm:inline">Components:</span>
         
         <div className="flex min-w-0 flex-1 items-center space-x-1 overflow-x-auto">
           {components.map((component) => {

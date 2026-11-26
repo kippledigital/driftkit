@@ -15,7 +15,7 @@
  * =============================================================================
  */
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform, type MotionValue } from "framer-motion";
 import { springValue, useMotionPrefs } from "./motion";
 
@@ -98,20 +98,54 @@ function DockIcon({
 export function MagneticDock({ items, maxScale = 1.6, magneticRange = 110, size = 44, className = "" }: MagneticDockProps) {
   const m = useMotionPrefs();
   const pointerX = useMotionValue(Number.POSITIVE_INFINITY);
-  const max = size * maxScale;
+  const wrapRef = useRef<HTMLDivElement>(null);
+  // Shrink the icons when the dock's container is narrower than the dock,
+  // so it fits a phone screen instead of running off both edges.
+  const [fitSize, setFitSize] = useState(size);
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const GAP = 8, PAD = 20, BORDER = 2;
+    // Containers that shrink-wrap the dock report the dock's own width, so the
+    // real room is the narrowest content box anywhere above it.
+    const available = () => {
+      let room = Infinity;
+      for (let el: HTMLElement | null = wrap; el && el !== document.body; el = el.parentElement) {
+        const cs = getComputedStyle(el);
+        room = Math.min(room, el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
+      }
+      return Math.min(room, document.documentElement.clientWidth);
+    };
+    const fit = () => {
+      const room = available() - PAD - BORDER - GAP * (items.length - 1);
+      setFitSize(Math.max(24, Math.min(size, Math.floor(room / items.length))));
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, [items.length, size]);
+  const base = fitSize;
+  const max = base * maxScale;
 
   return (
-    <nav
-      aria-label="Dock"
-      onPointerMove={(e) => e.pointerType === "mouse" && pointerX.set(e.clientX)}
-      onPointerLeave={() => pointerX.set(Number.POSITIVE_INFINITY)}
-      className={`inline-flex items-end gap-2 rounded-[18px] border border-neutral-200 bg-white/80 px-2.5 pb-2.5 pt-2.5 shadow-lg backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-900/80 ${className}`}
-      style={{ height: max + 20 }}
-    >
-      {items.map((item) => (
-        <DockIcon key={item.id} item={item} pointerX={pointerX} base={size} max={max} range={magneticRange} reduced={m.reduced} />
-      ))}
-    </nav>
+    <div ref={wrapRef} className="flex w-full min-w-0 justify-center">
+      <nav
+        aria-label="Dock"
+        onPointerMove={(e) => pointerX.set(e.clientX)}
+        onPointerDown={(e) => pointerX.set(e.clientX)}
+        onPointerLeave={() => pointerX.set(Number.POSITIVE_INFINITY)}
+        // Touch: magnify under the finger, settle back on lift.
+        onPointerUp={(e) => e.pointerType !== "mouse" && pointerX.set(Number.POSITIVE_INFINITY)}
+        onPointerCancel={() => pointerX.set(Number.POSITIVE_INFINITY)}
+        className={`inline-flex items-end gap-2 rounded-[18px] border border-neutral-200 bg-white/80 px-2.5 pb-2.5 pt-2.5 shadow-lg backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-900/80 ${className}`}
+        style={{ height: max + 20 }}
+      >
+        {items.map((item) => (
+          <DockIcon key={item.id} item={item} pointerX={pointerX} base={base} max={max} range={magneticRange} reduced={m.reduced} />
+        ))}
+      </nav>
+    </div>
   );
 }
 

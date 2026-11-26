@@ -106,9 +106,12 @@ export function LiquidButton({ children, className = "", onClick, color = "#6366
       ref={ref}
       type="button"
       onClick={onClick}
-      onPointerEnter={(e) => e.pointerType === "mouse" && !reduced && onEnter(e)}
-      onPointerMove={(e) => e.pointerType === "mouse" && !reduced && onMove(e)}
+      onPointerEnter={(e) => !reduced && onEnter(e)}
+      onPointerMove={(e) => !reduced && onMove(e)}
       onPointerLeave={onLeave}
+      // Touch: the droplet follows the finger and drains back on lift.
+      onPointerUp={(e) => e.pointerType !== "mouse" && onLeave()}
+      onPointerCancel={onLeave}
       className={`relative inline-flex cursor-pointer items-center justify-center rounded-[10px] px-6 py-3 text-sm font-medium text-white outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-900 dark:focus-visible:ring-white dark:focus-visible:ring-offset-neutral-950 ${className}`}
     >
       {w > 0 && (

@@ -54,7 +54,7 @@ export default async function ComponentPage({ params }: PageProps) {
   }
 
   return (
-    <div className="py-12 px-8">
+    <div className="py-8 sm:py-12 sm:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-300 mb-4">

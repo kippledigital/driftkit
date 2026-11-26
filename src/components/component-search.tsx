@@ -280,13 +280,15 @@ export function ComponentSearch() {
       {/* Floating trigger button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-8 right-8 z-40 flex items-center gap-2 px-4 py-2.5 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 shadow-lg shadow-neutral-900/25 dark:shadow-white/10 hover:shadow-xl hover:scale-105 transition-all cursor-pointer"
+        aria-label="Search components"
+        // Icon-only on phones, where the labelled pill sat on top of demos.
+        className="fixed bottom-5 right-5 sm:bottom-8 sm:right-8 z-40 flex items-center gap-2 p-3 sm:px-4 sm:py-2.5 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 shadow-lg shadow-neutral-900/25 dark:shadow-white/10 hover:shadow-xl hover:scale-105 transition-all cursor-pointer"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
-        <span className="text-sm font-medium">Search</span>
+        <span className="hidden text-sm font-medium sm:inline">Search</span>
         <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono rounded bg-white/20 dark:bg-black/20">
           ⌘K
         </kbd>

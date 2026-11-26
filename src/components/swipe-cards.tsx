@@ -62,7 +62,7 @@ export function SwipeCards({ cards: initial, className = "", onSwipe, threshold 
   const visible = cards.slice(0, 3);
 
   return (
-    <div className={`flex flex-col items-center gap-5 ${className}`}>
+    <div className={`flex w-full max-w-[22rem] flex-col items-center gap-5 ${className}`}>
       <div
         role="group"
         aria-roledescription="card stack"
@@ -72,7 +72,7 @@ export function SwipeCards({ cards: initial, className = "", onSwipe, threshold 
           if (e.key === "ArrowLeft") decide("left");
           if (e.key === "ArrowRight") decide("right");
         }}
-        className="relative mb-6 h-[300px] w-[22rem] max-w-full rounded-[12px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-4"
+        className="relative mb-6 h-[300px] w-full rounded-[12px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-4"
       >
         <AnimatePresence custom={exitDir}>
           {visible.map((card, i) => (
