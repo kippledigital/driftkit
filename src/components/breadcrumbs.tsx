@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
+import { spring } from "./motion";
 
 export interface BreadcrumbItem {
   /** Unique identifier */
@@ -37,11 +38,7 @@ const itemVariants = {
   exit: { opacity: 0, x: -10 },
 };
 
-const springConfig = {
-  type: "spring" as const,
-  stiffness: 300,
-  damping: 30,
-};
+const springConfig = spring.smooth;
 
 const defaultSeparator = (
   <svg
@@ -79,10 +76,8 @@ export function Breadcrumbs({
 
   // Handle collapsing when there are too many items
   let displayItems = items;
-  let hasCollapsed = false;
 
   if (maxItems && items.length > maxItems) {
-    hasCollapsed = true;
     // Show first item, ellipsis, and last few items
     const keepFromEnd = maxItems - 2; // Reserve space for first item and ellipsis
     displayItems = [

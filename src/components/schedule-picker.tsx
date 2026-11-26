@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useState, useCallback, useId, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 import { Toggle } from "@/components/toggle";
 
 // =============================================================================
 // SPRING PHYSICS
 // =============================================================================
 const springs = {
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-  quick: { type: "spring" as const, stiffness: 500, damping: 40, mass: 0.3 },
+  snappy: spring.snappy,
+  smooth: spring.smooth,
+  quick: spring.snappy,
 };
 
 // =============================================================================
@@ -81,7 +82,7 @@ function TimeInput({
 }) {
   return (
     <motion.label
-      className="flex flex-col gap-1"
+      className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-none"
       initial={reduced ? false : { opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={springs.quick}
@@ -93,8 +94,7 @@ function TimeInput({
         type="time"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="px-2.5 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:ring-2 focus:ring-blue-500/40 transition-shadow w-[110px] tabular-nums [&::-webkit-calendar-picker-indicator]:opacity-70 [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:hover:opacity-100"
-        style={{ fontFamily: "Satoshi, sans-serif" }}
+        className="px-2.5 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:ring-2 focus:ring-blue-500/40 transition-shadow w-full sm:w-[8.75rem] tabular-nums max-sm:px-2 max-sm:[&::-webkit-calendar-picker-indicator]:hidden dark:[color-scheme:dark] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-70 hover:[&::-webkit-calendar-picker-indicator]:opacity-100"
       />
     </motion.label>
   );
@@ -134,7 +134,7 @@ function SlotRow({
         // Stagger entrance based on index
         delay: index * 0.05,
       }}
-      className="flex items-end gap-3"
+      className="flex items-end gap-2 sm:gap-3"
     >
       <TimeInput
         label="From"
@@ -142,7 +142,7 @@ function SlotRow({
         onChange={(from) => onUpdate(index, { ...slot, from })}
         reduced={reduced}
       />
-      <span className="text-neutral-400 dark:text-neutral-500 pb-2 text-sm">→</span>
+      <span className="shrink-0 text-neutral-400 dark:text-neutral-500 pb-2 text-sm">→</span>
       <TimeInput
         label="To"
         value={slot.to}
@@ -338,7 +338,6 @@ export function SchedulePicker({
   return (
     <motion.div
       className={`flex flex-col gap-2 ${className}`}
-      style={{ fontFamily: "Satoshi, sans-serif" }}
       initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={springs.smooth}

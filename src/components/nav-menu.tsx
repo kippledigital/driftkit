@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // NAVIGATION MENU
@@ -16,8 +17,8 @@ import { motion, useReducedMotion } from "framer-motion";
 // =============================================================================
 
 const springs = {
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
+  snappy: spring.snappy,
+  smooth: spring.smooth,
 };
 
 export interface NavItem {
@@ -45,7 +46,7 @@ export function NavMenu({
 
   return (
     <nav
-      className={`flex items-center gap-1 p-1 rounded-[8px] bg-neutral-100 dark:bg-neutral-900 ${className}`}
+      className={`flex max-w-full items-center gap-1 overflow-x-auto rounded-[8px] bg-neutral-100 p-1 [scrollbar-width:none] dark:bg-neutral-900 ${className}`}
       onMouseLeave={() => setHoveredId(null)}
     >
       {items.map((item) => {
@@ -56,7 +57,7 @@ export function NavMenu({
           <button
             key={item.id}
             className={`
-              relative px-4 py-2 text-sm font-medium rounded-[6px]
+              relative shrink-0 whitespace-nowrap px-3 sm:px-4 py-2 text-sm font-medium rounded-[6px]
               transition-none outline-none
               ${
                 isActive

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useCallback, useRef, useId, useSyncExternalStore } from "react";
 import {
   motion,
   useReducedMotion,
 } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // MODE SWITCHER
@@ -25,8 +26,8 @@ import {
 // =============================================================================
 
 // Smooth spring — the morph should feel natural, not snappy
-const MORPH_SPRING = { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 };
-const RAY_SPRING = { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 };
+const MORPH_SPRING = spring.smooth;
+const RAY_SPRING = spring.snappy;
 
 export interface ModeSwitcherProps {
   /** Controlled mode. If not provided, manages its own state. */
@@ -40,6 +41,16 @@ export interface ModeSwitcherProps {
   className?: string;
 }
 
+function readTheme(): "light" | "dark" {
+  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+}
+
+function subscribeToTheme(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  return () => observer.disconnect();
+}
+
 export function ModeSwitcher({
   mode: controlledMode,
   onChange,
@@ -50,16 +61,9 @@ export function ModeSwitcher({
   const prefersReducedMotion = useReducedMotion();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Internal state — used when uncontrolled
-  const [internalMode, setInternalMode] = useState<"light" | "dark">("light");
-
-  // Initialize from document class on mount
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      const isDark = document.documentElement.classList.contains("dark");
-      setInternalMode(isDark ? "dark" : "light");
-    }
-  }, []);
+  // Uncontrolled mode reads the live `dark` class on <html>, so every switcher
+  // on the page (header, demos) stays in sync with whichever one was pressed.
+  const internalMode = useSyncExternalStore(subscribeToTheme, readTheme, () => "light" as const);
 
   const currentMode = controlledMode ?? internalMode;
   const isDark = currentMode === "dark";
@@ -112,7 +116,6 @@ export function ModeSwitcher({
     }
 
     localStorage.setItem("theme", next);
-    setInternalMode(next);
     onChange?.(next);
   }, [isDark, irisWipe, prefersReducedMotion, onChange]);
 
@@ -120,9 +123,13 @@ export function ModeSwitcher({
   const center = 12;
   const sunRadius = isDark ? 5 : 4; // Moon is slightly larger
   // Moon "bite" — a circle that overlaps to create the crescent
-  const maskCx = isDark ? 15 : 12; // Moves in to create bite, or stays centered (hidden)
-  const maskCy = isDark ? 7 : 12;
-  const maskRadius = isDark ? 4.5 : 0; // 0 = no bite = full circle = sun
+  // The bite keeps its size and slides off the sun's edge in light mode.
+  // Shrinking it to r=0 let the spring overshoot into negative radii.
+  const maskCx = isDark ? 15 : 22;
+  const maskCy = isDark ? 7 : 2;
+  const maskRadius = 4.5;
+  // Unique per instance: the header and the docs demo render this together.
+  const maskId = `moon-mask-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
 
   // Sun rays — 8 lines radiating from center
   const rays = Array.from({ length: 8 }, (_, i) => {
@@ -164,10 +171,14 @@ export function ModeSwitcher({
       >
         <defs>
           {/* Mask to create the crescent "bite" in the moon */}
-          <mask id="moon-mask">
+          <mask id={maskId}>
             <rect x="0" y="0" width="24" height="24" fill="white" />
             <motion.circle
-              animate={{ cx: maskCx, cy: maskCy, r: maskRadius }}
+              initial={false}
+              cx={maskCx}
+              cy={maskCy}
+              r={maskRadius}
+              animate={{ cx: maskCx, cy: maskCy }}
               transition={MORPH_SPRING}
               fill="black"
             />
@@ -179,7 +190,9 @@ export function ModeSwitcher({
           cx={center}
           cy={center}
           fill="currentColor"
-          mask="url(#moon-mask)"
+          mask={`url(#${maskId})`}
+          r={sunRadius}
+          initial={false}
           animate={{ r: sunRadius }}
           transition={MORPH_SPRING}
           className="text-neutral-800 dark:text-neutral-100"
@@ -190,10 +203,11 @@ export function ModeSwitcher({
           {rays.map((ray, i) => (
             <motion.line
               key={i}
-              x1={ray.x1}
-              y1={ray.y1}
-              x2={ray.x2}
-              y2={ray.y2}
+              initial={false}
+              x1={isDark ? center : ray.x1}
+              y1={isDark ? center : ray.y1}
+              x2={isDark ? center : ray.x2}
+              y2={isDark ? center : ray.y2}
               stroke="currentColor"
               strokeWidth={1.5}
               strokeLinecap="round"

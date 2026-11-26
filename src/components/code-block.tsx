@@ -1,23 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { spring } from "./motion";
 
 interface CodeBlockProps {
   code: string;
   label?: string;
 }
 
-const SPRING = { type: "spring" as const, stiffness: 400, damping: 30 };
+const SPRING = spring.smooth;
 
 export function CodeBlock({ code, label = "Code" }: CodeBlockProps) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 1500);
+    return () => clearTimeout(t);
+  }, [copied]);
 
   const copy = async () => {
     await navigator.clipboard.writeText(code);
     setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
   };
 
   return (

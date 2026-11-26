@@ -1,4 +1,6 @@
 import React from "react";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getComponentInfo, getAllComponentNames } from "../../data/components";
@@ -42,8 +44,17 @@ export default async function ComponentPage({ params }: PageProps) {
   
   const info = componentInfo || fallbackComponent;
 
+  // Shared files this component imports, so copy-paste users grab them too.
+  let shared: string[] = [];
+  try {
+    const source = readFileSync(join(process.cwd(), "src/components", `${slug}.tsx`), "utf8");
+    shared = ["motion", "overlay"].filter((f) => source.includes(`from "./${f}"`));
+  } catch {
+    shared = [];
+  }
+
   return (
-    <div className="py-12 px-8">
+    <div className="py-8 sm:py-12 sm:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-300 mb-4">
@@ -83,6 +94,27 @@ export default async function ComponentPage({ params }: PageProps) {
               </p>
               <CodeBlock code={info.importPath} language="typescript" />
             </div>
+            {shared.length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold text-neutral-900 dark:text-white mb-2">Shared files</h3>
+                <p className="text-neutral-600 dark:text-neutral-400">
+                  This component uses{" "}
+                  {shared.map((f, i) => (
+                    <React.Fragment key={f}>
+                      {i > 0 && " and "}
+                      <a
+                        className="underline underline-offset-2 hover:text-neutral-900 dark:hover:text-white"
+                        href={`https://github.com/kippledigital/driftkit/blob/main/src/components/${f}.ts`}
+                      >
+                        <code>{f}.ts</code>
+                      </a>
+                    </React.Fragment>
+                  ))}
+                  . Copy {shared.length > 1 ? "them" : "it"} into the same folder.{" "}
+                  {shared.includes("motion") && "It holds the shared springs, so every component moves like the same family."}
+                </p>
+              </div>
+            )}
           </div>
         </section>
 

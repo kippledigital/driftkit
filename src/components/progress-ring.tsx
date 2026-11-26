@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useSpring, useTransform } from "framer-motion";
+import { springValue } from "./motion";
 import { useEffect } from "react";
 
 type ProgressRingSize = "sm" | "md" | "lg" | "xl";
@@ -41,7 +42,7 @@ export function ProgressRing({
   const radius = (actualSize - actualStrokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
-  const spring = useSpring(0, { stiffness: 60, damping: 15 });
+  const spring = useSpring(0, springValue.gentle);
   const strokeDashoffset = useTransform(
     spring,
     (v: number) => circumference - (v / 100) * circumference

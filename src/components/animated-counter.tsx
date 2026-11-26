@@ -1,7 +1,9 @@
 "use client";
 
+import { ReplayButton } from "./replay-button";
 import { useEffect, useRef, useState } from "react";
-import { motion, useSpring, useTransform, useInView } from "framer-motion";
+import { motion, animate, useInView, useMotionValue, useTransform, type AnimationPlaybackControls } from "framer-motion";
+import { spring, useMotionPrefs } from "./motion";
 
 interface AnimatedCounterProps {
   target: number;
@@ -24,59 +26,53 @@ export function AnimatedCounter({
 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: !showReplayButton, margin: "-50px" });
-  const [hasTriggered, setHasTriggered] = useState(false);
+  const m = useMotionPrefs();
+  const value = useMotionValue(0);
+  const controls = useRef<AnimationPlaybackControls | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [runs, setRuns] = useState(0);
+  const lastRun = useRef(-1);
 
-  const spring = useSpring(0, {
-    stiffness: 50,
-    damping: 20,
-    duration: duration,
-  });
+  const display = useTransform(
+    value,
+    (v: number) =>
+      `${prefix}${v.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}${suffix}`
+  );
 
-  const display = useTransform(spring, (v: number) => {
-    return `${prefix}${v.toFixed(decimals)}${suffix}`;
-  });
-
-  const startAnimation = () => {
-    setIsAnimating(true);
-    setHasTriggered(true);
-    spring.set(target);
-    // Reset animation state after duration
-    setTimeout(() => {
-      setIsAnimating(false);
-    }, duration * 1000);
-  };
-
-  const replay = () => {
-    spring.set(0);
-    setTimeout(() => startAnimation(), 100); // Small delay for visual effect
-  };
-
+  // A spring with a fixed duration and no bounce: counts fast, then eases into
+  // the final number without overshooting it (a counter that passes its target
+  // and comes back reads as a glitch).
   useEffect(() => {
-    if (isInView && !hasTriggered) {
-      startAnimation();
+    if (!isInView) return;
+    controls.current?.stop();
+    if (m.reduced) {
+      value.set(target);
+      return;
     }
-  }, [isInView, hasTriggered, spring, target]);
+    // Count up from zero the first time it's seen and on replay; when only the
+    // target changes, roll from the current number to the new one.
+    if (lastRun.current !== runs) {
+      value.set(0);
+      lastRun.current = runs;
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reflects a running animation
+    setIsAnimating(true);
+    controls.current = animate(value, target, {
+      type: "spring",
+      duration,
+      bounce: 0,
+      onComplete: () => setIsAnimating(false),
+    });
+    return () => controls.current?.stop();
+  }, [isInView, target, duration, m.reduced, value, runs]);
 
   return (
     <div className="inline-flex items-center gap-3">
-      <motion.span 
-        ref={ref} 
-        className={className}
-        style={{ fontVariantNumeric: "tabular-nums", minWidth: "max-content" }}
-      >
+      <motion.span ref={ref} className={className} style={{ fontVariantNumeric: "tabular-nums", minWidth: "max-content" }}>
         {display}
       </motion.span>
       {showReplayButton && (
-        <motion.button
-          onClick={replay}
-          disabled={isAnimating}
-          className="px-3 py-1.5 text-xs font-medium rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          {isAnimating ? "Animating..." : "↻ Replay"}
-        </motion.button>
+        <ReplayButton onReplay={() => setRuns((n) => n + 1)} disabled={isAnimating} />
       )}
     </div>
   );
@@ -109,7 +105,7 @@ export function StatCard({
       ref={ref}
       initial={{ opacity: 0, y: 20 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ type: "spring", stiffness: 100, damping: 15 }}
+      transition={spring.gentle}
       className="p-5 rounded-[8px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900"
     >
       {icon && <span className="text-2xl mb-2 block">{icon}</span>}

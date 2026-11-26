@@ -2,9 +2,7 @@
 
 import React, { useState, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/button";
 import { ControlPanel } from "@/components/control-panel";
-import { CodeDisplay } from "@/components/code-display";
 import { ComponentSwitcher } from "@/components/component-switcher";
 
 export interface PhysicsConfig {
@@ -323,7 +321,7 @@ export default function ButtonPlayground() {
                 onClick={async () => {
                   try {
                     await navigator.clipboard.writeText(generateCode);
-                  } catch (err) {
+                  } catch {
                     // Fallback for older browsers
                     const textArea = document.createElement("textarea");
                     textArea.value = generateCode;

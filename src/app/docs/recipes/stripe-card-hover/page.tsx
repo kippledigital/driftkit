@@ -176,7 +176,7 @@ export default function StripeCardHoverRecipe() {
   }
 
   return (
-    <div className="py-12 px-8 max-w-5xl">
+    <div className="py-8 sm:py-12 sm:px-8 max-w-5xl">
       {/* Breadcrumb */}
       <div className="mb-8 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-300">
         <Link href="/docs/recipes" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
@@ -193,7 +193,7 @@ export default function StripeCardHoverRecipe() {
         The signature Stripe pricing card hover — lift, 3D tilt, and cursor glow that makes flat cards feel physical.
       </p>
       <div className="flex gap-2 mb-10">
-        <span className="text-xs px-2 py-0.5 rounded-full border text-green-500 bg-green-500/10 border-green-500/20">
+        <span className="text-xs px-2 py-0.5 rounded-full border text-green-700 dark:text-green-400 bg-green-500/10 border-green-500/20">
           Beginner
         </span>
         <span className="text-xs px-2 py-0.5 rounded-md bg-neutral-200/60 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-400">
@@ -251,7 +251,7 @@ export default function StripeCardHoverRecipe() {
           </div>
           <div className="flex gap-3">
             <span className="text-neutral-400 font-mono">4.</span>
-            <p><strong className="text-neutral-900 dark:text-white">Lift on hover</strong> — whileHover with spring transition creates the satisfying "pick up" feel</p>
+            <p><strong className="text-neutral-900 dark:text-white">Lift on hover</strong> — whileHover with spring transition creates the satisfying “pick up” feel</p>
           </div>
         </div>
       </section>

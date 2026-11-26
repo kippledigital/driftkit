@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
-function CodeBlock({ code, language = "bash" }: { code: string; language?: string }) {
+function CodeBlock({ code }: { code: string; language?: string }) {
   const [copied, setCopied] = useState(false);
   
   return (
@@ -27,7 +27,7 @@ function CodeBlock({ code, language = "bash" }: { code: string; language?: strin
 
 export default function InstallationPage() {
   return (
-    <div className="py-12 px-8 max-w-3xl">
+    <div className="py-8 sm:py-12 sm:px-8 max-w-3xl">
       <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white mb-4">
         Installation
       </h1>

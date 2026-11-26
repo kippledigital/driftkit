@@ -2,14 +2,15 @@
 
 import React, { forwardRef, useState, useId } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // SPRING PHYSICS — matching button.tsx system
 // =============================================================================
 const springs = {
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-  quick: { type: "spring" as const, stiffness: 500, damping: 40, mass: 0.3 },
+  snappy: spring.snappy,
+  smooth: spring.smooth,
+  quick: spring.snappy,
 };
 
 // Error shake — spring-based oscillation feels more natural than CSS keyframes.
@@ -81,7 +82,8 @@ export const Input = forwardRef<HTMLInputElement, DriftInputProps>(
     const id = useId();
     const inputId = props.id || id;
 
-    const isFloated = isFocused || hasValue;
+    // A placeholder occupies the resting spot, so the label stays floated.
+    const isFloated = isFocused || hasValue || !!props.placeholder;
 
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
       setIsFocused(true);
@@ -129,17 +131,20 @@ export const Input = forwardRef<HTMLInputElement, DriftInputProps>(
           {label && (
             <motion.label
               htmlFor={inputId}
-              className={`absolute ${sizeClasses[size].label} pointer-events-none text-neutral-500 dark:text-neutral-400 origin-left`}
+              // z-10: the input is rendered after the label and has its own
+              // background, so without this the label is painted underneath it.
+              className={`absolute top-0 z-10 ${sizeClasses[size].label} pointer-events-none origin-left transition-colors duration-150 ${
+                isFocused
+                  ? state === "error"
+                    ? "text-red-500"
+                    : state === "success"
+                    ? "text-emerald-500"
+                    : "text-blue-500"
+                  : "text-neutral-500 dark:text-neutral-400"
+              }`}
               animate={{
                 y: isFloated ? 4 : size === "lg" ? 14 : size === "md" ? 10 : 6,
                 scale: isFloated ? 0.75 : 1,
-                color: isFocused
-                  ? state === "error"
-                    ? "rgb(239 68 68)"
-                    : state === "success"
-                    ? "rgb(16 185 129)"
-                    : "rgb(59 130 246)"
-                  : "",
               }}
               transition={prefersReducedMotion ? { duration: 0 } : springs.smooth}
             >

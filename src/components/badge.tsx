@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
+import { spring } from "./motion";
 
 export type BadgeVariant = 
   | "default" 
@@ -57,11 +58,7 @@ const iconSizes = {
   lg: "w-4 h-4",
 };
 
-const springConfig = {
-  type: "spring" as const,
-  stiffness: 300,
-  damping: 30,
-};
+const springConfig = spring.smooth;
 
 export function Badge({
   children,

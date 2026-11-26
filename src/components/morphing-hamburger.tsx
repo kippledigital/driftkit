@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // MORPHING HAMBURGER
@@ -18,7 +19,7 @@ import { motion, useReducedMotion } from "framer-motion";
 // a subtle rotation too, adding organic feel.
 // =============================================================================
 
-const LINE_SPRING = { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.8 };
+const LINE_SPRING = spring.snappy;
 
 export interface MorphingHamburgerProps {
   /** Controlled open state */

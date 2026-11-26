@@ -90,7 +90,7 @@ function FloatingInput({
       <AnimatePresence>
         {error && (
           <motion.p
-            className="text-red-500 text-xs mt-1 ml-1"
+            className="text-red-700 dark:text-red-400 text-xs mt-1 ml-1"
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
@@ -259,7 +259,7 @@ const codeString = `// Floating label — spring-animated y + scale
 
 export default function FormMicroInteractionsRecipe() {
   return (
-    <div className="py-12 px-8 max-w-5xl">
+    <div className="py-8 sm:py-12 sm:px-8 max-w-5xl">
       <div className="mb-8 flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-300">
         <Link href="/docs/recipes" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
           Recipes
@@ -275,7 +275,7 @@ export default function FormMicroInteractionsRecipe() {
         Complete form flow: floating labels, error shake, success checkmark, and button state transitions — all spring-powered.
       </p>
       <div className="flex gap-2 mb-10">
-        <span className="text-xs px-2 py-0.5 rounded-full border text-green-500 bg-green-500/10 border-green-500/20">
+        <span className="text-xs px-2 py-0.5 rounded-full border text-green-700 dark:text-green-400 bg-green-500/10 border-green-500/20">
           Beginner
         </span>
         <span className="text-xs px-2 py-0.5 rounded-md bg-neutral-200/60 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-400">
@@ -326,7 +326,7 @@ export default function FormMicroInteractionsRecipe() {
             <span className="text-lg">✓</span>
             <div>
               <strong className="text-neutral-900 dark:text-white">Success checkmark</strong>
-              <p>Scale from 0 + rotate from -90° with spring. The overshoot from the spring makes it feel like it "pops" into place.</p>
+              <p>Scale from 0 + rotate from -90° with spring. The overshoot from the spring makes it feel like it “pops” into place.</p>
             </div>
           </div>
           <div className="flex gap-3">

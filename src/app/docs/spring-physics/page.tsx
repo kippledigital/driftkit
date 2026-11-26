@@ -1,8 +1,10 @@
 "use client";
 
+import { ReplayButton } from "@/components/replay-button";
+
 import React, { useState } from "react";
 import Link from "next/link";
-import { motion, useSpring, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 
 // Interactive spring demo
 function SpringDemo() {
@@ -15,12 +17,7 @@ function SpringDemo() {
         <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">
           Interactive Spring
         </h3>
-        <button
-          onClick={() => setKey(k => k + 1)}
-          className="text-xs px-3 py-1.5 rounded-md bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors"
-        >
-          Replay
-        </button>
+        <ReplayButton onReplay={() => setKey(k => k + 1)} />
       </div>
 
       {/* Animation preview */}
@@ -130,12 +127,7 @@ function ComparisonDemo() {
         <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">
           Spring vs Bezier Curve
         </h3>
-        <button
-          onClick={() => setKey(k => k + 1)}
-          className="text-xs px-3 py-1.5 rounded-md bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 transition-colors"
-        >
-          Replay
-        </button>
+        <ReplayButton onReplay={() => setKey(k => k + 1)} />
       </div>
 
       <div className="space-y-4">
@@ -198,12 +190,7 @@ function PresetExamples() {
         <h3 className="text-sm font-semibold text-neutral-900 dark:text-white">
           Preset Library
         </h3>
-        <button
-          onClick={() => setKey(k => k + 1)}
-          className="text-xs px-3 py-1.5 rounded-md bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors"
-        >
-          Replay All
-        </button>
+        <ReplayButton onReplay={() => setKey(k => k + 1)}>Replay all</ReplayButton>
       </div>
       {presets.map((preset) => (
         <div
@@ -236,7 +223,7 @@ function PresetExamples() {
 
 export default function SpringPhysicsPage() {
   return (
-    <div className="py-12 px-8 max-w-3xl">
+    <div className="py-8 sm:py-12 sm:px-8 max-w-3xl">
       <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white mb-4">
         Spring Physics 101
       </h1>

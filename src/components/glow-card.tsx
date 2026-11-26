@@ -34,7 +34,7 @@ export interface GlowCardProps {
   glowColor?: string;
   /** Glow radius in px. Default 200 */
   glowSize?: number;
-  /** Glow opacity 0-1. Default 0.15 */
+  /** Surface glow opacity 0-1. Default 0.15. The border variant lights only the edge and ignores this. */
   glowOpacity?: number;
 }
 
@@ -44,7 +44,7 @@ export function GlowCard({
   borderGlow = false,
   glowColor,
   glowSize = 200,
-  glowOpacity = 0.15,
+  glowOpacity,
 }: GlowCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
@@ -61,10 +61,13 @@ export function GlowCard({
   const defaultColor = glowColor || "rgba(99,102,241,0.6)";
 
   const surfaceGlow = useMotionTemplate`radial-gradient(${glowSize}px circle at ${mouseX}px ${mouseY}px, ${defaultColor}, transparent 80%)`;
-  const borderGlowBg = useMotionTemplate`radial-gradient(${glowSize}px circle at ${mouseX}px ${mouseY}px, ${defaultColor}, transparent 80%)`;
+
+  // Border-glow layers (declared unconditionally; hooks can't live in a branch).
+  const ring = glowColor || "rgba(129,140,248,1)";
+  const ringBg = useMotionTemplate`radial-gradient(${glowSize * 0.6}px circle at ${mouseX}px ${mouseY}px, ${ring}, transparent 100%)`;
 
   const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.PointerEvent) => {
       if (prefersReducedMotion || !ref.current) return;
       const rect = ref.current.getBoundingClientRect();
       mouseX.set(e.clientX - rect.left);
@@ -80,48 +83,68 @@ export function GlowCard({
   }, [mouseX, mouseY, glowSize]);
 
   if (borderGlow) {
-    // BORDER GLOW: Outer container has the glow gradient, inner div masks
-    // the center, leaving only a 1px illuminated border visible.
+    // The glow is painted on top of the static border and masked to a 1px ring,
+    // so only the border lights up. A blurred copy of the same ring gives it a
+    // soft bloom right along the edge without tinting the card's surface.
     return (
       <div
         ref={ref}
-        className={`relative rounded-[8px] p-[1px] ${className}`}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        className={`group relative rounded-[8px] border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-950 ${className}`}
+        onPointerMove={handleMouseMove}
+        onPointerDown={handleMouseMove}
+        onPointerLeave={handleMouseLeave}
+        // Touch: the effect follows the finger and releases on lift.
+        onPointerUp={(e) => e.pointerType !== "mouse" && handleMouseLeave()}
+        onPointerCancel={handleMouseLeave}
       >
-        {/* Glow layer — sits behind the inner card, only visible at the 1px border */}
         <motion.div
-          className="absolute inset-0 rounded-[8px] transition-opacity duration-300"
-          style={{
-            background: borderGlowBg,
-            opacity: glowOpacity,
-          }}
           aria-hidden
+          className="pointer-events-none absolute -inset-px rounded-[8px] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          style={{
+            background: ringBg,
+            padding: 1,
+            WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+            WebkitMaskComposite: "xor",
+            mask: "linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0)",
+          }}
         />
-        {/* Static border fallback */}
-        <div className="absolute inset-0 rounded-[8px] border border-neutral-200 dark:border-neutral-800" aria-hidden />
-        {/* Inner card — masks the glow to only show at the edges */}
-        <div className="relative rounded-[7px] bg-white dark:bg-neutral-950 p-6">
-          {children}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -inset-px opacity-0 blur-[6px] transition-opacity duration-300 group-hover:opacity-100"
+        >
+          <motion.div
+            className="h-full w-full rounded-[8px]"
+            style={{
+              background: ringBg,
+              padding: 2,
+              WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+              WebkitMaskComposite: "xor",
+              mask: "linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0)",
+            }}
+          />
         </div>
+        <div className="relative">{children}</div>
       </div>
     );
   }
 
-  // SURFACE GLOW: The gradient overlays the card surface directly
   return (
     <motion.div
       ref={ref}
       className={`relative overflow-hidden rounded-[8px] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-6 ${className}`}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onPointerMove={handleMouseMove}
+        onPointerDown={handleMouseMove}
+      onPointerLeave={handleMouseLeave}
+        // Touch: the effect follows the finger and releases on lift.
+        onPointerUp={(e) => e.pointerType !== "mouse" && handleMouseLeave()}
+        onPointerCancel={handleMouseLeave}
     >
       {/* Glow overlay — pointer-events-none so clicks pass through */}
       <motion.div
         className="pointer-events-none absolute inset-0 rounded-[8px]"
         style={{
           background: surfaceGlow,
-          opacity: glowOpacity,
+          opacity: glowOpacity ?? 0.15,
         }}
         aria-hidden
       />

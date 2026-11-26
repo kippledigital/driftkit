@@ -108,7 +108,7 @@ export default function DocsPage() {
   );
 
   return (
-    <div className="py-12 px-8">
+    <div className="py-8 sm:py-12 sm:px-8">
         <div className="mb-12 max-w-2xl">
           <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white mb-3">
             Components

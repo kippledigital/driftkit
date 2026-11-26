@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useCallback, useMemo, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useCallback, useMemo } from "react";
+import { motion } from "framer-motion";
 
 // =============================================================================
 // PHYSICS CONFIG TYPES
@@ -75,20 +75,24 @@ function ControlSlider({ label, value, min, max, step, hint, onChange }: Control
 // SPECIALIZED COMPONENT DEMOS (from playground)
 // =============================================================================
 
-function ButtonDemo({ isPlaying, springTransition }: { isPlaying: boolean; springTransition: object }) {
-  const [playCount, setPlayCount] = useState(0);
-  
-  useEffect(() => {
-    if (isPlaying) setPlayCount(c => c + 1);
-  }, [isPlaying]);
+interface DemoProps {
+  isPlaying: boolean;
+  /** Increments on every Play press; demos key off it to restart. */
+  playCount: number;
+  springTransition: object;
+}
+
+function ButtonDemo({ playCount, springTransition }: DemoProps) {
 
   return (
     <div className="flex items-center justify-center h-full">
       <motion.div
         key={playCount}
         className="px-6 py-2.5 rounded-lg text-white text-sm font-semibold shadow-lg bg-neutral-900 dark:bg-white dark:text-neutral-900"
-        initial={{ scale: 1, y: 0 }}
-        animate={playCount > 0 ? { scale: [0.85, 1.08, 1], y: [3, -2, 0] } : {}}
+        // Springs take two keyframes: start pressed and let the spring's own
+        // overshoot supply the bounce, so it reflects the current settings.
+        initial={playCount > 0 ? { scale: 0.85, y: 3 } : false}
+        animate={{ scale: 1, y: 0 }}
         transition={springTransition}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -99,7 +103,7 @@ function ButtonDemo({ isPlaying, springTransition }: { isPlaying: boolean; sprin
   );
 }
 
-function ToggleDemo({ isPlaying, springTransition }: { isPlaying: boolean; springTransition: object }) {
+function ToggleDemo({ isPlaying, springTransition }: DemoProps) {
   return (
     <div className="flex items-center justify-center h-full">
       <div className="w-16 h-8 rounded-full p-1 relative bg-neutral-900 dark:bg-white">
@@ -113,7 +117,7 @@ function ToggleDemo({ isPlaying, springTransition }: { isPlaying: boolean; sprin
   );
 }
 
-function ToastDemo({ isPlaying, springTransition }: { isPlaying: boolean; springTransition: object }) {
+function ToastDemo({ isPlaying, springTransition }: DemoProps) {
   return (
     <div className="flex items-center justify-center h-full px-4">
       <motion.div
@@ -137,7 +141,7 @@ function ToastDemo({ isPlaying, springTransition }: { isPlaying: boolean; spring
   );
 }
 
-function CardDemo({ isPlaying, springTransition }: { isPlaying: boolean; springTransition: object }) {
+function CardDemo({ isPlaying, springTransition }: DemoProps) {
   return (
     <div className="flex items-center justify-center h-full">
       <motion.div
@@ -157,19 +161,13 @@ function CardDemo({ isPlaying, springTransition }: { isPlaying: boolean; springT
   );
 }
 
-function TabsDemo({ isPlaying, springTransition }: { isPlaying: boolean; springTransition: object }) {
-  const [activeTab, setActiveTab] = useState(0);
-  
-  useEffect(() => {
-    if (isPlaying) {
-      setActiveTab(prev => (prev === 0 ? 1 : prev === 1 ? 2 : 0));
-    }
-  }, [isPlaying]);
+function TabsDemo({ isPlaying, playCount, springTransition }: DemoProps) {
+  const activeTab = playCount % 3;
   
   const tabs = ["Overview", "Details", "Settings"];
   
   return (
-    <div className="flex flex-col justify-center h-full px-6">
+    <div className="flex flex-col justify-center h-full px-3 sm:px-6">
       <div className="w-full">
         <div className="flex border-b border-neutral-200 dark:border-neutral-700 relative">
           {tabs.map((tab, i) => (
@@ -198,12 +196,7 @@ function TabsDemo({ isPlaying, springTransition }: { isPlaying: boolean; springT
   );
 }
 
-function DropdownDemo({ isPlaying, springTransition }: { isPlaying: boolean; springTransition: object }) {
-  const [playCount, setPlayCount] = useState(0);
-  
-  useEffect(() => {
-    if (isPlaying) setPlayCount(c => c + 1);
-  }, [isPlaying]);
+function DropdownDemo({ playCount, springTransition }: DemoProps) {
   
   return (
     <div className="flex flex-col items-center justify-center h-full px-6">
@@ -230,20 +223,15 @@ function DropdownDemo({ isPlaying, springTransition }: { isPlaying: boolean; spr
   );
 }
 
-function ModalDemo({ isPlaying, springTransition }: { isPlaying: boolean; springTransition: object }) {
-  const [playCount, setPlayCount] = useState(0);
-  
-  useEffect(() => {
-    if (isPlaying) setPlayCount(c => c + 1);
-  }, [isPlaying]);
+function ModalDemo({ playCount, springTransition }: DemoProps) {
   
   return (
     <div className="flex items-center justify-center h-full relative">
       <motion.div
         key={playCount}
         className="w-64 rounded-lg bg-white dark:bg-neutral-800 shadow-2xl border border-neutral-200 dark:border-neutral-700 p-6"
-        initial={{ scale: 0.85, y: 8 }}
-        animate={playCount > 0 ? { scale: [0.75, 1.02, 1], y: [10, -2, 0] } : { scale: 1, y: 0 }}
+        initial={playCount > 0 ? { scale: 0.75, y: 10 } : false}
+        animate={{ scale: 1, y: 0 }}
         transition={springTransition}
       >
         <div className="w-full h-3 rounded-full bg-neutral-900 dark:bg-white mb-4 opacity-60" />
@@ -258,7 +246,7 @@ function ModalDemo({ isPlaying, springTransition }: { isPlaying: boolean; spring
   );
 }
 
-function BadgeDemo({ isPlaying, springTransition }: { isPlaying: boolean; springTransition: object }) {
+function BadgeDemo({ playCount, springTransition }: DemoProps) {
   return (
     <div className="flex items-center justify-center h-full">
       <div className="relative">
@@ -267,7 +255,9 @@ function BadgeDemo({ isPlaying, springTransition }: { isPlaying: boolean; spring
         </div>
         <motion.div
           className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center"
-          animate={isPlaying ? { scale: [0, 1.3, 1], opacity: [0, 1, 1] } : { scale: 1, opacity: 1 }}
+          key={playCount}
+          initial={playCount > 0 ? { scale: 0, opacity: 0 } : false}
+          animate={{ scale: 1, opacity: 1 }}
           transition={springTransition}
           whileHover={{ scale: 1.1 }}
         >
@@ -286,9 +276,10 @@ interface ComponentPreviewProps {
   componentName: string;
   config: PhysicsConfig;
   isPlaying: boolean;
+  playCount: number;
 }
 
-const demoComponents: Record<string, React.FC<{ isPlaying: boolean; springTransition: object }>> = {
+const demoComponents: Record<string, React.FC<DemoProps>> = {
   button: ButtonDemo,
   "magnetic-button": ButtonDemo,
   "ripple-button": ButtonDemo,
@@ -310,7 +301,7 @@ const demoComponents: Record<string, React.FC<{ isPlaying: boolean; springTransi
   badge: BadgeDemo,
 };
 
-function ComponentPreview({ componentName, config, isPlaying }: ComponentPreviewProps) {
+function ComponentPreview({ componentName, config, isPlaying, playCount }: ComponentPreviewProps) {
   const springTransition = {
     type: "spring" as const,
     stiffness: config.stiffness,
@@ -324,7 +315,7 @@ function ComponentPreview({ componentName, config, isPlaying }: ComponentPreview
     return (
       <div className="rounded-xl border border-neutral-200/40 dark:border-neutral-800/40 bg-neutral-100/30 dark:bg-neutral-900/30 p-6">
         <div className="min-h-[180px] flex items-center justify-center">
-          <Demo isPlaying={isPlaying} springTransition={springTransition} />
+          <Demo isPlaying={isPlaying} playCount={playCount} springTransition={springTransition} />
         </div>
       </div>
     );
@@ -337,7 +328,8 @@ function ComponentPreview({ componentName, config, isPlaying }: ComponentPreview
         <motion.div
           key={`${config.stiffness}-${config.damping}-${config.mass}-${isPlaying}`}
           className="px-6 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-lg font-medium cursor-pointer"
-          animate={isPlaying ? { scale: [1, 1.05, 1] } : { scale: 1 }}
+          initial={isPlaying ? { scale: 0.92 } : false}
+          animate={{ scale: 1 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           transition={springTransition}
@@ -358,9 +350,9 @@ interface TryItProps {
 }
 
 export default function TryIt({ componentName }: TryItProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [config, setConfig] = useState<PhysicsConfig>(defaultConfig);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playCount, setPlayCount] = useState(0);
 
   const handleConfigChange = useCallback((key: keyof PhysicsConfig, value: number) => {
     setConfig(prev => ({ ...prev, [key]: value }));
@@ -368,6 +360,7 @@ export default function TryIt({ componentName }: TryItProps) {
 
   const handlePlay = useCallback(() => {
     setIsPlaying(true);
+    setPlayCount((c) => c + 1);
     // Reset after animation completes
     setTimeout(() => setIsPlaying(false), 1500);
   }, []);
@@ -479,6 +472,7 @@ export default function TryIt({ componentName }: TryItProps) {
             componentName={componentName}
             config={config}
             isPlaying={isPlaying}
+            playCount={playCount}
           />
         </div>
 

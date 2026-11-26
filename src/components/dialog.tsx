@@ -1,45 +1,28 @@
 "use client";
 
-import React, {
-  forwardRef,
-  useEffect,
-  useRef,
-  useCallback,
-  type ReactNode,
-} from "react";
-import {
-  motion,
-  AnimatePresence,
-  useReducedMotion,
-} from "framer-motion";
+/**
+ * Dialog
+ * =============================================================================
+ * Opens with the `smooth` spring: it rises 8px and scales from 0.96, so it
+ * reads as arriving with a little weight. Closes with a short ease-in tween,
+ * because by the time someone dismisses a dialog they've already moved on.
+ *
+ * The backdrop is a pre-blurred layer that only fades. Animating blur itself is
+ * expensive and shimmers on a spring.
+ *
+ * Behavior: rendered in a portal, focus is trapped and restored, Escape closes
+ * the topmost overlay only, page scroll locks without a layout jump, and the
+ * title is wired to aria-labelledby automatically.
+ *
+ * Needs: ./motion.ts, ./overlay.ts
+ * =============================================================================
+ */
 
-// =============================================================================
-// SPRING PHYSICS
-// =============================================================================
-// Opening uses "smooth" spring — stiffness 300, damping 30, mass 1.
-//   The modal should feel like it's rising into view with weight and intention.
-//   Slight settling at the end communicates "I've arrived." Not bouncy — just
-//   organic. Scale 0.95 → 1.0 with opacity creates a subtle zoom-in that
-//   draws focus without being dramatic.
-//
-// Closing uses a quicker ease-out (not spring) — duration 0.15s.
-//   Closing should feel snappier than opening. Users expect dismissal to be
-//   near-instant. A spring on close would make it feel sluggish. The modal
-//   scales down slightly (1.0 → 0.97) and fades — like something deflating.
-//
-// Backdrop uses a tween for blur/opacity — blur is expensive and springs
-//   would make it oscillate, which looks glitchy with backdrop-filter.
-// =============================================================================
-
-const springs = {
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-};
-
-const exitTransition = { duration: 0.15, ease: "easeOut" as const };
-
-// =============================================================================
-// TYPES
-// =============================================================================
+import React, { createContext, forwardRef, useContext, useId, useRef, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { fade, useMotionPrefs } from "./motion";
+import { useEscape, useFocusTrap, useMounted, useScrollLock } from "./overlay";
 
 export type DialogSize = "sm" | "md" | "lg";
 
@@ -49,13 +32,11 @@ export interface DialogProps {
   size?: DialogSize;
   children: ReactNode;
   className?: string;
-  /** Optional title for aria-labelledby */
+  /** Accessible name, used when you don't render a <DialogTitle>. */
   title?: string;
+  /** Close when the backdrop is clicked. Default true. */
+  closeOnBackdrop?: boolean;
 }
-
-// =============================================================================
-// SIZE MAP
-// =============================================================================
 
 const sizeClasses: Record<DialogSize, string> = {
   sm: "max-w-sm",
@@ -63,180 +44,82 @@ const sizeClasses: Record<DialogSize, string> = {
   lg: "max-w-2xl",
 };
 
-// =============================================================================
-// COMPONENT
-// =============================================================================
+const DialogIds = createContext<{ titleId: string; descId: string } | null>(null);
 
-export const Dialog = forwardRef<HTMLDivElement, DialogProps>(
-  ({ open, onClose, size = "md", children, className = "", title }, ref) => {
-    const prefersReducedMotion = useReducedMotion();
-    const contentRef = useRef<HTMLDivElement>(null);
-    const previousFocusRef = useRef<HTMLElement | null>(null);
+export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
+  { open, onClose, size = "md", children, className = "", title, closeOnBackdrop = true },
+  ref
+) {
+  const mounted = useMounted();
+  const m = useMotionPrefs();
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const baseId = useId();
+  const ids = { titleId: `${baseId}-title`, descId: `${baseId}-desc` };
 
-    // Focus trap: focus first focusable element on open, restore on close
-    useEffect(() => {
-      if (open) {
-        previousFocusRef.current = document.activeElement as HTMLElement;
-        // Small delay to let the animation start before focusing
-        const timer = setTimeout(() => {
-          const focusable = contentRef.current?.querySelector<HTMLElement>(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          );
-          focusable?.focus();
-        }, 50);
-        return () => clearTimeout(timer);
-      } else if (previousFocusRef.current) {
-        previousFocusRef.current.focus();
-        previousFocusRef.current = null;
-      }
-    }, [open]);
+  useFocusTrap(panelRef, open);
+  useScrollLock(open);
+  useEscape(open, onClose);
 
-    // Escape key to dismiss
-    const handleKeyDown = useCallback(
-      (e: React.KeyboardEvent) => {
-        if (e.key === "Escape") {
-          e.stopPropagation();
-          onClose();
-        }
-      },
-      [onClose]
-    );
+  if (!mounted) return null;
 
-    // Prevent body scroll when open
-    useEffect(() => {
-      if (open) {
-        const original = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
-        return () => {
-          document.body.style.overflow = original;
-        };
-      }
-    }, [open]);
-
-    const modalVariants = prefersReducedMotion
-      ? {
-          hidden: { opacity: 0 },
-          visible: { opacity: 1 },
-          exit: { opacity: 0 },
-        }
-      : {
-          hidden: { opacity: 0, scale: 0.95, y: 8 },
-          visible: { opacity: 1, scale: 1, y: 0 },
-          exit: { opacity: 0, scale: 0.97, y: 4 },
-        };
-
-    const backdropVariants = {
-      hidden: { opacity: 0 },
-      visible: { opacity: 1 },
-      exit: { opacity: 0 },
-    };
-
-    return (
-      <AnimatePresence>
-        {open && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            onKeyDown={handleKeyDown}
-            role="presentation"
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div
+            aria-hidden
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: fade.in }}
+            exit={{ opacity: 0, transition: fade.out }}
+            onClick={closeOnBackdrop ? onClose : undefined}
+          />
+          <motion.div
+            ref={(node) => {
+              panelRef.current = node;
+              if (typeof ref === "function") ref(node);
+              else if (ref) ref.current = node;
+            }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={title}
+            aria-labelledby={title ? undefined : ids.titleId}
+            aria-describedby={ids.descId}
+            tabIndex={-1}
+            className={`relative w-full ${sizeClasses[size]} rounded-[8px] bg-white p-6 shadow-xl outline-none dark:bg-neutral-900 ${className}`}
+            initial={m.reduced ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0, transition: m.spring("smooth") }}
+            exit={m.reduced ? { opacity: 0, transition: m.exit() } : { opacity: 0, scale: 0.98, y: 4, transition: m.exit() }}
           >
-            {/* Backdrop — blurs in smoothly.
-                backdrop-filter is animated via opacity on a blurred overlay.
-                Direct animation of backdrop-blur is janky in most browsers,
-                so we fade in a pre-blurred element instead. */}
-            <motion.div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-              variants={backdropVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              onClick={onClose}
-              aria-hidden
-            />
+            <DialogIds.Provider value={ids}>{children}</DialogIds.Provider>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
+});
 
-            {/* Modal panel */}
-            <motion.div
-              ref={(node) => {
-                // Merge refs
-                (contentRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-                if (typeof ref === "function") ref(node);
-                else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-              }}
-              role="dialog"
-              aria-modal="true"
-              aria-label={title}
-              className={`relative w-full ${sizeClasses[size]} rounded-[8px] bg-white dark:bg-neutral-900 shadow-xl p-6 ${className}`}
-              variants={modalVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{
-                ...springs.smooth,
-                // Exit override: quicker ease-out, not spring
-                // AnimatePresence will use the exit variant's transition
-              }}
-              // Override transition for exit specifically
-              style={{ willChange: "transform, opacity" }}
-            >
-              {children}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-    );
-  }
-);
-
-Dialog.displayName = "Dialog";
-
-// =============================================================================
-// CONVENIENCE SUB-COMPONENTS
-// =============================================================================
-
-export function DialogTitle({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+export function DialogTitle({ children, className = "" }: { children: ReactNode; className?: string }) {
+  const ids = useContext(DialogIds);
   return (
-    <h2
-      className={`text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-2 ${className}`}
-    >
+    <h2 id={ids?.titleId} className={`mb-2 text-lg font-semibold text-neutral-900 dark:text-neutral-100 ${className}`}>
       {children}
     </h2>
   );
 }
 
-export function DialogDescription({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+export function DialogDescription({ children, className = "" }: { children: ReactNode; className?: string }) {
+  const ids = useContext(DialogIds);
   return (
-    <p
-      className={`text-sm text-neutral-500 dark:text-neutral-400 mb-6 ${className}`}
-    >
+    <p id={ids?.descId} className={`mb-6 text-sm text-neutral-500 dark:text-neutral-400 ${className}`}>
       {children}
     </p>
   );
 }
 
-export function DialogFooter({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`flex justify-end gap-3 mt-6 ${className}`}>
-      {children}
-    </div>
-  );
+export function DialogFooter({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <div className={`mt-6 flex justify-end gap-3 ${className}`}>{children}</div>;
 }
 
 export default Dialog;

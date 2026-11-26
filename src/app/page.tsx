@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button, type ButtonVariant, type ButtonSize } from "@/components/button";
 import { Toggle } from "@/components/toggle";
@@ -8,7 +8,7 @@ import { Dialog, DialogTitle, DialogDescription, DialogFooter } from "@/componen
 import { useToast } from "@/components/toast";
 import { Tooltip } from "@/components/tooltip";
 import { Dropdown, type DropdownItem } from "@/components/dropdown";
-import { Card, CardImage, CardContent, CardActions, CardGrid, CardHeader, CardFooter, FlipCard } from "@/components/card";
+import { Card, CardImage, CardContent, CardActions, CardGrid, FlipCard } from "@/components/card";
 import { Tabs } from "@/components/tabs";
 import { Accordion } from "@/components/accordion";
 import { Input } from "@/components/input";
@@ -35,8 +35,9 @@ import { AnimatedTabs } from "@/components/animated-tabs";
 import { CommandPalette } from "@/components/command-palette";
 import { ExpandableCard } from "@/components/expandable-card";
 import { CursorTrail } from "@/components/cursor-trail";
+import { ReplayButton } from "@/components/replay-button";
 import { LiquidButton } from "@/components/liquid-button";
-import { AnimatedCounter, StatCard } from "@/components/animated-counter";
+import { StatCard } from "@/components/animated-counter";
 import { ProgressRing } from "@/components/progress-ring";
 import { SpringCarousel } from "@/components/spring-carousel";
 import { ParallaxScroll, ParallaxItem } from "@/components/parallax-scroll";
@@ -46,11 +47,6 @@ import { SchedulePicker, type ScheduleValue } from "@/components/schedule-picker
 import { DateRangePicker, type DateRange } from "@/components/date-range-picker";
 import { MultiSelect } from "@/components/multi-select";
 import { Stepper } from "@/components/stepper";
-import { Drawer, DrawerHeader, DrawerContent, DrawerFooter } from "@/components/drawer";
-import { ContextMenu, contextMenuItems } from "@/components/context-menu";
-import { Popover } from "@/components/popover";
-import { Breadcrumbs, breadcrumbPatterns } from "@/components/breadcrumbs";
-import { Badge, NotificationBadge } from "@/components/badge";
 import { ComponentSearch } from "@/components/component-search";
 
 const variants: ButtonVariant[] = ["default", "secondary", "ghost", "destructive"];
@@ -61,110 +57,6 @@ const COMPONENT_COUNT = 52;
 // =============================================================================
 // SPRING PHYSICS DEMO COMPONENT
 // =============================================================================
-
-function SpringPhysicsDemo() {
-  const [isDragging, setIsDragging] = useState(false);
-  
-  return (
-    <div className="relative h-48 w-full max-w-md mx-auto bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-900 dark:to-neutral-800 rounded-xl border border-neutral-300/50 dark:border-neutral-700/50 overflow-hidden">
-      {/* Background grid pattern */}
-      <div className="absolute inset-0 opacity-30 dark:opacity-20">
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" strokeWidth="0.5"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
-      </div>
-      
-      {/* Floating elements with spring physics */}
-      <motion.div
-        className="absolute w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full shadow-lg cursor-grab active:cursor-grabbing flex items-center justify-center text-white font-bold text-sm"
-        drag
-        dragConstraints={{
-          left: 0,
-          right: 288, // max-w-md (384px) - ball width (48px)  
-          top: 0,
-          bottom: 144, // height (192px) - ball width (48px)
-        }}
-        dragElastic={0.05}
-        dragTransition={{
-          power: 0.3,
-          timeConstant: 200,
-        }}
-        whileDrag={{
-          scale: 1.1,
-          boxShadow: "0 10px 30px rgba(99, 102, 241, 0.4)",
-        }}
-        animate={!isDragging ? {
-          x: [20, 120, 220, 120, 20],
-          y: [20, 80, 20, 100, 20],
-        } : undefined}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-          type: "spring",
-          stiffness: 50,
-          damping: 20,
-        }}
-        onDragStart={() => setIsDragging(true)}
-        onDragEnd={() => {
-          setIsDragging(false);
-          // Resume animation after a delay
-          setTimeout(() => setIsDragging(false), 2000);
-        }}
-        initial={{ x: 20, y: 20 }}
-      >
-        ⚡
-      </motion.div>
-
-      {/* Floating decorative elements */}
-      <motion.div
-        className="absolute w-6 h-6 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full opacity-70"
-        animate={{
-          x: [280, 200, 280],
-          y: [30, 100, 30],
-          rotate: [0, 180, 360],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut",
-          type: "spring",
-          stiffness: 40,
-          damping: 15,
-        }}
-      />
-
-      <motion.div
-        className="absolute w-4 h-4 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full opacity-60"
-        animate={{
-          x: [50, 180, 50],
-          y: [120, 40, 120],
-          scale: [1, 1.5, 1],
-        }}
-        transition={{
-          duration: 7,
-          repeat: Infinity,
-          ease: "easeInOut", 
-          type: "spring",
-          stiffness: 60,
-          damping: 18,
-        }}
-      />
-
-      {/* Instruction text */}
-      <div className="absolute bottom-4 left-4 right-4 text-center">
-        <p className="text-xs text-neutral-600 dark:text-neutral-400 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm rounded-full px-3 py-1 inline-block">
-          Drag the lightning bolt ⚡
-        </p>
-      </div>
-    </div>
-  );
-}
 
 // =============================================================================
 // SHOWPIECE DEMOS
@@ -198,9 +90,10 @@ function GlowCardDemo() {
 function NumberTickerDemo() {
   const [value, setValue] = useState(1234);
   const [price, setPrice] = useState(49.99);
+  const [rate, setRate] = useState(87);
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <span className="text-3xl font-bold tabular-nums"><NumberTicker value={value} /></span>
         <div className="flex gap-2">
           <Button size="sm" variant="secondary" onClick={() => setValue((v) => v + 100)}>+100</Button>
@@ -208,16 +101,30 @@ function NumberTickerDemo() {
           <Button size="sm" variant="ghost" onClick={() => setValue(Math.floor(Math.random() * 99999))}>Random</Button>
         </div>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <span className="text-2xl font-semibold"><NumberTicker value={price} prefix="$" decimals={2} /></span>
         <div className="flex gap-2">
           <Button size="sm" variant="secondary" onClick={() => setPrice((p) => +(p + 10).toFixed(2))}>+$10</Button>
           <Button size="sm" variant="secondary" onClick={() => setPrice((p) => +(Math.max(0, p - 10)).toFixed(2))}>−$10</Button>
         </div>
       </div>
-      <div className="flex items-center gap-4">
-        <span className="text-xl"><NumberTicker value={87} suffix="%" /></span>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <span className="text-xl tabular-nums"><NumberTicker value={rate} suffix="%" /></span>
         <span className="text-sm text-neutral-600 dark:text-neutral-400">Completion rate</span>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() =>
+            setRate((r) => {
+              // Always land somewhere visibly different from the last value.
+              let next = r;
+              while (Math.abs(next - r) < 8) next = 40 + Math.floor(Math.random() * 60);
+              return next;
+            })
+          }
+        >
+          Shuffle
+        </Button>
       </div>
     </div>
   );
@@ -281,11 +188,11 @@ function StaggeredListDemo() {
   ];
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2 [&_button]:whitespace-nowrap">
         {(["slide-up", "fade-blur", "slide-left"] as const).map((v) => (
           <Button key={v} size="sm" variant={variant === v ? "default" : "secondary"} onClick={() => { setVariant(v); setKey((k) => k + 1); }}>{v}</Button>
         ))}
-        <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>Replay</Button>
+        <ReplayButton onReplay={() => setKey((k) => k + 1)} />
       </div>
       <div className="h-[260px] overflow-hidden">
         <StaggeredList key={key} items={items} variant={variant} className="flex flex-col gap-2" />
@@ -318,7 +225,7 @@ function ScrollRevealDemo() {
   const rvariants: Array<"fade-up" | "fade-left" | "scale" | "blur"> = ["fade-up", "fade-left", "scale", "blur"];
   return (
     <div className="flex flex-col gap-4">
-      <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>Replay</Button>
+      <ReplayButton className="self-start" onReplay={() => setKey((k) => k + 1)} />
       <div key={key} className="grid grid-cols-2 gap-3">
         {rvariants.map((v, i) => (
           <ScrollReveal key={v} variant={v} delay={i * 0.1}>
@@ -368,7 +275,7 @@ function RippleButtonDemo() {
   return (
     <div className="flex flex-wrap gap-4 items-center">
       <RippleButton>Click for ripple</RippleButton>
-      <RippleButton rippleColor="rgba(99,102,241,0.4)" className="bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-600 dark:hover:bg-indigo-500 dark:text-white">Custom color</RippleButton>
+      <RippleButton rippleColor="rgba(255,255,255,0.4)" colorClassName="bg-indigo-600 text-white hover:bg-indigo-500">Custom color</RippleButton>
     </div>
   );
 }
@@ -376,8 +283,8 @@ function RippleButtonDemo() {
 function GradientBorderDemo() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <GradientBorder><div className="p-5"><h3 className="text-base font-semibold mb-1">Rainbow Spin</h3><p className="text-sm text-neutral-400">Default gradient, 3s rotation.</p></div></GradientBorder>
-      <GradientBorder colors={["#6366f1", "#8b5cf6", "#a78bfa", "#6366f1"]} duration={2} borderWidth={2}><div className="p-5"><h3 className="text-base font-semibold mb-1">Purple Pulse</h3><p className="text-sm text-neutral-400">Custom colors, faster spin.</p></div></GradientBorder>
+      <GradientBorder><div className="p-5"><h3 className="text-base font-semibold mb-1">Rainbow Spin</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Default gradient, 3s rotation.</p></div></GradientBorder>
+      <GradientBorder colors={["#6366f1", "#8b5cf6", "#a78bfa", "#6366f1"]} duration={2} borderWidth={2}><div className="p-5"><h3 className="text-base font-semibold mb-1">Purple Pulse</h3><p className="text-sm text-neutral-600 dark:text-neutral-400">Custom colors, faster spin.</p></div></GradientBorder>
     </div>
   );
 }
@@ -475,7 +382,7 @@ function SwipeCardsDemo() {
       <div className="h-[280px] overflow-hidden">
         <SwipeCards key={key} cards={cards} />
       </div>
-      <Button size="sm" variant="ghost" onClick={() => setKey((k) => k + 1)}>Reset cards</Button>
+      <ReplayButton className="self-center" onReplay={() => setKey((k) => k + 1)}>Reset cards</ReplayButton>
     </div>
   );
 }
@@ -491,12 +398,17 @@ function LiquidButtonDemo() {
 }
 
 function AnimatedCounterDemo() {
+  // Remounting the grid replays both the staggered entrance and the count.
+  const [run, setRun] = useState(0);
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      <StatCard value={12847} label="Total Users" icon="👥" />
-      <StatCard value={99.9} label="Uptime" suffix="%" decimals={1} icon="⚡" />
-      <StatCard value={3.2} label="Avg Rating" prefix="" suffix="/5" decimals={1} icon="⭐" />
-      <StatCard value={482} label="Components" suffix="+" icon="🧩" />
+    <div className="flex flex-col gap-4">
+      <div key={run} className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <StatCard value={12847} label="Total Users" icon="👥" />
+        <StatCard value={99.9} label="Uptime" suffix="%" decimals={1} icon="⚡" />
+        <StatCard value={3.2} label="Avg Rating" prefix="" suffix="/5" decimals={1} icon="⭐" />
+        <StatCard value={482} label="Components" suffix="+" icon="🧩" />
+      </div>
+      <ReplayButton className="self-start" onReplay={() => setRun((n) => n + 1)} />
     </div>
   );
 }
@@ -608,6 +520,7 @@ function MultiSelectDemo() {
 
 function StepperDemo() {
   const [finished, setFinished] = useState(false);
+  const [run, setRun] = useState(0);
   const steps = [
     { id: "details", label: "Details", content: <div className="p-4 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm text-neutral-600 dark:text-neutral-400"><p className="font-medium text-neutral-800 dark:text-neutral-200 mb-2">Project Details</p><p>Enter your project name, description, and select a category. All fields are required.</p></div> },
     { id: "config", label: "Configure", content: <div className="p-4 rounded-lg border border-neutral-300 dark:border-neutral-800 text-sm text-neutral-600 dark:text-neutral-400"><p className="font-medium text-neutral-800 dark:text-neutral-200 mb-2">Configuration</p><p>Choose your framework, set up environment variables, and configure build settings.</p></div> },
@@ -615,216 +528,13 @@ function StepperDemo() {
   ];
   return (
     <div className="flex flex-col gap-4">
-      <Stepper steps={steps} onFinish={() => setFinished(true)} />
-      {finished && <p className="text-xs text-green-600 dark:text-green-400 text-center">✓ Complete! (reset by navigating back)</p>}
-    </div>
-  );
-}
-
-function DrawerDemo() {
-  const [open, setOpen] = useState(false);
-  const [side, setSide] = useState<"left" | "right" | "top" | "bottom">("right");
-  
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex gap-2">
-        {(["right", "left", "top", "bottom"] as const).map((s) => (
-          <Button key={s} size="sm" variant={side === s ? "default" : "secondary"} onClick={() => setSide(s)}>
-            {s}
-          </Button>
-        ))}
-      </div>
-      <Button variant="secondary" onClick={() => setOpen(true)}>
-        Open {side} drawer
-      </Button>
-      
-      <Drawer open={open} onClose={() => setOpen(false)} side={side}>
-        <DrawerHeader onClose={() => setOpen(false)}>
-          {side.charAt(0).toUpperCase() + side.slice(1)} Drawer
-        </DrawerHeader>
-        <DrawerContent>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-            This drawer slides in from the {side} with spring physics. The backdrop blurs and clicking outside closes it.
-          </p>
-          <div className="space-y-4">
-            <Button variant="secondary" size="sm">Action 1</Button>
-            <Button variant="secondary" size="sm">Action 2</Button>
-            <Button variant="secondary" size="sm">Action 3</Button>
-          </div>
-        </DrawerContent>
-        <DrawerFooter>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button size="sm" onClick={() => setOpen(false)}>Save</Button>
-          </div>
-        </DrawerFooter>
-      </Drawer>
-    </div>
-  );
-}
-
-function ContextMenuDemo() {
-  const [lastAction, setLastAction] = useState<string>("");
-  
-  const items = [
-    contextMenuItems.copy(() => setLastAction("Copied!")),
-    contextMenuItems.cut(() => setLastAction("Cut!")),
-    contextMenuItems.paste(() => setLastAction("Pasted!")),
-    contextMenuItems.separator(),
-    contextMenuItems.rename(() => setLastAction("Renamed!")),
-    contextMenuItems.duplicate(() => setLastAction("Duplicated!")),
-    contextMenuItems.separator(),
-    contextMenuItems.delete(() => setLastAction("Deleted!")),
-  ];
-  
-  return (
-    <div className="flex flex-col gap-4">
-      <ContextMenu items={items}>
-        <div className="p-8 rounded-lg border border-neutral-300 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800 text-center cursor-context-menu">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">Right-click me!</p>
-          <p className="text-xs text-neutral-500 dark:text-neutral-500">Try the context menu with keyboard shortcuts</p>
+      <Stepper key={run} steps={steps} onFinish={() => setFinished(true)} />
+      {finished && (
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs text-green-700 dark:text-green-400">✓ Complete</p>
+          <ReplayButton onReplay={() => { setFinished(false); setRun((n) => n + 1); }}>Start over</ReplayButton>
         </div>
-      </ContextMenu>
-      {lastAction && (
-        <p className="text-sm text-green-600 dark:text-green-400">Last action: {lastAction}</p>
       )}
-    </div>
-  );
-}
-
-function PopoverDemo() {
-  const [trigger, setTrigger] = useState<"click" | "hover">("click");
-  
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex gap-2">
-        <Button size="sm" variant={trigger === "click" ? "default" : "secondary"} onClick={() => setTrigger("click")}>
-          Click
-        </Button>
-        <Button size="sm" variant={trigger === "hover" ? "default" : "secondary"} onClick={() => setTrigger("hover")}>
-          Hover
-        </Button>
-      </div>
-      
-      <div className="flex flex-wrap gap-4">
-        <Popover 
-          content={<div className="p-2"><p className="text-sm">This popover appears on {trigger}!</p></div>}
-          trigger={trigger}
-          placement="top"
-        >
-          <Button variant="secondary" size="sm">Top</Button>
-        </Popover>
-        
-        <Popover 
-          content={<div className="p-2"><p className="text-sm">Smart positioning keeps me in view</p></div>}
-          trigger={trigger}
-          placement="bottom"
-        >
-          <Button variant="secondary" size="sm">Bottom</Button>
-        </Popover>
-        
-        <Popover 
-          content={<div className="p-2 max-w-xs"><p className="text-sm">Popovers automatically flip when there's not enough space. Try resizing your window!</p></div>}
-          trigger={trigger}
-          placement="right"
-        >
-          <Button variant="secondary" size="sm">Right</Button>
-        </Popover>
-      </div>
-    </div>
-  );
-}
-
-function BreadcrumbsDemo() {
-  const [current, setCurrent] = useState("/docs/components/breadcrumbs");
-  
-  const items = breadcrumbPatterns.filesystem(current, (path) => setCurrent(path));
-  
-  return (
-    <div className="flex flex-col gap-4">
-      <Breadcrumbs items={items} showHomeIcon />
-      
-      <div className="flex flex-wrap gap-2 text-sm">
-        <span className="text-neutral-600 dark:text-neutral-400">Try:</span>
-        {["/", "/docs", "/docs/components", "/docs/components/buttons"].map((path) => (
-          <button
-            key={path}
-            onClick={() => setCurrent(path)}
-            className="text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            {path === "/" ? "root" : path}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function BadgeDemo() {
-  const [items, setItems] = useState([
-    { id: "1", label: "React", variant: "default" as const },
-    { id: "2", label: "TypeScript", variant: "info" as const },
-    { id: "3", label: "New", variant: "success" as const },
-  ]);
-  
-  const removeItem = (id: string) => {
-    setItems(items => items.filter(item => item.id !== id));
-  };
-  
-  return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">Variants</p>
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="default">Default</Badge>
-          <Badge variant="secondary">Secondary</Badge>
-          <Badge variant="success">Success</Badge>
-          <Badge variant="warning">Warning</Badge>
-          <Badge variant="error">Error</Badge>
-          <Badge variant="info">Info</Badge>
-          <Badge variant="outline">Outline</Badge>
-        </div>
-      </div>
-      
-      <div>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">With Icons & Pulse</p>
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="success" icon={<span>✓</span>}>Completed</Badge>
-          <Badge variant="warning" icon={<span>⚠</span>}>Warning</Badge>
-          <Badge variant="error" pulse>Live</Badge>
-        </div>
-      </div>
-      
-      <div>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">Removable Tags</p>
-        <div className="flex flex-wrap gap-2">
-          {items.map(item => (
-            <Badge 
-              key={item.id}
-              variant={item.variant}
-              removable 
-              onRemove={() => removeItem(item.id)}
-            >
-              {item.label}
-            </Badge>
-          ))}
-        </div>
-      </div>
-      
-      <div>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">Notification Badges</p>
-        <div className="flex gap-6">
-          <NotificationBadge count={3}>
-            <Button variant="secondary" size="sm">Messages</Button>
-          </NotificationBadge>
-          <NotificationBadge count={99} max={99}>
-            <Button variant="secondary" size="sm">Notifications</Button>
-          </NotificationBadge>
-          <NotificationBadge dot>
-            <Button variant="secondary" size="sm">Online</Button>
-          </NotificationBadge>
-        </div>
-      </div>
     </div>
   );
 }
@@ -968,13 +678,7 @@ function CardDemo() {
           {showGrid ? "Hide Grid Demo" : "Show Grid Demo"}
         </Button>
         {showGrid && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setGridKey(k => k + 1)}
-          >
-            Replay Animation
-          </Button>
+          <ReplayButton onReplay={() => setGridKey(k => k + 1)} />
         )}
       </div>
 
@@ -1513,7 +1217,7 @@ export default function Home() {
         {/* HERO                                                           */}
         {/* ============================================================= */}
         <header className="pt-24 pb-32 border-b border-neutral-200 dark:border-neutral-800">
-          <div className="mb-6 h-[3.5rem] sm:h-[4rem] overflow-hidden">
+          <div className="mb-6 min-h-[5.75rem] sm:min-h-[3.75rem]">
             <span className="text-4xl sm:text-5xl font-bold leading-tight block">
               <Typewriter
                 text=""
@@ -1779,11 +1483,11 @@ export default function Home() {
             <TabsDemo />
           </Section>
 
-          <Section id="accordion" title="Accordion" code={codeSnippets["accordion"]}>
+          <Section id="accordion" title="Accordion" description="Panels open with a spring height animation and staggered content. Full keyboard support." code={codeSnippets["accordion"]}>
             <AccordionDemo />
           </Section>
 
-          <Section id="dialog" title="Dialog" code={codeSnippets["dialog"]}>
+          <Section id="dialog" title="Dialog" description="Spring entrance over a blurred backdrop. Focus is trapped and restored; Escape closes." code={codeSnippets["dialog"]}>
             <DialogDemo />
           </Section>
 
@@ -1795,7 +1499,7 @@ export default function Home() {
             </div>
           </Section>
 
-          <Section id="dropdown" title="Dropdown Menu" code={codeSnippets["dropdown"]}>
+          <Section id="dropdown" title="Dropdown Menu" description="Staggered items, arrow-key navigation, and click-outside to dismiss." code={codeSnippets["dropdown"]}>
             <DropdownDemo />
           </Section>
 

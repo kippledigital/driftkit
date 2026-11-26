@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 
 export interface CodeDisplayProps {
@@ -9,49 +9,67 @@ export interface CodeDisplayProps {
   language?: string;
 }
 
-// Simple syntax highlighting for TSX/JSX
-function highlightTSX(code: string): string {
-  return code
-    // JSX tags and components
-    .replace(/(<\/?)([A-Z][a-zA-Z0-9]*|[a-z]+)(\s|>)/g, '$1<span class="token-tag">$2</span>$3')
-    // JSX attributes
-    .replace(/(\s)([a-zA-Z-]+)(=)/g, '$1<span class="token-attr">$2</span>$3')
-    // String values
-    .replace(/"([^"]*)"/g, '"<span class="token-string">$1</span>"')
-    .replace(/'([^']*)'/g, '\'<span class="token-string">$1</span>\'')
-    // Template literals
-    .replace(/`([^`]*)`/g, '`<span class="token-template">$1</span>`')
-    // Numbers
-    .replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="token-number">$1</span>')
-    // Keywords
-    .replace(/\b(const|let|var|function|return|if|else|for|while|class|export|import|from|default|type|interface|extends|implements)\b/g, '<span class="token-keyword">$1</span>')
-    // Boolean values
-    .replace(/\b(true|false|null|undefined)\b/g, '<span class="token-boolean">$1</span>')
-    // Comments
-    .replace(/\/\*[\s\S]*?\*\//g, '<span class="token-comment">$&</span>')
-    .replace(/\/\/.*$/gm, '<span class="token-comment">$&</span>')
-    // Object properties
-    .replace(/(\w+)(\s*:)/g, '<span class="token-property">$1</span>$2')
-    // Curly braces content (JSX expressions)
-    .replace(/\{([^}]*)\}/g, '{<span class="token-expression">$1</span>}');
+// Syntax highlighting for TSX/JSX in a single left-to-right pass.
+// Chained find-and-replace passes match the markup earlier passes inserted
+// (the string rule catches class="token-…"), so the output showed raw tags.
+// This tokenizer reads the source once and returns React nodes, so nothing is
+// injected as HTML and a <Button> in the snippet is shown, not rendered.
+const TOKEN = new RegExp(
+  [
+    String.raw`(\/\/[^\n]*|\/\*[\s\S]*?\*\/)`, // 1 comment
+    String.raw`("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|` + "`(?:[^`\\\\]|\\\\.)*`)", // 2 string
+    String.raw`(<\/?)([A-Za-z][\w.]*)`, // 3 bracket, 4 tag name
+    String.raw`\b(const|let|var|function|return|if|else|for|while|class|export|import|from|default|type|interface|extends|implements|new|async|await)\b`, // 5 keyword
+    String.raw`\b(true|false|null|undefined)\b`, // 6 literal
+    String.raw`\b(\d+(?:\.\d+)?)\b`, // 7 number
+    String.raw`([A-Za-z_$][\w$-]*)(?=\s*=(?!=))`, // 8 attribute / assignment
+    String.raw`([A-Za-z_$][\w$]*)(?=\s*:)`, // 9 property
+  ].join("|"),
+  "g"
+);
+
+function highlightTSX(code: string): React.ReactNode[] {
+  const out: React.ReactNode[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  const push = (cls: string, text: string) => out.push(<span key={out.length} className={`token-${cls}`}>{text}</span>);
+  TOKEN.lastIndex = 0;
+  while ((m = TOKEN.exec(code))) {
+    if (m.index > last) out.push(code.slice(last, m.index));
+    if (m[1]) push("comment", m[1]);
+    else if (m[2]) push("string", m[2]);
+    else if (m[3]) {
+      out.push(m[3]);
+      push("tag", m[4]);
+    } else if (m[5]) push("keyword", m[5]);
+    else if (m[6]) push("boolean", m[6]);
+    else if (m[7]) push("number", m[7]);
+    else if (m[8]) push("attr", m[8]);
+    else if (m[9]) push("property", m[9]);
+    last = TOKEN.lastIndex;
+  }
+  if (last < code.length) out.push(code.slice(last));
+  return out;
 }
 
 export function CodeDisplay({ title, code, language = "tsx" }: CodeDisplayProps) {
   const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(t);
+  }, [copied]);
 
   const highlightedCode = useMemo(() => {
-    if (language === "tsx" || language === "jsx") {
-      return highlightTSX(code);
-    }
-    return code;
+    if (language === "tsx" || language === "jsx") return highlightTSX(code);
+    return [code];
   }, [code, language]);
 
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
+    } catch {
       // Fallback for older browsers
       const textArea = document.createElement("textarea");
       textArea.value = code;
@@ -61,15 +79,14 @@ export function CodeDisplay({ title, code, language = "tsx" }: CodeDisplayProps)
       document.execCommand("copy");
       document.body.removeChild(textArea);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     }
   }, [code]);
 
   return (
-    <div className="space-y-4">
+    <div className="w-full min-w-0 max-w-full space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">{title}</h2>
+        <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">{title}</h2>
         
         <motion.button
           className={`px-3 py-1.5 text-sm font-mono rounded transition-colors ${
@@ -95,12 +112,9 @@ export function CodeDisplay({ title, code, language = "tsx" }: CodeDisplayProps)
           </div>
           
           {/* Code content */}
-          <div className="p-4 overflow-x-auto">
+          <div className="max-w-full overflow-x-auto p-4">
             <pre className="text-sm font-mono text-neutral-200 leading-relaxed">
-              <code 
-                dangerouslySetInnerHTML={{ __html: highlightedCode }}
-                className="syntax-highlight"
-              />
+              <code className="syntax-highlight">{highlightedCode}</code>
             </pre>
           </div>
         </div>

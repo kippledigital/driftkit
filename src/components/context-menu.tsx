@@ -1,7 +1,8 @@
 "use client";
 
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { spring } from "./motion";
 import { createPortal } from "react-dom";
 
 export interface ContextMenuItem {
@@ -40,11 +41,7 @@ const menuVariants = {
   },
 };
 
-const springConfig = {
-  type: "spring" as const,
-  stiffness: 300,
-  damping: 30,
-};
+const springConfig = spring.smooth;
 
 export function ContextMenu({ children, items, disabled = false, className = "" }: ContextMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -59,7 +56,6 @@ export function ContextMenu({ children, items, disabled = false, className = "" 
     e.preventDefault();
     e.stopPropagation();
 
-    const rect = (e.target as HTMLElement).getBoundingClientRect();
     const x = e.clientX;
     const y = e.clientY;
 
@@ -99,8 +95,9 @@ export function ContextMenu({ children, items, disabled = false, className = "" 
     };
   }, [isOpen]);
 
-  // Adjust menu position to stay in viewport
-  useEffect(() => {
+  // Keep the menu in the viewport. A layout effect measures before paint, so
+  // the menu never flashes at the unclamped position.
+  useLayoutEffect(() => {
     if (!isOpen || !menuRef.current) return;
 
     const menu = menuRef.current;
@@ -125,6 +122,10 @@ export function ContextMenu({ children, items, disabled = false, className = "" 
     if (y < 8) y = 8;
 
     if (x !== position.x || y !== position.y) {
+      // Measure-then-position needs the rendered size, so it can't be computed
+      // during render. This is the layout-effect pattern React documents for
+      // tooltips; it re-renders once, before paint.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPosition({ x, y });
     }
   }, [isOpen, position]);

@@ -24,9 +24,9 @@ export function ComponentSwitcher({ currentComponent }: ComponentSwitcherProps) 
   return (
     <div className="border-b border-neutral-800 bg-neutral-900">
       <div className="flex items-center px-4 py-2">
-        <span className="text-sm font-mono text-neutral-400 mr-4">Components:</span>
+        <span className="mr-4 hidden shrink-0 text-sm font-mono text-neutral-400 sm:inline">Components:</span>
         
-        <div className="flex items-center space-x-1 overflow-x-auto">
+        <div className="flex min-w-0 flex-1 items-center space-x-1 overflow-x-auto">
           {components.map((component) => {
             const isActive = component.id === currentComponent;
             const isAvailable = component.available;
@@ -51,18 +51,18 @@ export function ComponentSwitcher({ currentComponent }: ComponentSwitcherProps) 
               return (
                 <motion.div
                   key={component.id}
-                  className="px-3 py-1.5 text-sm font-mono rounded bg-neutral-850 text-neutral-500 cursor-not-allowed whitespace-nowrap relative"
+                  className="px-3 py-1.5 text-sm font-mono rounded bg-neutral-800/50 text-neutral-500 cursor-not-allowed whitespace-nowrap relative"
                   title="Coming soon"
                 >
                   {component.name}
-                  <span className="ml-2 text-xs text-neutral-600">soon</span>
+                  <span className="ml-2 text-xs text-neutral-500">soon</span>
                 </motion.div>
               );
             }
           })}
         </div>
 
-        <div className="ml-auto">
+        <div className="ml-4 shrink-0">
           <Link href="/">
             <motion.span
               className="text-sm font-mono text-neutral-400 hover:text-white transition-colors"

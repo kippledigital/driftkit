@@ -2,14 +2,15 @@
 
 import React, { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // SPRING PHYSICS
 // =============================================================================
 const springs = {
-  snappy: { type: "spring" as const, stiffness: 500, damping: 30, mass: 0.5 },
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-  quick: { type: "spring" as const, stiffness: 500, damping: 40, mass: 0.3 },
+  snappy: spring.snappy,
+  smooth: spring.smooth,
+  quick: spring.snappy,
 };
 
 // =============================================================================
@@ -120,18 +121,8 @@ function ProgressBar({
   const progressTransition = reduced 
     ? { duration: 0.1 } 
     : direction < 0 
-      ? {
-          type: "spring" as const,
-          stiffness: 250,
-          damping: 40,
-          mass: 1.2,
-        }
-      : {
-          type: "spring" as const,
-          stiffness: 280,
-          damping: 35,
-          mass: 1,
-        };
+      ? spring.gentle
+      : spring.gentle;
 
   return (
     <div className="h-1 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
@@ -197,7 +188,6 @@ export function Stepper({
   return (
     <motion.div
       className={`flex flex-col gap-4 ${className}`}
-      style={{ fontFamily: "Satoshi, sans-serif" }}
       initial={prefersReducedMotion ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={springs.smooth}
@@ -239,12 +229,7 @@ export function Stepper({
               prefersReducedMotion
                 ? { duration: 0.1 }
                 : {
-                    x: {
-                      type: "spring" as const,
-                      stiffness: 300,
-                      damping: 30,
-                      mass: 1.2,
-                    },
+                    x: spring.smooth,
                     opacity: { 
                       duration: 0.25, 
                       ease: [0.25, 0.1, 0.25, 1] // Custom eased curve

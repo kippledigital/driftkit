@@ -14,11 +14,12 @@ import {
   AnimatePresence,
   useReducedMotion,
 } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // SPRING PHYSICS
 // =============================================================================
-// Opening uses "smooth" spring — stiffness 300, damping 30, mass 1.
+// Opening uses the "smooth" token from ./motion.ts.
 // WHY: The dropdown should feel like it's unfurling from the trigger — organic
 // and weighted. Scale 0.95 → 1.0 with origin at top creates a "growing downward"
 // effect that visually connects the menu to its trigger.
@@ -28,14 +29,14 @@ import {
 // craftsmanship. 30ms is fast enough to not slow down power users but visible
 // enough to notice. Each item fades in + slides up 4px for a waterfall effect.
 //
-// Item hover uses "quick" spring — stiffness 500, damping 40, mass 0.3.
+// Item hover uses the "snappy" token from ./motion.ts.
 // WHY: Framer-owned hover backgrounds need to feel instant and responsive as
 // the user scans menu items. Any lag here makes the menu feel sluggish.
 // =============================================================================
 
 const springs = {
-  smooth: { type: "spring" as const, stiffness: 300, damping: 30, mass: 1 },
-  quick: { type: "spring" as const, stiffness: 500, damping: 40, mass: 0.3 },
+  smooth: spring.smooth,
+  quick: spring.snappy,
 };
 
 // =============================================================================
@@ -74,6 +75,12 @@ export function Dropdown({
 }: DropdownProps) {
   const prefersReducedMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard mount flag for portals
+    setMounted(true);
+  }, []);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [triggerPos, setTriggerPos] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
@@ -86,18 +93,39 @@ export function Dropdown({
   useEffect(() => {
     if (!open) return;
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      // The menu is portaled to <body>, so it isn't inside containerRef.
+      // Without this check, pressing a menu item closed the menu first.
+      if (menuRef.current?.contains(target)) return;
+      if (containerRef.current && !containerRef.current.contains(target)) {
         setOpen(false);
       }
     };
+    const handleKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    // Fixed-position menu would detach from its trigger on scroll.
+    const handleScroll = (e: Event) => {
+      if (menuRef.current?.contains(e.target as Node)) return;
+      setOpen(false);
+    };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKey);
+    window.addEventListener("scroll", handleScroll, { passive: true, capture: true });
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKey);
+      window.removeEventListener("scroll", handleScroll, { capture: true });
+    };
   }, [open]);
 
-  // Reset focus index when closing
-  useEffect(() => {
+  // Reset focus index when closing: adjust during render rather than in an
+  // effect, so closing doesn't cost an extra render pass.
+  const [wasOpen, setWasOpen] = useState(open);
+  if (wasOpen !== open) {
+    setWasOpen(open);
     if (!open) setFocusedIndex(-1);
-  }, [open]);
+  }
 
   // Focus the active item when focusedIndex changes
   useEffect(() => {
@@ -171,8 +199,9 @@ export function Dropdown({
       if (!prev && triggerRef.current) {
         const rect = triggerRef.current.getBoundingClientRect();
         setTriggerPos({
-          x: rect.left + window.scrollX,
-          y: rect.top + window.scrollY,
+          // Viewport coordinates: the menu is position: fixed.
+          x: rect.left,
+          y: rect.top,
           width: rect.width,
           height: rect.height,
         });
@@ -229,9 +258,12 @@ export function Dropdown({
       </div>
 
       {/* Menu */}
-      <AnimatePresence>
-        {open && typeof window !== "undefined" && createPortal(
+      {mounted && createPortal(
+        <AnimatePresence>
+          {open && (
           <motion.div
+            key="menu"
+            ref={menuRef}
             role="menu"
             className={`fixed z-[9999] min-w-[180px] rounded-[8px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-lg py-1 ${className}`}
             style={{
@@ -307,10 +339,11 @@ export function Dropdown({
                 </motion.button>
               </React.Fragment>
             ))}
-          </motion.div>,
-          document.body
-        )}
-      </AnimatePresence>
+          </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }

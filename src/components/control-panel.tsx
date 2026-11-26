@@ -3,6 +3,9 @@
 import React, { useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 
+/** A control value: a slider number or a select option. */
+export type ControlValue = string | number;
+
 export interface ControlConfig {
   type: "slider" | "dropdown";
   label: string;
@@ -11,14 +14,15 @@ export interface ControlConfig {
   max?: number;
   step?: number;
   unit?: string;
-  options?: { value: any; label: string }[];
+  options?: { value: ControlValue; label: string }[];
 }
 
 export interface ControlPanelProps {
   title: string;
-  config: Record<string, any>;
+  /** Any object whose control keys hold numbers or strings. */
+  config: object;
   controls: ControlConfig[];
-  onChange: (key: string, value: any) => void;
+  onChange: (key: string, value: ControlValue) => void;
 }
 
 function CustomSlider({
@@ -179,9 +183,9 @@ function CustomDropdown({
   onChange,
 }: {
   label: string;
-  value: any;
-  options: { value: any; label: string }[];
-  onChange: (value: any) => void;
+  value: ControlValue;
+  options: { value: ControlValue; label: string }[];
+  onChange: (value: ControlValue) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const currentOption = options.find(opt => opt.value === value);
@@ -225,7 +229,7 @@ function CustomDropdown({
             >
               {options.map((option) => (
                 <button
-                  key={option.value}
+                  key={String(option.value)}
                   className={`w-full px-3 py-2 text-left text-sm font-mono hover:bg-neutral-700 transition-colors ${
                     option.value === value ? "bg-neutral-700 text-white" : "text-neutral-300"
                   }`}
@@ -246,8 +250,11 @@ function CustomDropdown({
 }
 
 export function ControlPanel({ title, config, controls, onChange }: ControlPanelProps) {
+  const values = config as Record<string, ControlValue>;
+  // The controls are styled for a dark surface, so the panel brings its own
+  // instead of relying on the page being in dark mode.
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rounded-[10px] border border-neutral-800 bg-neutral-950 p-5 text-neutral-100 shadow-lg">
       <h2 className="text-lg font-semibold text-white">{title}</h2>
       
       <div className="space-y-4">
@@ -256,7 +263,7 @@ export function ControlPanel({ title, config, controls, onChange }: ControlPanel
             {control.type === "slider" ? (
               <CustomSlider
                 label={control.label}
-                value={config[control.key]}
+                value={Number(values[control.key])}
                 min={control.min}
                 max={control.max}
                 step={control.step}
@@ -266,7 +273,7 @@ export function ControlPanel({ title, config, controls, onChange }: ControlPanel
             ) : control.type === "dropdown" && control.options ? (
               <CustomDropdown
                 label={control.label}
-                value={config[control.key]}
+                value={values[control.key]}
                 options={control.options}
                 onChange={(value) => onChange(control.key, value)}
               />

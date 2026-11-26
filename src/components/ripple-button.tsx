@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, type ReactNode, type MouseEvent } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { spring } from "./motion";
 
 // =============================================================================
 // RIPPLE BUTTON
@@ -12,8 +13,16 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 interface RippleButtonProps {
   children: ReactNode;
   className?: string;
-  /** Ripple color (CSS value) */
+  /** Ripple color (CSS value). Defaults to the button's text color, so it
+   *  contrasts with the background in both light and dark themes. */
   rippleColor?: string;
+  /**
+   * Background and text color classes. Replaces the default neutral colors
+   * entirely. Use this rather than className for colors: Tailwind classes that
+   * set the same property don't override by order in className, so a color in
+   * className can lose to the default (white text on a white button).
+   */
+  colorClassName?: string;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
 }
@@ -30,7 +39,8 @@ let rippleId = 0;
 export function RippleButton({
   children,
   className = "",
-  rippleColor = "rgba(255,255,255,0.35)",
+  rippleColor = "color-mix(in srgb, currentColor 35%, transparent)",
+  colorClassName = "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200",
   onClick,
   disabled = false,
 }: RippleButtonProps) {
@@ -50,9 +60,6 @@ export function RippleButton({
 
       const newRipple = { id: ++rippleId, x, y, size };
       setRipples((prev) => [...prev, newRipple]);
-      setTimeout(() => {
-        setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
-      }, 1000);
     },
     [disabled, onClick, prefersReduced]
   );
@@ -61,9 +68,9 @@ export function RippleButton({
     <motion.button
       onClick={handleClick}
       disabled={disabled}
-      className={`relative overflow-hidden rounded-[8px] bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 px-5 py-2.5 text-sm font-medium transition-colors hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      className={`relative overflow-hidden rounded-[8px] px-5 py-2.5 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${colorClassName} ${className}`}
       whileTap={!disabled && !prefersReduced ? { scale: 0.95 } : {}}
-      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      transition={spring.bouncy}
     >
       <span className="relative z-10">{children}</span>
       <AnimatePresence>
@@ -80,10 +87,13 @@ export function RippleButton({
             }}
             initial={{ scale: 0, opacity: 0.6 }}
             animate={{ scale: 1, opacity: 0 }}
+            onAnimationComplete={() => setRipples((prev) => prev.filter((r) => r.id !== ripple.id))}
             exit={{ opacity: 0 }}
             transition={{
-              scale: { type: "spring", stiffness: 200, damping: 15 },
-              opacity: { duration: 0.5, ease: "easeOut" },
+              // gentle, not bouncy: a fast spring filled the button in a
+              // single frame, so the ripple read as a flash, not a spread.
+              scale: spring.gentle,
+              opacity: { duration: 0.7, ease: "easeOut" },
             }}
           />
         ))}
