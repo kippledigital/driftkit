@@ -76,10 +76,8 @@ export function Breadcrumbs({
 
   // Handle collapsing when there are too many items
   let displayItems = items;
-  let hasCollapsed = false;
 
   if (maxItems && items.length > maxItems) {
-    hasCollapsed = true;
     // Show first item, ellipsis, and last few items
     const keepFromEnd = maxItems - 2; // Reserve space for first item and ellipsis
     displayItems = [

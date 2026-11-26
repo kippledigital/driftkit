@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef, useId } from "react";
+import React, { useCallback, useRef, useId, useSyncExternalStore } from "react";
 import {
   motion,
   useReducedMotion,
@@ -41,6 +41,16 @@ export interface ModeSwitcherProps {
   className?: string;
 }
 
+function readTheme(): "light" | "dark" {
+  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+}
+
+function subscribeToTheme(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  return () => observer.disconnect();
+}
+
 export function ModeSwitcher({
   mode: controlledMode,
   onChange,
@@ -51,16 +61,9 @@ export function ModeSwitcher({
   const prefersReducedMotion = useReducedMotion();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Internal state — used when uncontrolled
-  const [internalMode, setInternalMode] = useState<"light" | "dark">("light");
-
-  // Initialize from document class on mount
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      const isDark = document.documentElement.classList.contains("dark");
-      setInternalMode(isDark ? "dark" : "light");
-    }
-  }, []);
+  // Uncontrolled mode reads the live `dark` class on <html>, so every switcher
+  // on the page (header, demos) stays in sync with whichever one was pressed.
+  const internalMode = useSyncExternalStore(subscribeToTheme, readTheme, () => "light" as const);
 
   const currentMode = controlledMode ?? internalMode;
   const isDark = currentMode === "dark";
@@ -113,7 +116,6 @@ export function ModeSwitcher({
     }
 
     localStorage.setItem("theme", next);
-    setInternalMode(next);
     onChange?.(next);
   }, [isDark, irisWipe, prefersReducedMotion, onChange]);
 

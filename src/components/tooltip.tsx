@@ -59,12 +59,11 @@ export interface TooltipProps {
 // POSITION UTILITIES
 // =============================================================================
 
-// WHY auto-flip: A tooltip that clips off-screen is worse than no tooltip.
-// We measure the trigger's bounding rect against the viewport and flip to
-// the opposite side if there isn't enough room. 8px buffer to avoid edge-hugging.
-const FLIP_BUFFER = 8;
 const TOOLTIP_OFFSET = 8;
 
+// WHY auto-flip: A tooltip that clips off-screen is worse than no tooltip.
+// We measure the trigger's bounding rect against the viewport and flip to
+// the opposite side if there isn't enough room for it.
 function getFlippedPosition(
   position: TooltipPosition,
   triggerRect: DOMRect

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
-function CodeBlock({ code, language = "bash" }: { code: string; language?: string }) {
+function CodeBlock({ code }: { code: string; language?: string }) {
   const [copied, setCopied] = useState(false);
   
   return (

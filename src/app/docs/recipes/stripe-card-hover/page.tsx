@@ -251,7 +251,7 @@ export default function StripeCardHoverRecipe() {
           </div>
           <div className="flex gap-3">
             <span className="text-neutral-400 font-mono">4.</span>
-            <p><strong className="text-neutral-900 dark:text-white">Lift on hover</strong> — whileHover with spring transition creates the satisfying "pick up" feel</p>
+            <p><strong className="text-neutral-900 dark:text-white">Lift on hover</strong> — whileHover with spring transition creates the satisfying “pick up” feel</p>
           </div>
         </div>
       </section>

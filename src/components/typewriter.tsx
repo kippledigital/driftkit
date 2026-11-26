@@ -48,78 +48,71 @@ export function Typewriter({
   const texts = loop && loop.length > 0 ? loop : [text];
   const currentText = texts[currentTextIndex];
 
-  // Reset on text prop change (non-loop mode)
-  useEffect(() => {
-    if (!loop) {
-      setDisplayedCount(0);
-      setIsComplete(false);
-      setPhase("idle");
-    }
-  }, [text, loop]);
+  // Reset when the text prop changes (non-loop mode). Adjusting state during
+  // render, rather than in an effect, avoids a wasted render with stale text.
+  const [prevText, setPrevText] = useState(text);
+  if (!loop && text !== prevText) {
+    setPrevText(text);
+    setDisplayedCount(0);
+    setIsComplete(false);
+    setPhase("idle");
+  }
 
-  // Single effect drives the entire state machine
-  useEffect(() => {
-    // Clear any existing timer on every phase/count change
-    clearTimeout(timerRef.current);
+  // Reduced motion shows the whole text at once.
+  const shownCount = prefersReducedMotion ? currentText.length : displayedCount;
+  const complete = prefersReducedMotion || isComplete;
 
+  // The state machine. Every state change happens inside a timer callback,
+  // so each step is one render and the effect only schedules the next tick.
+  useEffect(() => {
     if (prefersReducedMotion) {
-      setDisplayedCount(currentText.length);
-      setIsComplete(true);
       onComplete?.();
       return;
     }
 
-    if (phase === "idle") {
-      // Start typing after initial delay
-      timerRef.current = setTimeout(() => setPhase("typing"), delay || 0);
-      return () => clearTimeout(timerRef.current);
-    }
-
-    if (phase === "typing") {
-      if (displayedCount >= currentText.length) {
-        // Done typing
-        if (loop) {
-          setPhase("pausing");
-        } else {
-          setIsComplete(true);
-          onComplete?.();
-        }
-        return;
+    const finishTyping = () => {
+      if (loop) setPhase("pausing");
+      else {
+        setIsComplete(true);
+        onComplete?.();
       }
+    };
+
+    if (phase === "idle") {
+      timerRef.current = setTimeout(() => {
+        if (currentText.length === 0) finishTyping();
+        else setPhase("typing");
+      }, delay || 0);
+    } else if (phase === "typing") {
       const jitter = speed * (0.7 + Math.random() * 0.6);
       timerRef.current = setTimeout(() => {
-        setDisplayedCount((c) => c + 1);
+        const next = displayedCount + 1;
+        setDisplayedCount(next);
+        if (next >= currentText.length) finishTyping();
       }, jitter);
-      return () => clearTimeout(timerRef.current);
-    }
-
-    if (phase === "pausing") {
+    } else if (phase === "pausing") {
       timerRef.current = setTimeout(() => setPhase("deleting"), loopPause);
-      return () => clearTimeout(timerRef.current);
-    }
-
-    if (phase === "deleting") {
-      if (displayedCount <= 0) {
-        // Move to next text and start typing
-        setCurrentTextIndex((i) => (i + 1) % texts.length);
-        setPhase("typing");
-        return;
-      }
+    } else if (phase === "deleting") {
       timerRef.current = setTimeout(() => {
-        setDisplayedCount((c) => c - 1);
+        const next = displayedCount - 1;
+        setDisplayedCount(Math.max(0, next));
+        if (next <= 0) {
+          setCurrentTextIndex((i) => (i + 1) % texts.length);
+          setPhase("typing");
+        }
       }, speed * 0.4);
-      return () => clearTimeout(timerRef.current);
     }
-  }, [phase, displayedCount, currentText, currentTextIndex, delay, loop, loopPause, speed, texts.length, onComplete, prefersReducedMotion]);
+    return () => clearTimeout(timerRef.current);
+  }, [phase, displayedCount, currentText, delay, loop, loopPause, speed, texts.length, onComplete, prefersReducedMotion]);
 
-  const showCursor = cursor && (!isComplete || persistCursor || !!loop);
+  const showCursor = cursor && (!complete || persistCursor || !!loop);
 
   return (
     <span className={`inline ${className}`} aria-label={currentText} role="status">
       {/* Letters are grouped into words that can't break internally. Each letter
           is an inline-block (so it can move), and on their own inline-blocks let the
           browser wrap a line mid-word ("com / ponents"). */}
-      {words(currentText.slice(0, displayedCount)).map(({ word, start }) =>
+      {words(currentText.slice(0, shownCount)).map(({ word, start }) =>
         word === " " ? (
           <React.Fragment key={`${currentTextIndex}-s${start}`}> </React.Fragment>
         ) : (

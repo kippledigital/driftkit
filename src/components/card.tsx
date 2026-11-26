@@ -220,6 +220,9 @@ Card.displayName = "Card";
 
 export const CardImage = ({ src, alt, className = "" }: CardImageProps) => (
   <div className={`relative w-full aspect-[16/10] overflow-hidden ${className}`}>
+    {/* A plain <img> on purpose: DriftKit components are copy-paste and must
+        work outside Next.js, where next/image isn't available. */}
+    {/* eslint-disable-next-line @next/next/no-img-element */}
     <img
       src={src}
       alt={alt}

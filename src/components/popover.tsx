@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { spring } from "./motion";
 import { createPortal } from "react-dom";
@@ -80,17 +80,16 @@ export function Popover({
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : internalOpen;
 
-  const setOpen = (open: boolean) => {
-    if (isControlled) {
+  const setOpen = useCallback(
+    (open: boolean) => {
+      if (!isControlled) setInternalOpen(open);
       onOpenChange?.(open);
-    } else {
-      setInternalOpen(open);
-      onOpenChange?.(open);
-    }
-  };
+    },
+    [isControlled, onOpenChange]
+  );
 
   // Calculate position
-  const calculatePosition = () => {
+  const calculatePosition = useCallback(() => {
     if (!triggerRef.current || !popoverRef.current) return;
 
     const triggerRect = triggerRef.current.getBoundingClientRect();
@@ -173,14 +172,14 @@ export function Popover({
 
     setPosition({ x, y });
     setActualPlacement(finalPlacement);
-  };
+  }, [placement, offset]);
 
   // Update position when open
   useEffect(() => {
     if (isOpen) {
       calculatePosition();
     }
-  }, [isOpen, placement]);
+  }, [isOpen, calculatePosition]);
 
   // Handle click outside
   useEffect(() => {
@@ -199,7 +198,7 @@ export function Popover({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen, closeOnOutsideClick]);
+  }, [isOpen, closeOnOutsideClick, setOpen]);
 
   // Handle escape key
   useEffect(() => {
@@ -213,7 +212,7 @@ export function Popover({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, closeOnEscape]);
+  }, [isOpen, closeOnEscape, setOpen]);
 
   // Handle scroll
   useEffect(() => {
@@ -232,7 +231,7 @@ export function Popover({
       window.removeEventListener("scroll", handleScroll, true);
       window.removeEventListener("resize", handleScroll);
     };
-  }, [isOpen]);
+  }, [isOpen, calculatePosition]);
 
   // Trigger handlers
   const handleClick = () => {

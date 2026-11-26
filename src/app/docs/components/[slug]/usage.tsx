@@ -7,8 +7,34 @@ interface UsageProps {
   componentName: string;
 }
 
+interface UsageExample {
+  title: string;
+  description?: string;
+  code: string;
+}
+
+interface UsageSection {
+  title: string;
+  description?: string;
+  examples: UsageExample[];
+}
+
+interface UsageProp {
+  name: string;
+  type: string;
+  default?: string;
+  description: string;
+  required?: boolean;
+}
+
+interface UsageEntry {
+  variants?: UsageSection[];
+  compositions?: UsageExample[];
+  props?: UsageProp[];
+}
+
 // Component-specific usage data
-const usageData: Record<string, any> = {
+const usageData: Record<string, UsageEntry> = {
   button: {
     variants: [
       {
@@ -1360,7 +1386,7 @@ export default function Usage({ componentName }: UsageProps) {
             Variants & States
           </h2>
           <div className="space-y-8">
-            {data.variants.map((section: any, index: number) => (
+            {data.variants.map((section, index) => (
               <div key={index}>
                 <h3 className="text-lg font-semibold text-neutral-900 dark:text-white mb-3">
                   {section.title}
@@ -1369,7 +1395,7 @@ export default function Usage({ componentName }: UsageProps) {
                   {section.description}
                 </p>
                 <div className="grid gap-6">
-                  {section.examples.map((example: any, exIndex: number) => (
+                  {section.examples.map((example, exIndex) => (
                     <div key={exIndex} className="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
                       <div className="p-4 bg-neutral-50 dark:bg-neutral-900/50 border-b border-neutral-200 dark:border-neutral-800">
                         <h4 className="font-medium text-neutral-900 dark:text-white mb-2">
@@ -1398,7 +1424,7 @@ export default function Usage({ componentName }: UsageProps) {
             Composition Examples
           </h2>
           <div className="space-y-6">
-            {data.compositions.map((example: any, index: number) => (
+            {data.compositions.map((example, index) => (
               <div key={index} className="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden">
                 <div className="p-4 bg-neutral-50 dark:bg-neutral-900/50 border-b border-neutral-200 dark:border-neutral-800">
                   <h3 className="font-medium text-neutral-900 dark:text-white mb-2">
@@ -1435,7 +1461,7 @@ export default function Usage({ componentName }: UsageProps) {
                 </tr>
               </thead>
               <tbody>
-                {data.props.map((prop: any) => (
+                {data.props.map((prop) => (
                   <tr key={prop.name} className="border-b border-neutral-100 dark:border-neutral-900">
                     <td className="py-3 pr-6">
                       <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded text-neutral-900 dark:text-neutral-100">

@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
 import { ReplayButton } from "@/components/replay-button";
 import { Button } from "@/components/button";
 import { Toggle } from "@/components/toggle";
@@ -24,7 +23,7 @@ import { CodeBlock } from "@/components/code-block";
 import { CodeDisplay } from "@/components/code-display";
 import { ComponentSwitcher } from "@/components/component-switcher";
 import { ContextMenu } from "@/components/context-menu";
-import { ControlPanel } from "@/components/control-panel";
+import { ControlPanel, type ControlValue } from "@/components/control-panel";
 import { CursorTrail } from "@/components/cursor-trail";
 import { DateRangePicker } from "@/components/date-range-picker";
 import { Drawer } from "@/components/drawer";
@@ -40,7 +39,7 @@ import { MorphingShape } from "@/components/morphing-shape";
 import { MultiSelect } from "@/components/multi-select";
 import { NavMenu } from "@/components/nav-menu";
 import { NumberTicker } from "@/components/number-ticker";
-import { ParallaxScroll, ParallaxItem } from "@/components/parallax-scroll";
+import { ParallaxScroll } from "@/components/parallax-scroll";
 import { Popover } from "@/components/popover";
 import { ProgressRing } from "@/components/progress-ring";
 import { RippleButton } from "@/components/ripple-button";
@@ -226,7 +225,7 @@ export function AccordionDemo() {
             trigger: "How do layout animations work?",
             content: (
               <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                <p>Framer Motion's layout animations automatically animate between DOM states — position, size, border-radius all morph smoothly without manual FLIP calculations.</p>
+                <p>Framer Motion’s layout animations automatically animate between DOM states — position, size, border-radius all morph smoothly without manual FLIP calculations.</p>
               </div>
             ),
           },
@@ -467,7 +466,7 @@ export function ControlPanelDemo() {
     easing: "spring",
   });
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = (key: string, value: ControlValue) => {
     setConfig(prev => ({ ...prev, [key]: value }));
   };
 

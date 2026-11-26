@@ -24,7 +24,7 @@ export function AnimatedTabs({ items, defaultId, className = "" }: AnimatedTabsP
   const containerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const [blobStyle, setBlobStyle] = useState<{ left: number; width: number } | null>(null);
-  const isResizing = useRef(false);
+  const [isResizing, setIsResizing] = useState(false);
   const resizeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const measureBlob = useCallback(() => {
@@ -47,11 +47,11 @@ export function AnimatedTabs({ items, defaultId, className = "" }: AnimatedTabsP
   // On resize: snap instantly (no spring), then re-enable spring after
   useEffect(() => {
     const onResize = () => {
-      isResizing.current = true;
+      setIsResizing(true);
       measureBlob();
       clearTimeout(resizeTimer.current);
       resizeTimer.current = setTimeout(() => {
-        isResizing.current = false;
+        setIsResizing(false);
       }, 150);
     };
     window.addEventListener("resize", onResize);
@@ -69,7 +69,7 @@ export function AnimatedTabs({ items, defaultId, className = "" }: AnimatedTabsP
             className="absolute top-1 bottom-1 rounded-[6px] bg-white dark:bg-neutral-700 shadow-sm"
             initial={false}
             animate={{ x: blobStyle.left, width: blobStyle.width }}
-            transition={isResizing.current ? { duration: 0 } : TAB_SPRING}
+            transition={isResizing ? { duration: 0 } : TAB_SPRING}
             style={{ zIndex: 0, left: 0 }}
           />
         )}

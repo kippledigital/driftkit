@@ -69,7 +69,7 @@ export function CodeDisplay({ title, code, language = "tsx" }: CodeDisplayProps)
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
-    } catch (err) {
+    } catch {
       // Fallback for older browsers
       const textArea = document.createElement("textarea");
       textArea.value = code;

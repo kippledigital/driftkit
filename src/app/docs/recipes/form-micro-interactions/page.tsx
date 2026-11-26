@@ -326,7 +326,7 @@ export default function FormMicroInteractionsRecipe() {
             <span className="text-lg">✓</span>
             <div>
               <strong className="text-neutral-900 dark:text-white">Success checkmark</strong>
-              <p>Scale from 0 + rotate from -90° with spring. The overshoot from the spring makes it feel like it "pops" into place.</p>
+              <p>Scale from 0 + rotate from -90° with spring. The overshoot from the spring makes it feel like it “pops” into place.</p>
             </div>
           </div>
           <div className="flex gap-3">

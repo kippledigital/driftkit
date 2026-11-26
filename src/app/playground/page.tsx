@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
-import { motion, useAnimation } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/button";
 import { Toggle } from "@/components/toggle";
-import { Tabs, type TabItem } from "@/components/tabs";
+import { Tabs } from "@/components/tabs";
 // Global nav handles navigation + mode switcher
 
 // =============================================================================
@@ -90,41 +90,19 @@ function calculateSpringCurve(config: { stiffness: number; damping: number; mass
 // MINI SPRING CURVE (inline, no axes — just the shape)
 // =============================================================================
 
-function MiniCurve({ config, color = "#6366f1", height = 48, width = 120 }: {
-  config: { stiffness: number; damping: number; mass: number };
-  color?: string;
-  height?: number;
-  width?: number;
-}) {
-  const { points } = useMemo(() => calculateSpringCurve(config), [config]);
-  const maxY = Math.max(...points, 1.15);
-  
-  const d = points.map((y, i) => {
-    const x = (i / (points.length - 1)) * width;
-    const py = height - (y / maxY) * height * 0.85 - height * 0.05;
-    return `${i === 0 ? "M" : "L"}${x},${py}`;
-  }).join(" ");
-
-  const targetY = height - (1 / maxY) * height * 0.85 - height * 0.05;
-
-  return (
-    <svg width={width} height={height} className="opacity-60">
-      <line x1={0} y1={targetY} x2={width} y2={targetY} stroke={color} strokeWidth={0.5} strokeDasharray="2 2" opacity={0.3} />
-      <path d={d} fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" />
-    </svg>
-  );
-}
-
 // =============================================================================
 // ANIMATION DEMOS — each preset shows a different micro-interaction
 // =============================================================================
 
-function ButtonPressDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
-  const [playCount, setPlayCount] = useState(0);
-  
-  useEffect(() => {
-    if (isPlaying) setPlayCount(c => c + 1);
-  }, [isPlaying]);
+interface DemoProps {
+  isPlaying: boolean;
+  /** Increments on every play; demos key off it to restart. */
+  playCount: number;
+  color: string;
+  springTransition: object;
+}
+
+function ButtonPressDemo({ playCount, color, springTransition }: DemoProps) {
 
   return (
     <div className="flex items-center justify-center h-full">
@@ -132,8 +110,10 @@ function ButtonPressDemo({ isPlaying, color, springTransition }: { isPlaying: bo
         key={playCount}
         className="px-6 py-2.5 rounded-lg text-white text-xs font-semibold shadow-lg"
         style={{ backgroundColor: color }}
-        initial={{ scale: 1, y: 0 }}
-        animate={playCount > 0 ? { scale: [0.85, 1.08, 1], y: [3, -2, 0] } : {}}
+        // Springs take two keyframes: start pressed and let the spring's own
+        // overshoot supply the bounce, so it reflects the current settings.
+        initial={playCount > 0 ? { scale: 0.85, y: 3 } : false}
+        animate={{ scale: 1, y: 0 }}
         transition={springTransition}
       >
         Get Started
@@ -142,7 +122,7 @@ function ButtonPressDemo({ isPlaying, color, springTransition }: { isPlaying: bo
   );
 }
 
-function ToggleSwitchDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+function ToggleSwitchDemo({ isPlaying, color, springTransition }: DemoProps) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 h-full">
       <div className="w-12 h-6 rounded-full p-0.5 relative" style={{ backgroundColor: isPlaying ? color : "#d1d5db" }}>
@@ -156,7 +136,7 @@ function ToggleSwitchDemo({ isPlaying, color, springTransition }: { isPlaying: b
   );
 }
 
-function NotificationBadgeDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+function NotificationBadgeDemo({ playCount, color, springTransition }: DemoProps) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 h-full">
       <div className="relative">
@@ -166,7 +146,9 @@ function NotificationBadgeDemo({ isPlaying, color, springTransition }: { isPlayi
         <motion.div
           className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center"
           style={{ backgroundColor: color }}
-          animate={isPlaying ? { scale: [0, 1.3, 1], opacity: [0, 1, 1] } : { scale: 1, opacity: 1 }}
+          key={playCount}
+          initial={playCount > 0 ? { scale: 0, opacity: 0 } : false}
+          animate={{ scale: 1, opacity: 1 }}
           transition={springTransition}
         >
           3
@@ -176,7 +158,7 @@ function NotificationBadgeDemo({ isPlaying, color, springTransition }: { isPlayi
   );
 }
 
-function CardSlideDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+function CardSlideDemo({ isPlaying, color, springTransition }: DemoProps) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 h-full">
       <motion.div
@@ -194,7 +176,7 @@ function CardSlideDemo({ isPlaying, color, springTransition }: { isPlaying: bool
   );
 }
 
-function ToastDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
+function ToastDemo({ isPlaying, color, springTransition }: DemoProps) {
   return (
     <div className="flex flex-col items-center justify-center h-full px-3">
       <motion.div
@@ -217,9 +199,7 @@ function ToastDemo({ isPlaying, color, springTransition }: { isPlaying: boolean;
   );
 }
 
-function DropdownDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
-  const [playCount, setPlayCount] = useState(0);
-  useEffect(() => { if (isPlaying) setPlayCount(c => c + 1); }, [isPlaying]);
+function DropdownDemo({ playCount, color, springTransition }: DemoProps) {
   return (
     <div className="flex flex-col items-center justify-center h-full px-4">
       <div className="w-full">
@@ -245,16 +225,14 @@ function DropdownDemo({ isPlaying, color, springTransition }: { isPlaying: boole
   );
 }
 
-function ModalDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
-  const [playCount, setPlayCount] = useState(0);
-  useEffect(() => { if (isPlaying) setPlayCount(c => c + 1); }, [isPlaying]);
+function ModalDemo({ playCount, color, springTransition }: DemoProps) {
   return (
     <div className="flex items-center justify-center h-full relative">
       <motion.div
         key={playCount}
         className="w-28 rounded-lg bg-white dark:bg-neutral-800 shadow-2xl border border-neutral-200 dark:border-neutral-700 p-3"
-        initial={{ scale: 0.85, y: 8 }}
-        animate={playCount > 0 ? { scale: [0.75, 1.02, 1], y: [10, -2, 0] } : { scale: 1, y: 0 }}
+        initial={playCount > 0 ? { scale: 0.75, y: 10 } : false}
+        animate={{ scale: 1, y: 0 }}
         transition={springTransition}
       >
         <div className="w-full h-1.5 rounded-full mb-2" style={{ backgroundColor: color, opacity: 0.6 }} />
@@ -269,15 +247,8 @@ function ModalDemo({ isPlaying, color, springTransition }: { isPlaying: boolean;
   );
 }
 
-function TabsDemo({ isPlaying, color, springTransition }: { isPlaying: boolean; color: string; springTransition: object }) {
-  const [playCount, setPlayCount] = useState(0);
-  const [activeTab, setActiveTab] = useState(0);
-  useEffect(() => {
-    if (isPlaying) {
-      setPlayCount(c => c + 1);
-      setActiveTab(prev => (prev === 0 ? 1 : prev === 1 ? 2 : 0));
-    }
-  }, [isPlaying]);
+function TabsDemo({ playCount, color, springTransition }: DemoProps) {
+  const activeTab = playCount % 3;
   const tabs = ["Overview", "Details", "Settings"];
   return (
     <div className="flex flex-col justify-center h-full px-3">
@@ -322,7 +293,7 @@ const demoOptions = [
   { key: "tabs", label: "Tabs" },
 ];
 
-const demoComponents: Record<string, React.FC<{ isPlaying: boolean; color: string; springTransition: object }>> = {
+const demoComponents: Record<string, React.FC<DemoProps>> = {
   button: ButtonPressDemo,
   toggle: ToggleSwitchDemo,
   badge: NotificationBadgeDemo,
@@ -336,77 +307,6 @@ const demoComponents: Record<string, React.FC<{ isPlaying: boolean; color: strin
 // =============================================================================
 // COMPARISON CARD
 // =============================================================================
-
-function ComparisonCard({ 
-  config, 
-  meta, 
-  isPlaying: globalPlaying, 
-  isActive, 
-  onClick,
-  demoKey,
-  isCustom = false,
-}: {
-  config: { stiffness: number; damping: number; mass: number; bounce: number };
-  meta: { emoji: string; label: string; description: string; color: string };
-  isPlaying: boolean;
-  isActive: boolean;
-  onClick: () => void;
-  demoKey: string;
-  isCustom?: boolean;
-}) {
-  const [localPlaying, setLocalPlaying] = useState(false);
-  const isPlaying = globalPlaying || localPlaying;
-
-  const handleClick = useCallback(() => {
-    onClick();
-    setLocalPlaying(true);
-    setTimeout(() => setLocalPlaying(false), 1500);
-  }, [onClick]);
-
-  const springTransition = {
-    type: "spring" as const,
-    stiffness: config.stiffness,
-    damping: config.damping,
-    mass: config.mass,
-  };
-
-  const Demo = demoComponents[demoKey] || ToastDemo;
-  const color = isCustom ? "#6366f1" : meta.color;
-
-  return (
-    <motion.button
-      onClick={handleClick}
-      className={`relative text-left w-full rounded-xl border-2 overflow-hidden transition-colors ${
-        isActive
-          ? "border-indigo-500 dark:border-indigo-400 shadow-lg shadow-indigo-500/10"
-          : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
-      } bg-white dark:bg-neutral-900`}
-      whileHover={{ y: -2 }}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-    >
-      {/* Animation stage */}
-      <div className="h-48 bg-neutral-50 dark:bg-neutral-950 relative overflow-hidden">
-        <Demo isPlaying={isPlaying} color={color} springTransition={springTransition} />
-      </div>
-
-      {/* Info */}
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-1">
-          <h3 className="font-semibold text-sm text-neutral-900 dark:text-white">
-            {meta.emoji} {meta.label}
-            {isCustom && (
-              <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-full font-medium">
-                LIVE
-              </span>
-            )}
-          </h3>
-        </div>
-        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-3">{meta.description}</p>
-        <MiniCurve config={config} color={color} />
-      </div>
-    </motion.button>
-  );
-}
 
 // =============================================================================
 // FULL SPRING CURVE (detail view)
@@ -431,7 +331,9 @@ function SpringCurveDetail({ config }: { config: PhysicsConfig }) {
   const toPath = (pts: number[]) => pts.map((y, i) => {
     const x = padding.left + (i / (pts.length - 1)) * plotW;
     const py = padding.top + plotH - (y / maxY) * plotH;
-    return `${i === 0 ? "M" : "L"}${x},${py}`;
+    // Rounded: server and browser math can differ in the last float digit,
+    // which made the SSR path disagree with the hydrated one.
+    return `${i === 0 ? "M" : "L"}${x.toFixed(2)},${py.toFixed(2)}`;
   }).join(" ");
 
   const targetY = padding.top + plotH - (1 / maxY) * plotH;
@@ -707,20 +609,14 @@ function ContinuousAnimation() {
  */`;
   }, [config]);
 
-  const getCurrentCode = () => {
-    switch (activeFormat) {
-      case "framer": return framerCode;
-      case "spring": return springCode;
-      case "css": return cssCode;
-      default: return framerCode;
-    }
-  };
+  const currentCode =
+    activeFormat === "spring" ? springCode : activeFormat === "css" ? cssCode : framerCode;
 
   const copyToClipboard = useCallback(async () => {
-    const code = getCurrentCode();
+    const code = currentCode;
     try {
       await navigator.clipboard.writeText(code);
-    } catch (err) {
+    } catch {
       const textArea = document.createElement("textarea");
       textArea.value = code;
       document.body.appendChild(textArea);
@@ -731,7 +627,7 @@ function ContinuousAnimation() {
     }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [getCurrentCode]);
+  }, [currentCode]);
 
   const tabs = [
     { id: "framer" as const, label: "Framer", icon: <svg viewBox="0 0 14 21" fill="currentColor" className="w-3 h-3"><path d="M0 0h14v7H7L0 0zm0 7h7l7 7H7v7L0 14V7z"/></svg> },
@@ -774,7 +670,7 @@ function ContinuousAnimation() {
           )}
         </Button>
         <pre className="p-3 pr-10 text-[10px] font-mono text-neutral-200 leading-relaxed overflow-x-auto">
-          <code>{getCurrentCode()}</code>
+          <code>{currentCode}</code>
         </pre>
       </div>
     </div>
@@ -857,6 +753,7 @@ export default function PhysicsPlayground() {
     return parsed.config ? { ...defaultConfig, ...parsed.config } : defaultConfig;
   });
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playCount, setPlayCount] = useState(0);
   const [autoReplay, setAutoReplay] = useState(false);
   const [demoKey, setDemoKey] = useState(() => {
     const parsed = parseUrlConfig();
@@ -879,12 +776,13 @@ export default function PhysicsPlayground() {
 
   const play = useCallback(() => {
     setIsPlaying(true);
+    setPlayCount((c) => c + 1);
     setTimeout(() => setIsPlaying(false), 1500);
   }, []);
 
   useEffect(() => {
     if (autoReplay) {
-      play();
+      // The first play happens in the toggle handler; this only keeps time.
       intervalRef.current = setInterval(play, 3000);
     } else if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -950,7 +848,10 @@ export default function PhysicsPlayground() {
               <div className="flex items-center gap-2">
                 <Toggle
                   checked={autoReplay}
-                  onChange={setAutoReplay}
+                  onChange={(on) => {
+                    setAutoReplay(on);
+                    if (on) play();
+                  }}
                   size="sm"
                   aria-label="Auto-replay animations"
                 />
@@ -987,7 +888,7 @@ export default function PhysicsPlayground() {
                   return (
                     <div className="w-full h-full flex items-center justify-center scale-125">
                       <div className="w-full max-w-sm h-full">
-                        <Demo isPlaying={isPlaying} color="#6366f1" springTransition={springTransition} />
+                        <Demo isPlaying={isPlaying} playCount={playCount} color="#6366f1" springTransition={springTransition} />
                       </div>
                     </div>
                   );
@@ -1026,7 +927,7 @@ export default function PhysicsPlayground() {
                       } bg-neutral-50 dark:bg-neutral-950 rounded-xl`}
                     >
                       <div className="h-28 relative overflow-hidden">
-                        <Demo isPlaying={isPlaying} color={meta.color} springTransition={springTransition} />
+                        <Demo isPlaying={isPlaying} playCount={playCount} color={meta.color} springTransition={springTransition} />
                         <div className="absolute bottom-2 left-2">
                           <span className="text-[10px] font-semibold bg-white/80 dark:bg-neutral-900/80 px-2 py-0.5 rounded-full backdrop-blur-sm text-neutral-700 dark:text-neutral-300">
                             {meta.emoji} {meta.label}

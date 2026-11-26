@@ -4,7 +4,7 @@ import { ReplayButton } from "@/components/replay-button";
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { motion, useSpring, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 
 // Interactive spring demo
 function SpringDemo() {
